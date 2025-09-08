@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.logistics.mapper.StockSummaryMapper">
+
+    <select id="selectStockSummaryList" parameterType="org.logistics.domain.SearchCriteriaDto"
+            resultType="org.logistics.domain.StockSummaryResultDto">
+        WITH Inbound AS (
+            SELECT
+                t2.item_id,
+                SUM(t2.qty) AS inbound_qty,
+                SUM(CASE WHEN t1.inbound_type = '생산입고' THEN t2.qty ELSE 0 END) AS production_inbound,
+                SUM(CASE WHEN t1.inbound_type = '외주입고' THEN t2.qty ELSE 0 END) AS outsourcing_inbound,
+                SUM(CASE WHEN t1.inbound_type = '구매입고' THEN t2.qty ELSE 0 END) AS purchase_inbound,
+                SUM(CASE WHEN t1.inbound_type = '수입입고' THEN t2.qty ELSE 0 END) AS import_inbound
+            FROM inbound_master t1
+            JOIN inbound_detail t2 ON t1.inbound_id = t2.inbound_id
+            WHERE t1.inbound_date BETWEEN #{searchPeriodStart} AND #{searchPeriodEnd} AND t1.bu_id = #{buId}
+            GROUP BY t2.item_id
+        ),
+        Outbound AS (
+            SELECT
+                t2.item_id,
+                SUM(t2.qty) AS outbound_qty,
+                SUM(CASE WHEN t1.out_type = '거래명세표' THEN t2.qty ELSE 0 END) AS delivery_slip_outbound,
+                SUM(CASE WHEN t1.out_type = '판매보관품출고' THEN t2.qty ELSE 0 END) AS sales_consignment_outbound,
+                SUM(CASE WHEN t1.out_type = '작업실적' THEN t2.qty ELSE 0 END) AS work_performance_outbound,
+                SUM(CASE WHEN t1.out_type = '외주입고' THEN t2.qty ELSE 0 END) AS outsourcing_outbound,
+                SUM(CASE WHEN t2.other_out_code IS NOT NULL THEN t2.qty ELSE 0 END) AS other_outbound
+            FROM out_master t1
+            JOIN out_detail t2 ON t1.out_id = t2.out_id
+            WHERE t1.out_date BETWEEN #{searchPeriodStart} AND #{searchPeriodEnd} AND t1.bu_id = #{buId}
+            GROUP BY t2.item_id
+        ),
+        StockTxn AS (
+            SELECT
+                item_id,
+                SUM(CASE WHEN stock_type = 'INPUT' THEN qty ELSE -qty END) AS stock_qty,
+                SUM(CASE WHEN txn_date &lt; #{searchPeriodStart} THEN qty ELSE -qty END) AS carried_over_qty
+            FROM stock_transaction
+            WHERE txn_date BETWEEN #{searchPeriodStart} AND #{searchPeriodEnd} AND bu_id = #{buId}
+            GROUP BY item_id
+        )
+        SELECT
+            t1.item_internal_code as itemInternalCode,
+            t1.asset_class as itemAssetClass,
+            t1.big_category as itemBigCategory,
+            t1.mid_category as itemMidCategory,
+            t1.item_name as itemName,
+            NVL(t2.inbound_qty, 0) AS inboundQty,
+            t1.base_unit as itemUnit,
+            t1.item_status as itemStatus,
+            NVL(t3.stock_qty, 0) AS stockQty,
+            NVL(t3.carried_over_qty, 0) AS carriedOverQty,
+            NVL(t4.outbound_qty, 0) AS outboundQty,
+            NVL(t2.production_inbound, 0) AS productionInbound,
+            NVL(t2.outsourcing_inbound, 0) AS outsourcingInbound,
+            NVL(t2.purchase_inbound, 0) AS purchaseInbound,
+            NVL(t2.import_inbound, 0) AS importInbound,
+            NVL(t4.delivery_slip_outbound, 0) AS deliverySlipOutbound,
+            NVL(t4.other_outbound, 0) AS otherOutbound,
+            NVL(t4.sales_consignment_outbound, 0) AS salesConsignmentOutbound,
+            NVL(t4.work_performance_outbound, 0) AS workPerformanceOutbound,
+            NVL(t4.outsourcing_outbound, 0) AS outsourcingOutbound
+        FROM
+            item_master t1
+        LEFT JOIN
+            Inbound t2 ON t1.item_id = t2.item_id
+        LEFT JOIN
+            StockTxn t3 ON t1.item_id = t3.item_id
+        LEFT JOIN
+            Outbound t4 ON t1.item_id = t4.item_id
+        WHERE 1=1
+            AND t1.bu_id = #{buId}
+            <if test="itemInternalCode != null and itemInternalCode != ''">
+                AND t1.item_internal_code = #{itemInternalCode}
+            </if>
+            <if test="itemName != null and itemName != ''">
+                AND t1.item_name LIKE '%' || #{itemName} || '%'
+            </if>
+            <if test="itemBigCategoryCode != null and itemBigCategoryCode != ''">
+                AND t1.big_category = #{itemBigCategoryCode}
+            </if>
+            <if test="itemMidCategoryCode != null and itemMidCategoryCode != ''">
+                AND t1.mid_category = #{itemMidCategoryCode}
+            </if>
+            <if test="itemSmallCategoryCode != null and itemSmallCategoryCode != ''">
+                AND t1.small_category = #{itemSmallCategoryCode}
+            </if>
+            <if test="itemAssetClassCode != null and itemAssetClassCode != ''">
+                AND t1.asset_class = #{itemAssetClassCode}
+            </if>
+            <if test="itemStatus != null and itemStatus != ''">
+                AND t1.item_status = #{itemStatus}
+            </if>
+            <if test="!includeZeroQty">
+                AND (NVL(t2.inbound_qty, 0) &gt; 0 OR NVL(t4.outbound_qty, 0) &gt; 0 OR NVL(t3.stock_qty, 0) &gt; 0 OR NVL(t3.carried_over_qty, 0) &gt; 0)
+            </if>
+    </select>
+
+</mapper>
