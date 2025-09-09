@@ -14,7 +14,7 @@
                 SUM(CASE WHEN t1.inbound_type = '수입입고' THEN t2.qty ELSE 0 END) AS import_inbound
             FROM inbound_master t1
             JOIN inbound_detail t2 ON t1.inbound_id = t2.inbound_id
-            WHERE t1.inbound_date BETWEEN #{searchPeriodStart} AND #{searchPeriodEnd} AND t1.bu_id = #{buId}
+            WHERE t1.inbound_date BETWEEN #{searchPeriodStart} AND #{searchPeriodEnd} AND t1.bu_id = #{businessBuId}
             GROUP BY t2.item_id
         ),
         Outbound AS (
@@ -28,16 +28,25 @@
                 SUM(CASE WHEN t2.other_out_code IS NOT NULL THEN t2.qty ELSE 0 END) AS other_outbound
             FROM out_master t1
             JOIN out_detail t2 ON t1.out_id = t2.out_id
-            WHERE t1.out_date BETWEEN #{searchPeriodStart} AND #{searchPeriodEnd} AND t1.bu_id = #{buId}
+            WHERE t1.out_date BETWEEN #{searchPeriodStart} AND #{searchPeriodEnd} AND t1.bu_id = #{businessBuId}
             GROUP BY t2.item_id
         ),
-        StockTxn AS (
+        CarriedOver AS (
+            -- Calculate the stock balance before the search period starts
             SELECT
                 item_id,
-                SUM(CASE WHEN stock_type = 'INPUT' THEN qty ELSE -qty END) AS stock_qty,
-                SUM(CASE WHEN txn_date &lt; #{searchPeriodStart} THEN qty ELSE -qty END) AS carried_over_qty
+                SUM(CASE WHEN stock_type = 'INPUT' THEN qty ELSE -qty END) AS carried_over_qty
             FROM stock_transaction
-            WHERE txn_date BETWEEN #{searchPeriodStart} AND #{searchPeriodEnd} AND bu_id = #{buId}
+            WHERE txn_date &lt; #{searchPeriodStart} AND bu_id = #{businessBuId}
+            GROUP BY item_id
+        ),
+        PeriodStockChange AS (
+            -- Calculate the stock change within the search period
+            SELECT
+                item_id,
+                SUM(CASE WHEN stock_type = 'INPUT' THEN qty ELSE -qty END) AS period_stock_change
+            FROM stock_transaction
+            WHERE txn_date BETWEEN #{searchPeriodStart} AND #{searchPeriodEnd} AND bu_id = #{businessBuId}
             GROUP BY item_id
         )
         SELECT
@@ -46,16 +55,16 @@
             t1.big_category as itemBigCategory,
             t1.mid_category as itemMidCategory,
             t1.item_name as itemName,
-            NVL(t2.inbound_qty, 0) AS inboundQty,
             t1.base_unit as itemUnit,
             t1.item_status as itemStatus,
-            NVL(t3.stock_qty, 0) AS stockQty,
-            NVL(t3.carried_over_qty, 0) AS carriedOverQty,
+            NVL(t3.inbound_qty, 0) AS inboundQty,
             NVL(t4.outbound_qty, 0) AS outboundQty,
-            NVL(t2.production_inbound, 0) AS productionInbound,
-            NVL(t2.outsourcing_inbound, 0) AS outsourcingInbound,
-            NVL(t2.purchase_inbound, 0) AS purchaseInbound,
-            NVL(t2.import_inbound, 0) AS importInbound,
+            NVL(t5.carried_over_qty, 0) AS carriedOverQty,
+            NVL(t5.carried_over_qty, 0) + NVL(t6.period_stock_change, 0) AS stockQty,
+            NVL(t3.production_inbound, 0) AS productionInbound,
+            NVL(t3.outsourcing_inbound, 0) AS outsourcingInbound,
+            NVL(t3.purchase_inbound, 0) AS purchaseInbound,
+            NVL(t3.import_inbound, 0) AS importInbound,
             NVL(t4.delivery_slip_outbound, 0) AS deliverySlipOutbound,
             NVL(t4.other_outbound, 0) AS otherOutbound,
             NVL(t4.sales_consignment_outbound, 0) AS salesConsignmentOutbound,
@@ -64,36 +73,39 @@
         FROM
             item_master t1
         LEFT JOIN
-            Inbound t2 ON t1.item_id = t2.item_id
-        LEFT JOIN
-            StockTxn t3 ON t1.item_id = t3.item_id
+            Inbound t3 ON t1.item_id = t3.item_id
         LEFT JOIN
             Outbound t4 ON t1.item_id = t4.item_id
+        LEFT JOIN
+            CarriedOver t5 ON t1.item_id = t5.item_id
+        LEFT JOIN
+            PeriodStockChange t6 ON t1.item_id = t6.item_id
         WHERE 1=1
-            AND t1.bu_id = #{buId}
+            AND t1.bu_id = #{businessBuId}
             <if test="itemInternalCode != null and itemInternalCode != ''">
                 AND t1.item_internal_code = #{itemInternalCode}
             </if>
             <if test="itemName != null and itemName != ''">
                 AND t1.item_name LIKE '%' || #{itemName} || '%'
             </if>
-            <if test="itemBigCategoryCode != null and itemBigCategoryCode != ''">
-                AND t1.big_category = #{itemBigCategoryCode}
+            <!-- Updated to use the DTO fields directly -->
+            <if test="itemBigCategory != null and itemBigCategory != ''">
+                AND t1.big_category = #{itemBigCategory}
             </if>
-            <if test="itemMidCategoryCode != null and itemMidCategoryCode != ''">
-                AND t1.mid_category = #{itemMidCategoryCode}
+            <if test="itemMidCategory != null and itemMidCategory != ''">
+                AND t1.mid_category = #{itemMidCategory}
             </if>
-            <if test="itemSmallCategoryCode != null and itemSmallCategoryCode != ''">
-                AND t1.small_category = #{itemSmallCategoryCode}
+            <if test="itemSmallCategory != null and itemSmallCategory != ''">
+                AND t1.small_category = #{itemSmallCategory}
             </if>
-            <if test="itemAssetClassCode != null and itemAssetClassCode != ''">
-                AND t1.asset_class = #{itemAssetClassCode}
+            <if test="itemAssetClass != null and itemAssetClass != ''">
+                AND t1.asset_class = #{itemAssetClass}
             </if>
             <if test="itemStatus != null and itemStatus != ''">
                 AND t1.item_status = #{itemStatus}
             </if>
             <if test="!includeZeroQty">
-                AND (NVL(t2.inbound_qty, 0) &gt; 0 OR NVL(t4.outbound_qty, 0) &gt; 0 OR NVL(t3.stock_qty, 0) &gt; 0 OR NVL(t3.carried_over_qty, 0) &gt; 0)
+                AND (NVL(t3.inbound_qty, 0) > 0 OR NVL(t4.outbound_qty, 0) > 0 OR (NVL(t5.carried_over_qty, 0) + NVL(t6.period_stock_change, 0)) > 0)
             </if>
     </select>
 

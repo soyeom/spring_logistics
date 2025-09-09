@@ -2,6 +2,8 @@ package org.logistics.domain;
 
 import java.util.Date;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
 import lombok.Data;
 
 
@@ -10,7 +12,9 @@ public class SearchCriteriaDto {
 
 	private Integer businessBuId; // 사업단위 - business_unit bu_id
     private String businessBuName; // 사업단위 이름 - business_unit bu_name
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date searchPeriodStart; // 조회기간 시작일
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date searchPeriodEnd; // 조회기간 종료일
     private String stockStandard; // 재고기준
     private String itemAssetClass; // 품목자산분류 - item_master asset_class
