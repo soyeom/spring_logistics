@@ -1,12 +1,14 @@
 package org.logistics.controller;
 
-import org.logistics.domain.OutRequestDTO;
+import java.util.List;
+
+import org.logistics.domain.OtherOutCategory;
+import org.logistics.domain.OutDetailDTO;
 import org.logistics.service.OutService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import lombok.AllArgsConstructor;
@@ -18,18 +20,19 @@ import lombok.extern.log4j.Log4j;
 @AllArgsConstructor
 public class OutController {
 
-	private OutService outService;
+	 @Autowired
+	    private OutService outService; // 서비스를 주입
 
-	@GetMapping("/form") // 출고 입력 폼 화면
-	public String showOutForm(Model model) {
-		model.addAttribute("outRequestDTO", new OutRequestDTO());
-		return "out-form"; // JSP 파일 이름과 일치
-	}
+	    @GetMapping("/out/form")
+	    public String showOutForm(Model model) {
+	        // 1. 기타 출고 디테일 리스트 조회
+	        List<OutDetailDTO> outDetails = outService.getOutDetails();
+	        model.addAttribute("outDetails", outDetails);
 
-	@PostMapping("/create") // 출고 정보를 저장하는 요청
-	public String createOut(@ModelAttribute OutRequestDTO request, Model model) {
-		outService.createOut(request);
-		model.addAttribute("message", "출고 정보가 저장되었습니다.");
-		return "out-success"; // JSP 파일 이름과 일치
+	        // 2. 기타 출고 구분(카테고리) 리스트 조회
+	        List<OtherOutCategory> otherOutCategories = outService.getOtherOutCategories();
+	        model.addAttribute("otherOutCategories", otherOutCategories);
+
+	        return "out-form";
+	    }
 	}
-}
