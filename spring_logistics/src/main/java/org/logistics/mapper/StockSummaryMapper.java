@@ -2,11 +2,9 @@ package org.logistics.mapper;
 
 import java.util.List;
 
-import org.apache.ibatis.annotations.Mapper;
 import org.logistics.domain.SearchCriteriaDto;
 import org.logistics.domain.StockSummaryResultDto;
 
-@Mapper
 public interface StockSummaryMapper {
 
     /**
