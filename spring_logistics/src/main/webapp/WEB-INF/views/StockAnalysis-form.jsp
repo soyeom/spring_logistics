@@ -89,14 +89,15 @@
 			<div class="search-item">
 				<label for="warehouseId">창고:</label>
 				<div class="search-group">
-					<input type="text" id="warehouseId" name="warehouseId"
-						placeholder="창고 코드 또는 이름" />
-					<span class="search-icon" onclick="openWarehouseSearchPopup()">
-						<svg xmlns="http://www.w3.org/2000/svg" fill="none"
+					<input type="hidden" id="warehouseId" name="warehouseId" /> <input
+						type="text" id="warehouseName" name="warehouseName"
+						placeholder="창고 코드 또는 이름" readonly /> <span class="search-icon"
+						onclick="openWarehouseSearchPopup()"> <svg
+							xmlns="http://www.w3.org/2000/svg" fill="none"
 							viewBox="0 0 24 24" stroke="currentColor">
-							<path stroke-linecap="round" stroke-linejoin="round"
+				<path stroke-linecap="round" stroke-linejoin="round"
 								stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-						</svg>
+			</svg>
 					</span>
 				</div>
 			</div>
@@ -136,22 +137,19 @@
 
 			<%-- 품목소분류 검색 기능 추가 --%>
 			<div class="search-item">
-				<label for="itemSmallCategory">품목소분류:</label>
-				<div class="search-group">
-					<select id="itemSmallCategory" name="itemSmallCategory">
-						<option value="">전체</option>
-						<c:forEach var="category" items="${itemSmallCategories.rows}">
-							<option value="${category.small_category}">${category.small_category}</option>
-						</c:forEach>
-					</select> <span class="search-icon" onclick="openSmallCategorySearchPopup()">
-						<svg xmlns="http://www.w3.org/2000/svg" fill="none"
-							viewBox="0 0 24 24" stroke="currentColor">
-							<path stroke-linecap="round" stroke-linejoin="round"
-								stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-						</svg>
-					</span>
-				</div>
-			</div>
+	<label for="itemSmallCategory">품목소분류:</label>
+	<div class="search-group">
+		<input type="hidden" id="itemSmallCategory" name="itemSmallCategory" />
+		<input type="text" id="itemSmallCategoryName" name="itemSmallCategoryName" placeholder="품목소분류 코드 또는 이름" readonly />
+		<span class="search-icon" onclick="openSmallCategorySearchPopup()">
+			<svg xmlns="http://www.w3.org/2000/svg" fill="none"
+				viewBox="0 0 24 24" stroke="currentColor">
+				<path stroke-linecap="round" stroke-linejoin="round"
+					stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+			</svg>
+		</span>
+	</div>
+</div>
 
 			<div class="search-item">
 				<label for="itemName">품명:</label> <input type="text" id="itemName"
@@ -292,9 +290,8 @@ function openWarehouseSearchPopup() {
 
 // 팝업에서 선택된 창고 데이터를 받는 함수
 function setWarehouse(code, name) {
-    $('#warehouseId').val(code);
-    // 필요에 따라 창고 이름도 다른 곳에 표시할 수 있습니다.
-    // 예: $('#warehouseName').val(name);
+	$('#warehouseId').val(code);
+	$('#warehouseName').val(name);
 }
 
 // 품목소분류 검색 팝업 함수
@@ -306,16 +303,12 @@ function openSmallCategorySearchPopup() {
 }
 
 // 팝업에서 선택된 데이터를 받는 함수
+// 팝업에서 선택된 데이터를 받는 함수 (수정)
 function setSmallCategoryData(data) {
-    if (data && data.smallCategory) {
-        // 품목소분류 드롭다운에 값을 설정합니다.
-        let $select = $('#itemSmallCategory');
-        if ($select.find(`option[value='${data.smallCategory}']`).length) {
-            $select.val(data.smallCategory);
-        } else {
-            $select.append(`<option value="${data.smallCategory}">${data.smallCategory}</option>`);
-            $select.val(data.smallCategory);
-        }
+    if (data && data.smallCategoryCode && data.smallCategoryName) {
+        // 품목소분류 코드와 이름을 각각의 input에 설정
+        $('#itemSmallCategory').val(data.smallCategoryCode);
+        $('#itemSmallCategoryName').val(data.smallCategoryName);
     }
 }
 </script>

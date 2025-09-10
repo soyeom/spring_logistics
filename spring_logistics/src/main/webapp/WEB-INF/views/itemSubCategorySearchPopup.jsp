@@ -103,18 +103,18 @@
 </table>
 
 <script>
-	function selectItem(smallCategory, smallCategoryCode, bigCategory, bigCategoryCode, itemName) {
-		if (window.opener && window.opener.setItemData) {
-			window.opener.setItemData({
-				smallCategory: smallCategory,
-				smallCategoryCode: smallCategoryCode,
-				bigCategory: bigCategory,
-				bigCategoryCode: bigCategoryCode,
-				itemName: itemName
-			});
-		}
-		window.close();
-	}
+//수정된 JavaScript 코드
+function selectItem(smallCategory, smallCategoryCode, bigCategory, bigCategoryCode, itemName) {
+    if (window.opener && window.opener.setSmallCategoryData) {
+        // 부모 페이지의 setSmallCategoryData 함수 호출
+        window.opener.setSmallCategoryData({
+            // 품목소분류의 이름과 코드를 함께 전달
+            smallCategoryName: smallCategory,
+            smallCategoryCode: smallCategoryCode
+        });
+    }
+    window.close();
+}
 </script>
 
 </body>
