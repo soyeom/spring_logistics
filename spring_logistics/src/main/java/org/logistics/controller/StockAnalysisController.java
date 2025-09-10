@@ -34,4 +34,15 @@ public class StockAnalysisController {
     public List<StockAnalysisResponseDTO> getPeriodicStockAnalysis(@RequestBody StockAnalysisRequestDTO requestDTO) {
         return stockAnalysisService.getPeriodicStockAnalysis(requestDTO);
     }
+    
+    @GetMapping("/warehouseSearchPopup")
+    public String showWarehouseSearchPopup() {
+    	
+    	return "warehouseSearchPopup";
+    }
+    
+    @GetMapping("/itemSubCategorySearchPopup")
+    public String showitemSubCategorySearchPopup() {
+    	return "itemSubCategorySearchPopup";
+    }
 }
