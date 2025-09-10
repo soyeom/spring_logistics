@@ -8,18 +8,30 @@
 	driver="oracle.jdbc.driver.OracleDriver"
 	url="jdbc:oracle:thin:@localhost:1521:xe" user="system" password="1234" />
 
-<%-- warehouse_detail과 warehouse_master 테이블을 조인하여 필요한 정보 조회 --%>
-<sql:query var="warehouses" dataSource="${dataSource}">
-    SELECT
-        wd.warehouse_id,
-        wd.warehouse_name,
-        wm.warehouse_internal_code AS warehouse_code
-    FROM
-        warehouse_detail wd
-    JOIN
-        warehouse_master wm ON wd.warehouse_master_id = wm.warehouse_master_id
-    ORDER BY wd.warehouse_name
-</sql:query>
+<%-- 검색 키워드 변수 설정 --%>
+<c:set var="keyword" value="${param.keyword}" />
+
+<%-- 품목 데이터 조회 쿼리 (수정) --%>
+<c:choose>
+    <c:when test="${not empty keyword}">
+        <sql:query var="warehouses" dataSource="${dataSource}">
+            SELECT warehouse_id, warehouse_name
+            FROM warehouse_detail
+            WHERE warehouse_id LIKE '%' || ? || '%'
+                OR warehouse_name LIKE '%' || ? || '%'
+            ORDER BY warehouse_name
+            <sql:param value="${keyword}" />
+            <sql:param value="${keyword}" />
+        </sql:query>
+    </c:when>
+    <c:otherwise>
+        <sql:query var="warehouses" dataSource="${dataSource}">
+            SELECT warehouse_id, warehouse_name
+            FROM warehouse_detail
+            ORDER BY warehouse_name
+        </sql:query>
+    </c:otherwise>
+</c:choose>
 
 <!DOCTYPE html>
 <html>
@@ -27,60 +39,22 @@
 <meta charset="UTF-8">
 <title>창고 검색</title>
 <style>
-body {
-	font-family: Arial, sans-serif;
-	padding: 20px;
-}
-
-#search-form {
-	display: flex;
-	gap: 10px;
-	margin-bottom: 20px;
-}
-
-#search-input {
-	flex-grow: 1;
-	padding: 8px;
-	border: 1px solid #ccc;
-	border-radius: 4px;
-}
-
-#search-button {
-	padding: 8px 12px;
-	border: none;
-	background-color: #4CAF50;
-	color: white;
-	border-radius: 4px;
-	cursor: pointer;
-}
-
-#warehouse-list {
-	width: 100%;
-	border-collapse: collapse;
-}
-
-#warehouse-list th, #warehouse-list td {
-	border: 1px solid #ddd;
-	padding: 8px;
-	text-align: left;
-}
-
-#warehouse-list th {
-	background-color: #f2f2f2;
-}
-
-#warehouse-list tr:hover {
-	background-color: #f5f5f5;
-	cursor: pointer;
-}
+body { font-family: Arial, sans-serif; padding: 20px; }
+#search-form { display: flex; gap: 10px; margin-bottom: 20px; }
+#search-input { flex-grow: 1; padding: 8px; border: 1px solid #ccc; border-radius: 4px; }
+#search-button { padding: 8px 12px; border: none; background-color: #4CAF50; color: white; border-radius: 4px; cursor: pointer; }
+#warehouse-list { width: 100%; border-collapse: collapse; }
+#warehouse-list th, #warehouse-list td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+#warehouse-list th { background-color: #f2f2f2; }
+#warehouse-list tr:hover { background-color: #f5f5f5; cursor: pointer; }
 </style>
 </head>
 <body>
 
 	<h3>창고 검색</h3>
-	<form id="search-form" onsubmit="return false;">
-		<input type="text" id="search-input" placeholder="창고 코드 또는 이름 검색">
-		<button id="search-button">검색</button>
+	<form id="search-form" action="warehouseSearchPopup.jsp" method="get">
+		<input type="text" id="search-input" name="keyword" placeholder="창고 코드 또는 이름 검색" value="${keyword}">
+		<button type="submit" id="search-button">검색</button>
 	</form>
 
 	<table id="warehouse-list">
@@ -92,8 +66,8 @@ body {
 		</thead>
 		<tbody>
 			<c:forEach var="wh" items="${warehouses.rows}">
-				<tr onclick="selectWarehouse('${wh.warehouse_code}', '${wh.warehouse_name}')">
-					<td>${wh.warehouse_code}</td>
+				<tr onclick="selectWarehouse('${wh.warehouse_id}', '${wh.warehouse_name}')">
+					<td>${wh.warehouse_id}</td>
 					<td>${wh.warehouse_name}</td>
 				</tr>
 			</c:forEach>
@@ -101,47 +75,15 @@ body {
 	</table>
 
 	<script>
-    function selectWarehouse(code, name) {
-        if (window.opener && !window.opener.closed && window.opener.setWarehouse) {
-            window.opener.setWarehouse(code, name);
-            window.close();
-        } else {
-            alert('부모 창이 열려 있지 않거나 창고를 설정하는 함수가 없습니다.');
-        }
-    }
-
-    const warehouses = [
-        <c:forEach var="wh" items="${warehouses.rows}" varStatus="loop">
-            {
-                warehouse_code: "${wh.warehouse_code}",
-                warehouse_name: "${wh.warehouse_name}"
-            }<c:if test="${!loop.last}">,</c:if>
-        </c:forEach>
-    ];
-
-    const searchInput = document.getElementById('search-input');
-    const searchButton = document.getElementById('search-button');
-    const tableBody = document.querySelector('#warehouse-list tbody');
-
-    searchButton.addEventListener('click', () => {
-        const searchTerm = searchInput.value.toLowerCase();
-        const filteredData = warehouses.filter(wh =>
-            wh.warehouse_code.toLowerCase().includes(searchTerm) ||
-            wh.warehouse_name.toLowerCase().includes(searchTerm)
-        );
-        renderTable(filteredData);
-    });
-
-    function renderTable(data) {
-        tableBody.innerHTML = '';
-        data.forEach(wh => {
-            const row = document.createElement('tr');
-            row.onclick = () => selectWarehouse(wh.warehouse_code, wh.warehouse_name);
-            row.innerHTML = `<td>${wh.warehouse_code}</td><td>${wh.warehouse_name}</td>`;
-            tableBody.appendChild(row);
-        });
-    }
-</script>
+		function selectWarehouse(code, name) {
+			if (window.opener && !window.opener.closed && window.opener.setWarehouse) {
+				window.opener.setWarehouse(code, name);
+				window.close();
+			} else {
+				alert('부모 창이 열려 있지 않거나 창고를 설정하는 함수가 없습니다.');
+			}
+		}
+	</script>
 
 </body>
 </html>

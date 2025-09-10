@@ -9,26 +9,14 @@
 	url="jdbc:oracle:thin:@localhost:1521:xe" user="system" password="1234" />
 
 <%-- business_unit 테이블에서 bu_id와 bu_name을 조회 --%>
-<sql:query var="businessUnits" dataSource="${dataSource}">
-    SELECT bu_id, bu_name FROM business_unit ORDER BY bu_id
-</sql:query>
+<sql:query var="businessUnits" dataSource="${dataSource}">SELECT bu_id, bu_name FROM business_unit ORDER BY bu_id</sql:query>
 
 <%-- item_master 테이블에서 category를 조회 --%>
-<sql:query var="itemBigCategories" dataSource="${dataSource}">
-    SELECT DISTINCT big_category FROM item_master WHERE big_category IS NOT NULL
-</sql:query>
-<sql:query var="itemMidCategories" dataSource="${dataSource}">
-    SELECT DISTINCT mid_category FROM item_master WHERE mid_category IS NOT NULL
-</sql:query>
-<sql:query var="itemSmallCategories" dataSource="${dataSource}">
-    SELECT DISTINCT small_category FROM item_master WHERE small_category IS NOT NULL
-</sql:query>
-<sql:query var="importanceLevels" dataSource="${dataSource}">
-    SELECT DISTINCT importance_level FROM item_master WHERE importance_level IS NOT NULL
-</sql:query>
-<sql:query var="units" dataSource="${dataSource}">
-    SELECT DISTINCT base_unit FROM item_master WHERE base_unit IS NOT NULL
-</sql:query>
+<sql:query var="itemBigCategories" dataSource="${dataSource}">SELECT DISTINCT big_category FROM item_master WHERE big_category IS NOT NULL</sql:query>
+<sql:query var="itemMidCategories" dataSource="${dataSource}">SELECT DISTINCT mid_category FROM item_master WHERE mid_category IS NOT NULL</sql:query>
+<sql:query var="itemSmallCategories" dataSource="${dataSource}">SELECT DISTINCT small_category FROM item_master WHERE small_category IS NOT NULL</sql:query>
+<sql:query var="importanceLevels" dataSource="${dataSource}">SELECT DISTINCT importance_level FROM item_master WHERE importance_level IS NOT NULL</sql:query>
+<sql:query var="units" dataSource="${dataSource}">SELECT DISTINCT base_unit FROM item_master WHERE base_unit IS NOT NULL</sql:query>
 
 <!DOCTYPE html>
 <html>
@@ -58,6 +46,27 @@
 	font-weight: bold;
 	font-size: 14px;
 }
+
+/* 추가된 CSS */
+.search-group {
+	display: flex;
+	align-items: center;
+}
+
+.search-group input[type="text"], .search-group select {
+	flex-grow: 1;
+}
+
+.search-icon {
+	cursor: pointer;
+	margin-left: -25px;
+	z-index: 10;
+}
+
+.search-icon svg {
+	width: 20px;
+	height: 20px;
+}
 </style>
 </head>
 <body>
@@ -76,20 +85,22 @@
 				</select>
 			</div>
 
-			<div class="grid-item">
-				<label for="warehouseCode">창고</label>
+			<%-- 창고 검색 기능 추가 --%>
+			<div class="search-item">
+				<label for="warehouseId">창고:</label>
 				<div class="search-group">
-					<input type="text" id="warehouseCode" name="warehouseCode"
-						class="rounded-l-md" placeholder="창고 코드 또는 이름"
-						value="<c:out value='${param.warehouseCode}'/>" /> <span
-						class="search-icon" onclick="openWarehouseSearchPopup()"> <svg
-							xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none"
-							viewBox="0 0 24 24" stroke="currentColor"> <path
-								stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-								d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /> </svg>
+					<input type="text" id="warehouseId" name="warehouseId"
+						placeholder="창고 코드 또는 이름" />
+					<span class="search-icon" onclick="openWarehouseSearchPopup()">
+						<svg xmlns="http://www.w3.org/2000/svg" fill="none"
+							viewBox="0 0 24 24" stroke="currentColor">
+							<path stroke-linecap="round" stroke-linejoin="round"
+								stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+						</svg>
 					</span>
 				</div>
 			</div>
+
 			<div class="search-item">
 				<label for="stockStandard">재고기준:</label> <select id="stockStandard"
 					name="stockStandard">
@@ -109,19 +120,37 @@
 				</select>
 			</div>
 
+			<%-- 품목자산분류 드롭다운 목록으로 변경 --%>
 			<div class="search-item">
-				<label for="itemAssetClass">품목자산분류:</label> <input type="text"
-					id="itemAssetClass" name="itemAssetClass" placeholder="품목자산분류">
+				<label for="itemAssetClass">품목자산분류:</label> <select
+					id="itemAssetClass" name="itemAssetClass">
+					<option value="">전체</option>
+					<option value="제품">제품</option>
+					<option value="반제품">반제품</option>
+					<option value="상품">상품</option>
+					<option value="부자재">부자재</option>
+					<option value="원자재">원자재</option>
+					<option value="재공품">재공품</option>
+				</select>
 			</div>
 
+			<%-- 품목소분류 검색 기능 추가 --%>
 			<div class="search-item">
-				<label for="itemSmallCategory">품목소분류:</label> <select
-					id="itemSmallCategory" name="itemSmallCategory">
-					<option value="">전체</option>
-					<c:forEach var="category" items="${itemSmallCategories.rows}">
-						<option value="${category.small_category}">${category.small_category}</option>
-					</c:forEach>
-				</select>
+				<label for="itemSmallCategory">품목소분류:</label>
+				<div class="search-group">
+					<select id="itemSmallCategory" name="itemSmallCategory">
+						<option value="">전체</option>
+						<c:forEach var="category" items="${itemSmallCategories.rows}">
+							<option value="${category.small_category}">${category.small_category}</option>
+						</c:forEach>
+					</select> <span class="search-icon" onclick="openSmallCategorySearchPopup()">
+						<svg xmlns="http://www.w3.org/2000/svg" fill="none"
+							viewBox="0 0 24 24" stroke="currentColor">
+							<path stroke-linecap="round" stroke-linejoin="round"
+								stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+						</svg>
+					</span>
+				</div>
 			</div>
 
 			<div class="search-item">
@@ -173,7 +202,6 @@
 			</div>
 			<button type="button" id="searchButton">조회</button>
 		</div>
-		<!-- ✅ search-container 닫기 -->
 	</form>
 
 	<div id="resultTableContainer"></div>
@@ -183,76 +211,113 @@
 
 	<script>
 $(document).ready(function () {
-    // 현재 시스템 날짜를 yyyy-MM 형태로 변환
-    const today = new Date();
-    const year = today.getFullYear();
-    const month = String(today.getMonth() + 1).padStart(2, '0'); 
-    const currentMonth = `${year}-${month}`;
+    // 현재 시스템 날짜를 yyyy-MM 형태로 변환
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const currentMonth = `${year}-${month}`;
 
-    // readonly input에 기본값 세팅
-    $('#currentMonth').val(currentMonth);
+    // readonly input에 기본값 세팅
+    $('#currentMonth').val(currentMonth);
 
-    // 조회 버튼 클릭 이벤트
-    $('#searchButton').on('click', function () {
-        const formData = {
-            buId: $('#buId').val(),
-            warehouseId: $('#warehouseId').val(),
-            stockStandard: $('#stockStandard').val(),
-            importanceLevel: $('#importanceLevel').val(),
-            itemAssetClass: $('#itemAssetClass').val(),
-            itemSmallCategory: $('#itemSmallCategory').val(),
-            itemName: $('#itemName').val(),
-            itemInternalCode: $('#itemInternalCode').val(),
-            spec: $('#spec').val(),
-            unit: $('#unit').val(),
-            currentMonth: $('#currentMonth').val(),   // 현재월 값
-            periodRange: $('#periodRange').val(),
-            compareCount: $('#compareCount').val(),
-            analysisItem: $('#analysisItem').val()
-        };
+    // 조회 버튼 클릭 이벤트
+    $('#searchButton').on('click', function () {
+        const formData = {
+            buId: $('#buId').val(),
+            warehouseId: $('#warehouseId').val(),
+            stockStandard: $('#stockStandard').val(),
+            importanceLevel: $('#importanceLevel').val(),
+            itemAssetClass: $('#itemAssetClass').val(),
+            itemSmallCategory: $('#itemSmallCategory').val(),
+            itemName: $('#itemName').val(),
+            itemInternalCode: $('#itemInternalCode').val(),
+            spec: $('#spec').val(),
+            unit: $('#unit').val(),
+            currentMonth: $('#currentMonth').val(),
+            periodRange: $('#periodRange').val(),
+            compareCount: $('#compareCount').val(),
+            analysisItem: $('#analysisItem').val()
+        };
 
-        $.ajax({
-            url: '/stockAnalysis/analysis',
-            type: 'POST',
-            contentType: 'application/json',
-            data: JSON.stringify(formData),
-            success: function (response) {
-                console.log('데이터 조회 성공:', response);
-                displayDataInTable(response);
-            },
-            error: function (error) {
-                console.error('데이터 조회 실패:', error);
-                alert('데이터를 가져오는 데 실패했습니다.');
-            }
-        });
-    });
+        $.ajax({
+            url: '/stockAnalysis/analysis',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(formData),
+            success: function (response) {
+                console.log('데이터 조회 성공:', response);
+                displayDataInTable(response);
+            },
+            error: function (error) {
+                console.error('데이터 조회 실패:', error);
+                alert('데이터를 가져오는 데 실패했습니다.');
+            }
+        });
+    });
 
-    // 결과 테이블 출력 함수
-    function displayDataInTable(data) {
-        const container = $('#resultTableContainer');
-        container.empty();
+    // 결과 테이블 출력 함수
+    function displayDataInTable(data) {
+        const container = $('#resultTableContainer');
+        container.empty();
 
-        if (data && data.length > 0) {
-            let tableHtml = '<table border="1"><thead><tr>';
-            for (const key in data[0]) {
-                tableHtml += '<th>' + key + '</th>';
-            }
-            tableHtml += '</tr></thead><tbody>';
+        if (data && data.length > 0) {
+            let tableHtml = '<table border="1"><thead><tr>';
+            for (const key in data[0]) {
+                tableHtml += '<th>' + key + '</th>';
+            }
+            tableHtml += '</tr></thead><tbody>';
 
-            data.forEach(item => {
-                tableHtml += '<tr>';
-                for (const key in item) {
-                    tableHtml += '<td>' + (item[key] !== null ? item[key] : '') + '</td>';
-                }
-                tableHtml += '</tr>';
-            });
-            tableHtml += '</tbody></table>';
-            container.append(tableHtml);
+            data.forEach(item => {
+                tableHtml += '<tr>';
+                for (const key in item) {
+                    tableHtml += '<td>' + (item[key] !== null ? item[key] : '') + '</td>';
+                }
+                tableHtml += '</tr>';
+            });
+            tableHtml += '</tbody></table>';
+            container.append(tableHtml);
+        } else {
+            container.append('<p>조회된 데이터가 없습니다.</p>');
+        }
+    }
+});
+
+// 창고 검색 팝업 함수
+function openWarehouseSearchPopup() {
+    const url = '/stockAnalysis/warehouseSearchPopup';
+    const name = 'warehousePopup';
+    const specs = 'width=600,height=500,scrollbars=yes,resizable=yes';
+    window.open(url, name, specs);
+}
+
+// 팝업에서 선택된 창고 데이터를 받는 함수
+function setWarehouse(code, name) {
+    $('#warehouseId').val(code);
+    // 필요에 따라 창고 이름도 다른 곳에 표시할 수 있습니다.
+    // 예: $('#warehouseName').val(name);
+}
+
+// 품목소분류 검색 팝업 함수
+function openSmallCategorySearchPopup() {
+    const url = '/stockAnalysis/itemSubCategorySearchPopup';
+    const name = 'smallCategoryPopup';
+    const specs = 'width=800,height=600,scrollbars=yes,resizable=yes';
+    window.open(url, name, specs);
+}
+
+// 팝업에서 선택된 데이터를 받는 함수
+function setSmallCategoryData(data) {
+    if (data && data.smallCategory) {
+        // 품목소분류 드롭다운에 값을 설정합니다.
+        let $select = $('#itemSmallCategory');
+        if ($select.find(`option[value='${data.smallCategory}']`).length) {
+            $select.val(data.smallCategory);
         } else {
-            container.append('<p>조회된 데이터가 없습니다.</p>');
+            $select.append(`<option value="${data.smallCategory}">${data.smallCategory}</option>`);
+            $select.val(data.smallCategory);
         }
     }
-});
+}
 </script>
 
 </body>
