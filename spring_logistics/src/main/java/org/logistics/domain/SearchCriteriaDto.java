@@ -10,8 +10,7 @@ import lombok.Data;
 @Data
 public class SearchCriteriaDto {
 
-	private Integer businessBuId; // 사업단위 - business_unit bu_id
-    private String businessBuName; // 사업단위 이름 - business_unit bu_name
+    private String businessBuName; // 사업단위 - business_unit bu_name
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date searchPeriodStart; // 조회기간 시작일
     @DateTimeFormat(pattern = "yyyy-MM-dd")

@@ -2,6 +2,7 @@ package org.logistics.service;
 
 import java.util.List;
 
+import org.logistics.domain.ItemCategoryDto;
 import org.logistics.domain.SearchCriteriaDto;
 import org.logistics.domain.StockSummaryResultDto;
 import org.logistics.mapper.StockSummaryMapper;
@@ -13,17 +14,28 @@ import lombok.Setter;
 @Service
 public class StockSummaryServiceImpl implements StockSummaryService {
 
+	//메인 검색 구현
 	@Setter(onMethod_ = @Autowired)
 	private StockSummaryMapper stockSummaryMapper;
-
 	
-    /**
-     * 'StockSummaryService'에 정의된 기능을 실제로 구현한 부분입니다.
-     * @param criteria 사용자가 입력한 검색 조건입니다.
-     * @return 매퍼를 통해 데이터베이스에서 가져온 결과를 그대로 반환합니다.
-     */
     @Override
     public List<StockSummaryResultDto> getStockSummaryList(SearchCriteriaDto criteria) {
         return stockSummaryMapper.selectStockSummaryList(criteria);
     }
+    
+    // 모달 검색 구현
+	@Override
+	public List<ItemCategoryDto> getDistinctBigCategories(String searchTerm) {
+		return stockSummaryMapper.selectDistinctBigCategories(searchTerm);
+	}
+
+	@Override
+	public List<ItemCategoryDto> getDistinctMidCategories(String searchTerm) {
+		return stockSummaryMapper.selectDistinctMidCategories(searchTerm);
+	}
+
+	@Override
+	public List<ItemCategoryDto> getDistinctSmallCategories(String searchTerm) {
+		return stockSummaryMapper.selectDistinctSmallCategories(searchTerm);
+	}
 }
