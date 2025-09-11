@@ -22,8 +22,22 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>재고 변동 추이 분석</title>
+<title>재고변동추이분석</title>
 <style>
+.search-header {
+	display: flex;
+	justify-content: space-between; /* 양쪽 정렬 */
+	align-items: center; /* 수직 중앙 정렬 */
+	padding: 10px;
+	border-bottom: 1px solid #ccc;
+	font-weight: bold;
+}
+
+#searchButton {
+	padding: 6px 12px;
+	font-size: 14px;
+}
+
 .search-container {
 	display: grid;
 	grid-template-columns: repeat(4, 1fr);
@@ -67,14 +81,34 @@
 	width: 20px;
 	height: 20px;
 }
+
+.result-container {
+	margin-top: 15px;
+	border: 1px solid #ccc;
+	border-radius: 6px;
+	padding: 10px;
+	background: #fff;
+}
+
+.result-container table th {
+	background-color: #f5f5f5;
+	padding: 8px;
+}
+
+.result-container table td {
+	padding: 6px;
+}
 </style>
 </head>
 <body>
-	<h2>재고 변동 추이 분석</h2>
+	<h2>재고변동추이분석</h2>
 
 	<form id="stockAnalysisForm">
 		<div class="search-container">
-			<div class="search-header">조회조건</div>
+			<div class="search-header">
+				<span class="title">조회조건</span>
+				<button type="button" id="searchButton">조회</button>
+			</div>
 
 			<div class="search-item">
 				<label for="buId">사업단위:</label> <select id="buId" name="buId">
@@ -137,19 +171,21 @@
 
 			<%-- 품목소분류 검색 기능 추가 --%>
 			<div class="search-item">
-	<label for="itemSmallCategory">품목소분류:</label>
-	<div class="search-group">
-		<input type="hidden" id="itemSmallCategory" name="itemSmallCategory" />
-		<input type="text" id="itemSmallCategoryName" name="itemSmallCategoryName" placeholder="품목소분류 코드 또는 이름" readonly />
-		<span class="search-icon" onclick="openSmallCategorySearchPopup()">
-			<svg xmlns="http://www.w3.org/2000/svg" fill="none"
-				viewBox="0 0 24 24" stroke="currentColor">
+				<label for="itemSmallCategory">품목소분류:</label>
+				<div class="search-group">
+					<input type="hidden" id="itemSmallCategory"
+						name="itemSmallCategory" /> <input type="text"
+						id="itemSmallCategoryName" name="itemSmallCategoryName"
+						placeholder="품목소분류 코드 또는 이름" readonly /> <span
+						class="search-icon" onclick="openSmallCategorySearchPopup()">
+						<svg xmlns="http://www.w3.org/2000/svg" fill="none"
+							viewBox="0 0 24 24" stroke="currentColor">
 				<path stroke-linecap="round" stroke-linejoin="round"
-					stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+								stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
 			</svg>
-		</span>
-	</div>
-</div>
+					</span>
+				</div>
+			</div>
 
 			<div class="search-item">
 				<label for="itemName">품명:</label> <input type="text" id="itemName"
@@ -179,47 +215,75 @@
 		<div class="search-container">
 			<div class="search-header">비교대상 기간설정</div>
 			<div class="search-item">
-				<label for="currentMonth">현재월</label> <input type="month"
-					id="currentMonth" name="currentMonth" readonly>
+				<label for="currentMonth">현재월</label>
+				<%
+					java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM");
+					String currentMonth = sdf.format(new java.util.Date());
+				%>
+				<input type="month" id="currentMonth" name="currentMonth"
+					value="<%=currentMonth%>">
 			</div>
 			<div class="search-item">
-				<label for="periodRange">기간간격:</label> <input type="number"
-					id="periodRange" name="periodRange" value="3"> 개월
+				<label for="periodRange">기간간격:</label>
+				<div style="display: flex; align-items: center; gap: 8px;">
+					<input type="number" id="periodRange" name="periodRange" min="1"
+						value="3" style="width: 70px;"> <span>개월</span> <input
+						type="number" id="compareCount" name="compareCount" min="1"
+						value="4" style="width: 70px;"> <span>회</span>
+				</div>
 			</div>
-			<div class="search-item">
-				<label for="compareCount">비교횟수:</label> <input type="number"
-					id="compareCount" name="compareCount" value="4"> 회
-			</div>
-			<div class="search-item">
-				<label for="analysisItem">분석항목:</label> <select id="analysisItem"
-					name="analysisItem">
-					<option value="총출고량">총출고량</option>
-					<option value="총입고량">총입고량</option>
-					<option value="재고금액">재고금액</option>
-				</select>
-			</div>
-			<button type="button" id="searchButton">조회</button>
+
+			<select id="analysisItem" name="analysisItem">
+				<option value="averageStock">평균재고량</option>
+				<option value="turnoverRate">재고회전율(%)</option>
+				<option value="totalInbound">총입고량</option>
+				<option value="totalOutbound">총출고량</option>
+			</select>
+
+
 		</div>
+
 	</form>
 
-	<div id="resultTableContainer"></div>
-
+	<div id="resultTableContainer">
+		<table id="resultTable" border="1"
+			style="width: 100%; border-collapse: collapse; text-align: center;">
+			<thead>
+				<tr>
+					<th>품목대분류</th>
+					<th>품목중분류</th>
+					<th>품목자산분류</th>
+					<th>품목소분류</th>
+					<th>품명</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td colspan="5">조회 결과가 없습니다.</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
 	<script
 		src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
 	<script>
-$(document).ready(function () {
-    // 현재 시스템 날짜를 yyyy-MM 형태로 변환
-    const today = new Date();
-    const year = today.getFullYear();
-    const month = String(today.getMonth() + 1).padStart(2, '0');
-    const currentMonth = `${year}-${month}`;
 
-    // readonly input에 기본값 세팅
-    $('#currentMonth').val(currentMonth);
-
+	$(document).ready(function (){
     // 조회 버튼 클릭 이벤트
     $('#searchButton').on('click', function () {
+	
+		if(!$('#stockStandard').val()){
+			alert('재고기준을 선택하세요.');
+			$('#stockStandard').focus();
+			return;
+		}
+		if(!$('#analysisItem').val()){
+			alert('분석항목을 선택하세요.');
+			$('#analysisItem').focus();
+			return;
+		}
+		
         const formData = {
             buId: $('#buId').val(),
             warehouseId: $('#warehouseId').val(),

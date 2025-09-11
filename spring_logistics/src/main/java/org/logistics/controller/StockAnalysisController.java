@@ -29,20 +29,25 @@ public class StockAnalysisController {
         return "StockAnalysis-form"; // JSP 뷰 반환
     }
 
-    @PostMapping("/analysis")
-    @ResponseBody // JSON 데이터 반환을 명시
+    @PostMapping("/analysis/periodic")
+    @ResponseBody
     public List<StockAnalysisResponseDTO> getPeriodicStockAnalysis(@RequestBody StockAnalysisRequestDTO requestDTO) {
         return stockAnalysisService.getPeriodicStockAnalysis(requestDTO);
     }
     
+    @PostMapping("/analysis")
+    @ResponseBody
+    public StockAnalysisResponseDTO analyzeStock(@RequestBody StockAnalysisRequestDTO request) {
+        return stockAnalysisService.analyzeStock(request);
+    }
+    
     @GetMapping("/warehouseSearchPopup")
     public String showWarehouseSearchPopup() {
-    	
-    	return "warehouseSearchPopup";
+        return "warehouseSearchPopup";
     }
     
     @GetMapping("/itemSubCategorySearchPopup")
     public String showitemSubCategorySearchPopup() {
-    	return "itemSubCategorySearchPopup";
+        return "itemSubCategorySearchPopup";
     }
 }

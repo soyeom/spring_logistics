@@ -16,29 +16,42 @@
             im.small_category AS itemSmallCategory,
             im.asset_class AS assetClass,
 
-            -- 서브쿼리를 이용한 기초 재고, 입고, 출고, 기말 재고 계산
-            (
-                SELECT NVL(SUM(ibd.qty), 0) - NVL(SUM(od.qty), 0)
-                FROM inbound_detail ibd
-                LEFT JOIN out_detail od ON od.item_id = ibd.item_id
-                WHERE ibd.item_id = im.item_id AND ibd.created_at &lt; #{startDate}
-            ) AS beginningStock,
-            (
+                        (
                 SELECT NVL(SUM(qty), 0)
                 FROM inbound_detail
-                WHERE item_id = im.item_id AND created_at BETWEEN #{startDate} AND #{endDate}
-            ) AS inboundQty,
+                WHERE item_id = im.item_id AND created_at &lt; #{startDate, jdbcType=DATE}
+            )
+            -
             (
                 SELECT NVL(SUM(qty), 0)
                 FROM out_detail
-                WHERE item_id = im.item_id AND created_at BETWEEN #{startDate} AND #{endDate}
-            ) AS outQty,
+                WHERE item_id = im.item_id AND created_at &lt; #{startDate, jdbcType=DATE}
+            ) AS beginningStock,
+
             (
-                SELECT NVL(SUM(ibd.qty), 0) - NVL(SUM(od.qty), 0)
-                FROM inbound_detail ibd
-                LEFT JOIN out_detail od ON od.item_id = ibd.item_id
-                WHERE ibd.item_id = im.item_id AND ibd.created_at &lt;= #{endDate}
+                SELECT NVL(SUM(qty), 0)
+                FROM inbound_detail
+                WHERE item_id = im.item_id AND created_at BETWEEN #{startDate, jdbcType=DATE} AND #{endDate, jdbcType=DATE}
+            ) AS inboundQty,
+
+            (
+                SELECT NVL(SUM(qty), 0)
+                FROM out_detail
+                WHERE item_id = im.item_id AND created_at BETWEEN #{startDate, jdbcType=DATE} AND #{endDate, jdbcType=DATE}
+            ) AS outQty,
+
+            (
+                SELECT NVL(SUM(qty), 0)
+                FROM inbound_detail
+                WHERE item_id = im.item_id AND created_at &lt;= #{endDate, jdbcType=DATE}
+            )
+            -
+            (
+                SELECT NVL(SUM(qty), 0)
+                FROM out_detail
+                WHERE item_id = im.item_id AND created_at &lt;= #{endDate, jdbcType=DATE}
             ) AS endingStock
+
 
         FROM item_master im
         LEFT JOIN business_unit bu ON im.bu_id = bu.bu_id
