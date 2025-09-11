@@ -1,0 +1,50 @@
+<!-- <mapper namespace="org.logistics.mapper.OrderMapper"> -->
+
+<!--     주문 마스터 저장 -->
+<!--     <insert id="insertOrder" useGeneratedKeys="true" keyProperty="orderId"> -->
+<!--         INSERT INTO out_master ( -->
+<!--             out_id, bu_id, out_date, local_flag, party_id, contact_id, out_type, created_at -->
+<!--         ) VALUES ( -->
+<!--             seq_out_master.NEXTVAL, -->
+<!--             #{buId}, TO_DATE(#{orderDate}, 'YYYY-MM-DD'), -->
+<!--             #{localFlag}, #{partyId}, #{contactId}, #{orderType}, SYSDATE -->
+<!--         ) -->
+<!--     </insert> -->
+
+<!--     <update id="updateOrder"> -->
+<!--         UPDATE out_master -->
+<!--         SET local_flag = #{localFlag}, -->
+<!--             party_id   = #{partyId}, -->
+<!--             contact_id = #{contactId}, -->
+<!--             out_type   = #{orderType} -->
+<!--         WHERE out_id = #{orderId} -->
+<!--     </update> -->
+
+<!--     <delete id="deleteOrder"> -->
+<!--         DELETE FROM out_master WHERE out_id = #{orderId} -->
+<!--     </delete> -->
+
+<!--     주문 상세 -->
+<!--     <insert id="insertOrderDetail"> -->
+<!--         INSERT INTO out_detail ( -->
+<!--             out_detail_id, bu_id, out_id, item_id, qty, unit_price, amount, special_note, created_at -->
+<!--         ) VALUES ( -->
+<!--             seq_out_detail.NEXTVAL, -->
+<!--             1, #{orderId}, #{detail.itemId}, -->
+<!--             #{detail.qty}, #{detail.unitPrice}, #{detail.amount}, #{detail.note}, SYSDATE -->
+<!--         ) -->
+<!--     </insert> -->
+
+<!--     <delete id="deleteOrderDetails"> -->
+<!--         DELETE FROM out_detail WHERE out_id = #{orderId} -->
+<!--     </delete> -->
+
+<!--     조회 -->
+<!--     <select id="selectOrder" resultType="org.logistics.dto.OrderDTO"> -->
+<!--         SELECT * FROM out_master WHERE out_id = #{orderId} -->
+<!--     </select> -->
+
+<!--     <select id="selectOrderList" resultType="org.logistics.dto.OrderDTO"> -->
+<!--         SELECT * FROM out_master WHERE bu_id = #{buId} ORDER BY out_date DESC -->
+<!--     </select> -->
+<!-- </mapper> -->
