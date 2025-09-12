@@ -11,11 +11,11 @@
 <%-- 검색 키워드 변수 설정 --%>
 <c:set var="keyword" value="${param.keyword}" />
 
-<%-- 품목 데이터 조회 쿼리 (수정) --%>
+<%-- 창고 데이터 조회 쿼리 (수정) --%>
 <c:choose>
     <c:when test="${not empty keyword}">
         <sql:query var="warehouses" dataSource="${dataSource}">
-            SELECT warehouse_id, warehouse_name
+            SELECT warehouse_id, warehouse_name, warehouse_master_id
             FROM warehouse_detail
             WHERE warehouse_id LIKE '%' || ? || '%'
                 OR warehouse_name LIKE '%' || ? || '%'
@@ -26,7 +26,7 @@
     </c:when>
     <c:otherwise>
         <sql:query var="warehouses" dataSource="${dataSource}">
-            SELECT warehouse_id, warehouse_name
+            SELECT warehouse_id, warehouse_name, warehouse_master_id
             FROM warehouse_detail
             ORDER BY warehouse_name
         </sql:query>
@@ -62,22 +62,29 @@ body { font-family: Arial, sans-serif; padding: 20px; }
 			<tr>
 				<th>창고 코드</th>
 				<th>창고 이름</th>
+                <th>창고 마스터 ID</th>
 			</tr>
 		</thead>
 		<tbody>
 			<c:forEach var="wh" items="${warehouses.rows}">
-				<tr onclick="selectWarehouse('${wh.warehouse_id}', '${wh.warehouse_name}')">
+				<tr onclick="selectWarehouse('${wh.warehouse_id}', '${wh.warehouse_name}', '${wh.warehouse_master_id}')">
 					<td>${wh.warehouse_id}</td>
 					<td>${wh.warehouse_name}</td>
+                    <td>${wh.warehouse_master_id}</td>
 				</tr>
 			</c:forEach>
+            <c:if test="${empty warehouses.rows}">
+                <tr>
+                    <td colspan="3">조회된 창고가 없습니다.</td>
+                </tr>
+            </c:if>
 		</tbody>
 	</table>
 
 	<script>
-		function selectWarehouse(code, name) {
+		function selectWarehouse(id, name, masterId) {
 			if (window.opener && !window.opener.closed && window.opener.setWarehouse) {
-				window.opener.setWarehouse(code, name);
+				window.opener.setWarehouse(id, name, masterId);
 				window.close();
 			} else {
 				alert('부모 창이 열려 있지 않거나 창고를 설정하는 함수가 없습니다.');

@@ -38,15 +38,15 @@ h2 {
 }
 
 .search-header {
-    grid-column: 1/-1; /* 전체 너비 차지 */
+    grid-column: 1/-1;
     display: flex;
-    justify-content: space-between; /* 양쪽 정렬 */
-    align-items: center; /* 수직 중앙 정렬 */
+    justify-content: space-between;
+    align-items: center;
     padding: 10px;
     border-bottom: 1px solid #ccc;
     font-weight: bold;
     font-size: 14px;
-    background-color: #f5f5f5; /* 회색 배경 */
+    background-color: #f5f5f5;
 }
 
 #searchButton {
@@ -159,12 +159,11 @@ h2 {
             </div>
 
             <div class="search-item">
-    <label for="buId">사업단위:</label>
-    <select id="buId" name="buId" onchange="fetchDataForBusinessUnit()">
-        <option value="">전체</option>
-        <%-- 백엔드에서 동적으로 로드 필요 --%>
-    </select>
-</div>
+                <label for="buId">사업단위:</label>
+                <select id="buId" name="buId">
+                    <option value="">전체</option>
+                </select>
+            </div>
 
             <div class="search-item">
                 <label for="warehouseId">창고:</label>
@@ -182,7 +181,7 @@ h2 {
             <div class="search-item">
                 <label for="stockStandard">재고기준:</label>
                 <select id="stockStandard" name="stockStandard">
-                    <option value=""></option>
+                    <option value="">선택</option>
                     <option value="수량">수량</option>
                     <option value="금액">금액</option>
                 </select>
@@ -192,7 +191,6 @@ h2 {
                 <label for="importanceLevel">중요도:</label>
                 <select id="importanceLevel" name="importanceLevel">
                     <option value="">전체</option>
-                    <%-- 백엔드에서 동적으로 로드 필요 --%>
                 </select>
             </div>
 
@@ -236,7 +234,6 @@ h2 {
                 <label for="baseUnit">단위:</label>
                 <select id="baseUnit" name="baseUnit">
                     <option value="">전체</option>
-                    <%-- 백엔드에서 동적으로 로드 필요 --%>
                 </select>
             </div>
         </div>
@@ -250,9 +247,9 @@ h2 {
             <div class="search-item">
                 <label for="periodRange">기간간격:</label>
                 <div style="display: flex; align-items: center; gap: 8px;">
-                    <input type="number" id="periodRange" name="periodRange" min="1" value="3" style="width: 70px;">
+                    <input type="number" id="analysisPeriod" name="analysisPeriod" min="1" value="3" style="width: 70px;">
                     <span>개월</span>
-                    <input type="number" id="compareCount" name="compareCount" min="1" value="4" style="width: 70px;">
+                    <input type="number" id="analysisCount" name="analysisCount" min="1" value="4" style="width: 70px;">
                     <span>회</span>
                 </div>
             </div>
@@ -260,6 +257,7 @@ h2 {
             <div class="search-item">
                 <label for="analysisItem">분석항목:</label>
                 <select id="analysisItem" name="analysisItem">
+                    <option value="">선택</option>
                     <option value="averageStock">평균재고량</option>
                     <option value="turnoverRate">재고회전율(%)</option>
                     <option value="totalInbound">총입고량</option>
@@ -294,167 +292,53 @@ h2 {
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script>
-        $(document).ready(function () {
-            // 현재 월을 설정
-            const today = new Date();
-            const year = today.getFullYear();
-            const month = String(today.getMonth() + 1).padStart(2, '0');
-            $('#currentMonth').val(`${year}-${month}`);
+    // 팝업에서 선택된 창고 데이터를 받는 함수
+    function setWarehouse(id, name) {
+        $('#warehouseId').val(id);
+        $('#warehouseName').val(name);
+    }
+    
+    // 팝업에서 선택된 품목소분류 데이터를 받는 함수
+    function setSmallCategoryData(data) {
+        if (data && data.smallCategoryCode) {
+            $('#itemSmallCategory').val(data.smallCategoryCode);
+            $('#itemSmallCategoryName').val(data.smallCategoryName);
+        }
+    }
 
-            // 조회 버튼 클릭 이벤트
-            $('#searchButton').on('click', function () {
-                if (!$('#stockStandard').val()) {
-                    alert('재고기준을 선택하세요.');
-                    $('#stockStandard').focus();
-                    return;
-                }
-                if (!$('#analysisItem').val()) {
-                    alert('분석항목을 선택하세요.');
-                    $('#analysisItem').focus();
-                    return;
-                }
-                
-                const requestData = {
-                    buId: $('#buId').val(),
-                    warehouseId: $('#warehouseId').val(),
-                    stockStandard: $('#stockStandard').val(),
-                    importanceLevel: $('#importanceLevel').val(),
-                    itemAssetClass: $('#itemAssetClass').val(),
-                    itemSmallCategory: $('#itemSmallCategory').val(),
-                    itemName: $('#itemName').val(),
-                    spec: $('#spec').val(),
-                    baseUnit: $('#baseUnit').val(),
-                    periodRange: $('#periodRange').val(),
-                    compareCount: $('#compareCount').val(),
-                    analysisItem: $('#analysisItem').val()
-                };
+    $(document).ready(function () {
+        // 페이지 로딩 시 현재 월 설정
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = String(today.getMonth() + 1).padStart(2, '0');
+        $('#currentMonth').val(`${year}-${month}`);
 
-                const currentMonth = $('#currentMonth').val();
-                if (currentMonth) {
-                    const dateParts = currentMonth.split('-');
-                    const year = parseInt(dateParts[0]);
-                    const month = parseInt(dateParts[1]);
-                    const firstDayOfMonth = new Date(year, month - 1, 1);
-                    const lastDayOfMonth = new Date(year, month, 0);
+        // 동적으로 드롭다운 옵션을 로드하는 함수 (실제 API 엔드포인트에 맞게 수정 필요)
+        function loadOptions(selectId, endpoint) {
+            // 이 부분은 실제 API가 존재할 때 작동합니다.
+            // 예: loadOptions('#buId', '/api/business-units');
+        }
 
-                    requestData.startDate = firstDayOfMonth.toISOString().slice(0, 10);
-                    requestData.endDate = lastDayOfMonth.toISOString().slice(0, 10);
-                }
+        // 페이지 로딩 시 필요한 드롭다운 옵션 로드
+        // loadOptions('#buId', '/api/business-units'); 
+        // loadOptions('#importanceLevel', '/api/importance-levels');
+        // loadOptions('#baseUnit', '/api/base-units');
 
-                $.ajax({
-                    url: '/stock-analysis/analysis',
-                    type: 'POST',
-                    contentType: 'application/json',
-                    data: JSON.stringify(requestData),
-                    success: function (response) {
-                        console.log("AJAX 성공. 받은 데이터:", response);
-                        displayDataInTable(response);
-                    },
-                    error: function (xhr, status, error) {
-                        console.error("AJAX 오류:", status, error);
-                        console.log("XHR:", xhr.responseText);
-                        $('#resultTableContainer').html('<p style="text-align: center; color: #888;">데이터 조회 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.</p>');
-                    }
-                });
-            });
-
-            // 결과 테이블 출력 함수
-            function displayDataInTable(data) {
-                const container = $('#resultTableContainer');
-                container.empty();
-
-                if (Array.isArray(data) && data.length > 0) {
-                    const desiredColumns = [
-                        'itemBigCategory',
-                        'itemMidCategory',
-                        'itemAssetClass',
-                        'itemSmallCategory',
-                        'itemName',
-                        'beginningStock',
-                        'inboundQty',
-                        'outQty',
-                        'endingStock'
-                    ];
-                    let tableHtml = '<table><thead><tr>';
-                    
-                    const headerNames = {
-                        itemBigCategory: '품목대분류',
-                        itemMidCategory: '품목중분류',
-                        itemAssetClass: '품목자산분류',
-                        itemSmallCategory: '품목소분류',
-                        itemName: '품명',
-                        beginningStock: '기초재고',
-                        inboundQty: '입고량',
-                        outQty: '출고량',
-                        endingStock: '기말재고'
-                    };
-                    desiredColumns.forEach(key => {
-                        tableHtml += '<th>' + (headerNames[key] || key) + '</th>';
-                    });
-                    tableHtml += '</tr></thead><tbody>';
-                    data.forEach(item => {
-                        tableHtml += '<tr>';
-                        desiredColumns.forEach(key => {
-                            const value = item[key] !== null ? item[key] : '';
-                            tableHtml += '<td>' + value + '</td>';
-                        });
-                        tableHtml += '</tr>';
-                    });
-                    
-                    tableHtml += '</tbody></table>';
-                    container.append(tableHtml);
-                } else {
-                    container.append('<p style="text-align: center; color: #888; padding: 20px;">조회된 데이터가 없습니다.</p>');
-                }
+        // 조회 버튼 클릭 이벤트
+        $('#searchButton').on('click', function () {
+            if (!$('#stockStandard').val()) {
+                alert('재고기준을 선택하세요.');
+                $('#stockStandard').focus();
+                return;
             }
-        });
-
-        // 창고 검색 팝업 함수
-        function openWarehouseSearchPopup() {
-            const url = 'warehouse-search-popup';
-            const name = 'warehousePopup';
-            const specs = 'width=600,height=500,scrollbars=yes,resizable=yes';
-            window.open(url, name, specs);
-        }
-        
-        // 팝업에서 선택된 창고 데이터를 받는 함수
-        function setWarehouse(id, name) {
-            $('#warehouseId').val(id);
-            $('#warehouseName').val(name);
-        }
-        
-        // 품목소분류 검색 팝업 함수
-        function openSmallCategorySearchPopup() {
-            const url = 'item-sub-category-search-popup';
-            const name = 'smallCategoryPopup';
-            const specs = 'width=800,height=600,scrollbars=yes,resizable=yes';
-            window.open(url, name, specs);
-        }
-        
-        // 팝업에서 선택된 데이터를 받는 함수
-        function setSmallCategoryData(data) {
-            if (data && data.smallCategoryCode) {
-                $('#itemSmallCategory').val(data.smallCategoryCode);
-                $('#itemSmallCategoryName').val(data.smallCategoryName);
+            if (!$('#analysisItem').val()) {
+                alert('분석항목을 선택하세요.');
+                $('#analysisItem').focus();
+                return;
             }
-        }
-        
-        // 사업단위 변경 시 데이터를 조회하는 함수
-        function fetchDataForBusinessUnit() {
-            const buId = $('#buId').val();
             
-            // '전체'를 선택했거나 값이 없으면 모든 데이터를 조회
-            if (!buId) {
-                // 이 경우, 모든 사업단위에 대한 데이터를 조회하는 로직을 추가
-                // 예를 들어, 조회 버튼을 클릭하는 것과 동일한 동작을 수행
-                // $('#searchButton').click();
-                // 또는 AJAX 요청에 buId 값을 빈 값으로 보냅니다.
-                requestData.buId = '';
-            }
-
-            // 모든 조회 조건을 포함하는 요청 데이터 객체를 생성합니다.
             const requestData = {
-                buId: buId,
+                buId: $('#buId').val(),
                 warehouseId: $('#warehouseId').val(),
                 stockStandard: $('#stockStandard').val(),
                 importanceLevel: $('#importanceLevel').val(),
@@ -463,18 +347,11 @@ h2 {
                 itemName: $('#itemName').val(),
                 spec: $('#spec').val(),
                 baseUnit: $('#baseUnit').val(),
-                periodRange: $('#periodRange').val(),
-                compareCount: $('#compareCount').val(),
+                analysisPeriod: $('#analysisPeriod').val(),
+                analysisCount: $('#analysisCount').val(),
                 analysisItem: $('#analysisItem').val()
             };
 
-            // 재고기준과 분석항목이 필수값이므로, 값이 없을 때는 요청을 보내지 않거나 알림을 줍니다.
-            if (!$('#stockStandard').val() || !$('#analysisItem').val()) {
-                // 필수값이 없으면 함수 실행을 중단
-                return;
-            }
-
-            // 현재 월을 YYYY-MM-DD 형식으로 변환하여 요청에 추가
             const currentMonth = $('#currentMonth').val();
             if (currentMonth) {
                 const dateParts = currentMonth.split('-');
@@ -487,7 +364,6 @@ h2 {
                 requestData.endDate = lastDayOfMonth.toISOString().slice(0, 10);
             }
 
-            // Ajax 호출
             $.ajax({
                 url: '/stock-analysis/analysis',
                 type: 'POST',
@@ -503,7 +379,81 @@ h2 {
                     $('#resultTableContainer').html('<p style="text-align: center; color: #888;">데이터 조회 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.</p>');
                 }
             });
+        });
+
+        // 결과 테이블 출력 함수
+        function displayDataInTable(data) {
+            const container = $('#resultTableContainer');
+            container.empty();
+
+            if (Array.isArray(data) && data.length > 0) {
+                // 재고기준에 따라 동적으로 테이블 헤더와 데이터를 구성
+                const stockStandard = $('#stockStandard').val();
+                
+                let quantityColumns = ['beginningStock', 'inboundQty', 'outQty', 'endingStock'];
+                let amountColumns = ['beginningAmount', 'inboundAmount', 'outAmount', 'endingAmount'];
+                
+                let tableHeaderNames = {
+                    'itemBigCategory': '품목대분류',
+                    'itemMidCategory': '품목중분류',
+                    'itemAssetClass': '품목자산분류',
+                    'itemSmallCategory': '품목소분류',
+                    'itemName': '품명'
+                };
+                
+                let selectedColumns;
+                if (stockStandard === '금액') {
+                    selectedColumns = ['itemBigCategory', 'itemMidCategory', 'itemAssetClass', 'itemSmallCategory', 'itemName'].concat(amountColumns);
+                    tableHeaderNames['beginningAmount'] = '기초금액';
+                    tableHeaderNames['inboundAmount'] = '입고금액';
+                    tableHeaderNames['outAmount'] = '출고금액';
+                    tableHeaderNames['endingAmount'] = '기말금액';
+                } else { // 기본값: 수량
+                    selectedColumns = ['itemBigCategory', 'itemMidCategory', 'itemAssetClass', 'itemSmallCategory', 'itemName'].concat(quantityColumns);
+                    tableHeaderNames['beginningStock'] = '기초재고';
+                    tableHeaderNames['inboundQty'] = '입고량';
+                    tableHeaderNames['outQty'] = '출고량';
+                    tableHeaderNames['endingStock'] = '기말재고';
+                }
+
+                let tableHtml = '<table><thead><tr>';
+                selectedColumns.forEach(key => {
+                    tableHtml += '<th>' + (tableHeaderNames[key] || key) + '</th>';
+                });
+                tableHtml += '</tr></thead><tbody>';
+                
+                data.forEach(item => {
+                    tableHtml += '<tr>';
+                    selectedColumns.forEach(key => {
+                        const value = item[key] !== null ? item[key] : '';
+                        tableHtml += '<td>' + value + '</td>';
+                    });
+                    tableHtml += '</tr>';
+                });
+                
+                tableHtml += '</tbody></table>';
+                container.html(tableHtml);
+            } else {
+                container.html('<p style="text-align: center; color: #888; padding: 20px;">조회된 데이터가 없습니다.</p>');
+            }
         }
+    });
+
+    // 창고 검색 팝업 함수
+    function openWarehouseSearchPopup() {
+        const url = 'warehouse-search-popup';
+        const name = 'warehousePopup';
+        const specs = 'width=600,height=500,scrollbars=yes,resizable=yes';
+        window.open(url, name, specs);
+    }
+    
+    // 품목소분류 검색 팝업 함수
+    function openSmallCategorySearchPopup() {
+        const url = 'item-sub-category-search-popup';
+        const name = 'smallCategoryPopup';
+        const specs = 'width=800,height=600,scrollbars=yes,resizable=yes';
+        window.open(url, name, specs);
+    }
     </script>
 </body>
 </html>
