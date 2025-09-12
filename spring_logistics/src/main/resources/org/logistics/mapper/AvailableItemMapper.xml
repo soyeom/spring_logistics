@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.logistics.mapper.AvailableItemMapper">
+
+<select id="getAvailableItems" resultType="org.logistics.domain.AvailableItemVO">
+select a.warehouse_name   AS warehouseName
+     , a.warehouse_id     AS warehouseId
+     , b.asset_class      AS assetClass
+     , b.item_name        AS itemName
+     , b.spec             AS spec
+     , b.item_id          AS itemId
+     , b.base_unit        AS baseUnit
+     , (select sum(qty) from inbound_detail where bu_id = a.bu_id and inbound_id = a.inbound_id and a.inbound_complete = 'Y') AS totalQty
+     , (select sum(qty) from inbound_detail where bu_id = a.bu_id and inbound_id = a.inbound_id and a.inbound_complete = 'N' and a.inbound_type = '생산의뢰') AS requestQty
+     , (select sum(qty) from inbound_detail where bu_id = a.bu_id and inbound_id = a.inbound_id and a.inbound_complete = 'N' and a.inbound_type = '구매발주') AS orderQty
+     , (select sum(qty) from inbound_detail where bu_id = a.bu_id and inbound_id = a.inbound_id and a.inbound_complete = 'N' and a.inbound_type = '적송요청') AS transferQty
+     , (select sum(qty) from inbound_detail where bu_id = a.bu_id and inbound_id = a.inbound_id and a.inbound_complete = 'N' and a.inbound_type = '기타입고요청') AS inboundQty
+     , (select sum(qty) from inbound_detail where bu_id = a.bu_id and inbound_id = a.inbound_id and a.inbound_complete = 'N') AS expectedQty
+from (
+    select a.bu_id, b.item_id, 
+           (select warehouse_name from warehouse_detail where warehouse_id = b.warehouse_id and bu_id = b.bu_id) as warehouse_name,
+           b.warehouse_id, b.inbound_id, a.inbound_complete, a.inbound_type
+    from inbound_master a, inbound_detail b
+    where a.bu_id = b.bu_id
+      and a.inbound_id = b.inbound_id
+) a, item_master b
+where a.bu_id = b.bu_id
+  and a.item_id = b.item_id
+</select>
+
+
+
+</mapper>
