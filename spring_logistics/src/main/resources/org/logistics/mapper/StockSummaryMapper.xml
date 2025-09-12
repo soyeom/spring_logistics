@@ -3,8 +3,6 @@
 <mapper namespace="org.logistics.mapper.StockSummaryMapper">
 
 	<!-- 메인 조회 쿼리 -->
-
-	<!-- resultMap 태그를 사용하여 데이터베이스 컬럼(column)과 DTO의 필드명(property)을 정확히 1:1로 매칭 -->
 	<resultMap id="stockSummaryResultMap" type="org.logistics.domain.StockSummaryResultDto">
     	<result column="ITEM_INTERNAL_CODE" property="itemInternalCode"/>
     	<result column="ITEM_ASSET_CLASS" property="itemAssetClass"/>
@@ -27,10 +25,12 @@
     	<result column="WORK_PERFORMANCE_OUTBOUND" property="workPerformanceOutbound"/>
     	<result column="OUTSOURCING_OUTBOUND" property="outsourcingOutbound"/>
 	</resultMap>	
+	<!-- resultMap 태그를 사용하여 데이터베이스 컬럼(column)과 DTO의 필드명(property)을 정확히 1:1로 매칭 -->
 
     <select id="selectStockSummaryList" parameterType="org.logistics.domain.SearchCriteriaDto"
             resultMap="stockSummaryResultMap">
         WITH Inbound AS (
+        	-- 지정된 기간 동안의 입고 데이터를 집계하는 CTE(Common Table Expression)
             SELECT
                 t2.item_id,
                 SUM(t2.qty) AS inbound_qty,
@@ -51,6 +51,7 @@
             GROUP BY t2.item_id
         ),
         Outbound AS (
+        	-- 지정된 기간 동안의 출고 데이터를 집계하는 CTE
             SELECT
                 t2.item_id,
                 SUM(t2.qty) AS outbound_qty,
@@ -72,6 +73,7 @@
             GROUP BY t2.item_id
         ),
         PeriodStock AS (
+        	-- 지정된 기간 동안의 재고 변동량을 계산하는 CTE
             SELECT
                 st.item_id,
                 SUM(CASE WHEN st.stock_type = 'INPUT' THEN st.qty ELSE 0 END) - SUM(CASE WHEN st.stock_type = 'OUTPUT' THEN st.qty ELSE 0 END) AS stock_qty
@@ -87,6 +89,7 @@
             GROUP BY st.item_id
         )
         SELECT
+        	-- 최종 결과 테이블을 구성
             t1.item_internal_code,
             t1.asset_class AS item_asset_class,
             t1.big_category AS item_big_category,
@@ -95,8 +98,8 @@
             t2.inbound_qty,
             t1.base_unit AS item_unit,
             t1.item_status,
-            NVL(t4.stock_qty, 0) AS carried_over_qty,
-            NVL(t5.stock_qty, 0) AS stock_qty,
+            NVL(t4.stock_qty, 0) AS carried_over_qty, -- 이월수량(기간 시작일 이전의 재고 합계)
+            NVL(t5.stock_qty, 0) AS stock_qty, -- 기간 내 재고 변동량 (입고-출고)
             t3.outbound_qty,
             t2.production_inbound,
             t2.outsourcing_inbound,
@@ -115,6 +118,7 @@
             Outbound t3 ON t1.item_id = t3.item_id
         LEFT JOIN
             (
+            	-- 이월수량을 계산하는 서브쿼리
                 SELECT
                     item_id,
                     SUM(CASE WHEN stock_type = 'INPUT' THEN qty ELSE 0 END) - SUM(CASE WHEN stock_type = 'OUTPUT' THEN qty ELSE 0 END) AS stock_qty
@@ -122,13 +126,14 @@
                 JOIN business_unit bu ON st.bu_id = bu.bu_id
                 WHERE bu.bu_name = #{businessBuName}
                 <if test="searchPeriodStart != null">
-                AND st.txn_date &lt; #{searchPeriodStart}
+                AND st.txn_date &lt; #{searchPeriodStart} -- 검색 시작일 이전의 데이터만 필터링
                 </if>
                 GROUP BY item_id
             ) t4 ON t1.item_id = t4.item_id
         LEFT JOIN
             PeriodStock t5 ON t1.item_id = t5.item_id
         WHERE 1=1
+        	-- Mybatis 동적 쿼리: 사용자가 입력한 검색 조건에 따라 최종 결과 필터링
             <if test="businessBuName != null and businessBuName != ''">
                 AND EXISTS (
                     SELECT 1
@@ -159,28 +164,30 @@
                 AND t1.item_status = #{itemStatus}
             </if>
             <if test="!includeZeroQty">
+	            -- 0수량 제외 옵션이 체크되었을 경우
                 AND (NVL(t2.inbound_qty, 0) + NVL(t3.outbound_qty, 0) + NVL(t4.stock_qty, 0) + NVL(t5.stock_qty, 0)) > 0
             </if>
     </select>
     
     <!-- 모달 조회 쿼리 -->
-    
     <resultMap id="itemCategoryResultMap" type="org.logistics.domain.ItemCategoryDto">
     	<result column="BIG_CATEGORY" property="bigCategory"/>
     	<result column="MID_CATEGORY" property="midCategory"/>
     	<result column="SMALL_CATEGORY" property="smallCategory"/>
     </resultMap>
     
+    <!-- 테이블에서 중복되지 않는(distinct) 품목 대분류를 조회하는 쿼리 -->
     <select id="selectDistinctBigCategories" resultMap="itemCategoryResultMap">
     	SELECT DISTINCT big_category FROM item_master
-    	<where>
+    	<where> <!-- 태그 내부의 <if> 조건이 거짓이면 아무것도 추가되지 않음 -->
         	<if test="searchTerm != null and searchTerm != ''">
             	big_category LIKE CONCAT(CONCAT('%', #{searchTerm}), '%')
         	</if>
     	</where>
     	ORDER BY big_category
 	</select>
-
+	
+	<!-- 테이블에서 중복되지 않는 품목 중분류를 조회하는 쿼리 -->
 	<select id="selectDistinctMidCategories" resultMap="itemCategoryResultMap">
 	    SELECT DISTINCT big_category, mid_category FROM item_master
 	    <where>
@@ -190,7 +197,8 @@
 	    </where>
 	    ORDER BY big_category, mid_category
 	</select>
-
+	
+	<!-- 테이블에서 중복되지 않는 품목 소분류를 조회하는 쿼리 -->
 	<select id="selectDistinctSmallCategories" resultMap="itemCategoryResultMap">
 	    SELECT DISTINCT big_category, mid_category, small_category FROM item_master
 	    <where>
