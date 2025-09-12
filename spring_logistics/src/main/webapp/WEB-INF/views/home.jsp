@@ -12,6 +12,6 @@
 </h1>
 
 <P>  The time on the server is ${serverTime}. </P>
-<a href="stockAnalysis/form">재고 변동 추이 분석 페이지로 이동</a>
+<a href="stock-analysis/form">재고 변동 추이 분석 페이지로 이동</a>
 </body>
 </html>
