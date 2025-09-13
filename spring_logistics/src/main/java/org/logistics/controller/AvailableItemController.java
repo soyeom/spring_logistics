@@ -18,7 +18,6 @@ public class AvailableItemController {
     public String list(Model model) {
         List<AvailableItemVO> items = service.getAvailableItems();
         model.addAttribute("items", items);
-        System.out.println("조회 결과 건수 = " + items.size());
         return "availableItems"; // JSP 파일명
     }
 }

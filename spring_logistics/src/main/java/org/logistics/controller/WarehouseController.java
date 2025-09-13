@@ -35,13 +35,7 @@ public class WarehouseController {
 	    for (Warehouse wh : form.getWarehouses()) {
 	        if (wh.getAssetStockFlag() == null) wh.setAssetStockFlag("N");
 	        if (wh.getAvailableStockFlag() == null) wh.setAvailableStockFlag("N");
-	        if (wh.getActualStockFlag() == null) wh.setActualStockFlag("N");
-	        
-	        // ✅ 디버깅 로그
-	        System.out.println(">>> warehouseInternalCode=" + wh.getWarehouseInternalCode()
-	                + ", asset=" + wh.getAssetStockFlag()
-	                + ", available=" + wh.getAvailableStockFlag()
-	                + ", actual=" + wh.getActualStockFlag());
+	        if (wh.getActualStockFlag() == null) wh.setActualStockFlag("N");     
 
 
 	        warehouseService.updateWarehouseFlags(wh);
