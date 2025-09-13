@@ -75,4 +75,10 @@
 		and a.out_id = #{out_Id}
 	</select>
 	
+	<select id = "popupItemList" resultType = "org.logistics.domain.PopupItemVO">
+		select item_Id, bu_Id, item_Name, spec, safety_Stock_Qty, storage_Location, asset_Class, asset_Name, big_Category, mid_Category, small_Category
+		     , base_Unit, sales_Unit, lot_Control_Flag, manufacturer, currency, english_Name, importance_Level
+		from item_master
+	</select>
+	
 </mapper>

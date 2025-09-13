@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.logistics.domain.InvFlowConfigVO;
 import org.logistics.domain.OutBoundMasterVO;
+import org.logistics.domain.PopupItemVO;
 import org.logistics.domain.WareHouseContactListVO;
 import org.logistics.domain.WareHouseItemListVO;
 import org.logistics.service.InvFlowConfigService;
@@ -24,6 +25,7 @@ public class InvFlowConfigController {
 
 	private InvFlowConfigService invFlowConfigService;
 		
+	// 창고별 재고 부족 허용여부 설정하기
 	@GetMapping("/invflowconfig")
 	public void invFlowConfig() {
 	}
@@ -54,9 +56,7 @@ public class InvFlowConfigController {
 		return invFlowConfigService.getWareHouseContactList(wareHouse_Id);
 	}
 	
-	
-	
-	// 출고 관련 method
+	// 출고 처리하기
 	@GetMapping("/outbound")
 	public void outBound() {
 	}	
@@ -79,5 +79,14 @@ public class InvFlowConfigController {
 	public List<OutBoundMasterVO> outBoundDetailSearch2(@RequestParam("bu_Id") String bu_Id, @RequestParam("out_Id") String out_Id) {
 
 		return invFlowConfigService.getOutBoundDetail2(bu_Id, out_Id);
+	}
+	
+	
+	// 공통팝업
+	// 아이템목록 조회
+	@GetMapping("/popup_Item")
+	@ResponseBody
+	public List<PopupItemVO> popup_Item() {
+		return invFlowConfigService.popupItemList();
 	}
 }

@@ -19,7 +19,7 @@
     }
 	
 	#table_popup {
-      width: 100%;
+      width: 100% !important;
       border-collapse: collapse; /* 셀 간격 제거 */
     }
 
@@ -59,8 +59,8 @@
        		<thead>
           		<tr>
 	               <th>품번</th>
-	               <th>규격</th>
 	               <th>품명</th>
+	               <th>규격</th>
 	               <th>품목자산분류</th>
 	               <th>소분류</th>
 	               <th>단위</th>
@@ -84,7 +84,7 @@
 	function search() {
 		
 		$.ajax({
-			url: '/InvFlowConfig/list',
+			url: '/InvFlowConfig/popup_Item',
 			processData: false,
 			contentType: false,
 			data: "",
@@ -108,11 +108,14 @@
 				      style: 'single'  // 단일 행 선택 (or 'multi' / 'os')
 				    },
 					columns: [
-		                { data: "bu_Name" },
-		                { data: "wareHouse_Master_Id" },
-		                { data: "wareHouse_Internal_Code" },
-		                { data: "wareHouse_Id" },
-		                { data: "wareHouse_Name" }
+		                { data: "item_Id" },
+		                { data: "item_Name" },
+		                { data: "spec" },
+		                { data: "small_Category" },	// 품목자산분류
+		                { data: "small_Category" },
+		                { data: "base_Unit" },
+		                { data: "base_Unit" },
+		                { data: "english_Name" }
 		            ]
 				});
 				
@@ -124,11 +127,12 @@
            		  		var rowData = $("#table_popup").DataTable().rows(indexes).data().toArray();
             		
            		  		var data = {
-            	        	item_id: rowData[0].bu_id
+            	        	item_Id: rowData[0].item_Id
+            	          , item_Name: rowData[0].item_Name
             	      	};
            		  		
            		 		// 부모창 함수 호출 + 데이터 전달
-						window.opener.setSelectedRow1(data);
+						window.opener.selectRow_Item(data);
 						// 팝업 닫기
 				      	window.close();
            			});
