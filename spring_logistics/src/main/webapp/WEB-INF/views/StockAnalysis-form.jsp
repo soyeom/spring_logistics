@@ -204,18 +204,18 @@ h2 {
                 </select>
             </div>
 
-            <div class="search-item">
-                <label for="warehouseId">창고:</label>
-                <div class="search-group">
-                    <input type="text" id="warehouseName" name="warehouseName" placeholder="창고 코드 또는 이름" readonly />
-                    <input type="hidden" id="warehouseId" name="warehouseId" />
-                    <button type="button" class="search-icon" onclick="openWarehouseSearchPopup()">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                        </svg>
-                    </button>
-                </div>
-            </div>
+			<div class="search-item">
+			    <label for="warehouseId">창고:</label>
+			    <div class="search-group">
+			        <input type="text" id="warehouseName" name="warehouseName" placeholder="창고 코드 또는 이름" readonly />
+			        <input type="hidden" id="warehouseId" name="warehouseId" />
+			        <button type="button" class="search-icon" id="warehouseSearchBtn">
+			            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+			                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+			            </svg>
+			        </button>
+			    </div>
+			</div>
 
             <div class="search-item">
                 <label for="stockStandard">재고기준:</label>
@@ -246,18 +246,18 @@ h2 {
                 </select>
             </div>
 
-            <div class="search-item">
-                <label for="itemSmallCategory">품목소분류:</label>
-                <div class="search-group">
-                    <input type="text" id="itemSmallCategoryName" name="itemSmallCategoryName" placeholder="품목소분류 코드 또는 이름" readonly />
-                    <input type="hidden" id="itemSmallCategory" name="itemSmallCategory" />
-                    <button type="button" class="search-icon" onclick="openSmallCategorySearchPopup()">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                        </svg>
-                    </button>
-                </div>
-            </div>
+			<div class="search-item">
+			    <label for="itemSmallCategory">품목소분류:</label>
+			    <div class="search-group">
+			        <input type="text" id="itemSmallCategoryName" name="itemSmallCategoryName" placeholder="품목소분류 코드 또는 이름" readonly />
+			        <input type="hidden" id="itemSmallCategory" name="itemSmallCategory" />
+			        <button type="button" class="search-icon" id="smallCategorySearchBtn">
+			            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+			                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+			            </svg>
+			        </button>
+			    </div>
+			</div>
 
             <div class="search-item">
                 <label for="itemName">품명:</label>
