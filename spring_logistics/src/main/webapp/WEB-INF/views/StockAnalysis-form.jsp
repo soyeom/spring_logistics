@@ -183,6 +183,21 @@ h2 {
     text-decoration: none;
     cursor: pointer;
 }
+/* 모달 내 테이블 스타일 */
+.modal-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+}
+.modal-table th, .modal-table td {
+    border: 1px solid #e0e6ed;
+    padding: 8px;
+    text-align: left;
+}
+.modal-table tbody tr:hover {
+    background-color: #f0f4f8;
+    cursor: pointer;
+}
 /* --- 요청된 CSS 끝 --- */
 
 </style>
@@ -200,7 +215,8 @@ h2 {
             <div class="search-item">
                 <label for="buId">사업단위:</label>
                 <select id="buId" name="buId">
-                    <option value="">전체</option>
+                    <option value=""></option>
+                    <option value="buId">본사</option>
                 </select>
             </div>
 
@@ -333,18 +349,44 @@ h2 {
 	       <div class="modal-content">
 	           <span class="close-button">&times;</span>
 	           <h4>창고 검색</h4>
-	           <p>창고 검색 컨텐츠가 들어갈 자리입니다.</p>
+	           <div class="modal-search-box">
+                   <input type="text" id="modalWarehouseSearch" placeholder="창고명 검색">
+                   <button type="button" id="modalWarehouseSearchBtn">검색</button>
+               </div>
+               <table class="modal-table">
+                   <thead>
+                       <tr>
+                           <th>ID</th>
+                           <th>창고명</th>
+                       </tr>
+                   </thead>
+                   <tbody id="modalWarehouseTableBody">
+                       </tbody>
+               </table>
 	       </div>
-	   </div>
+	</div>
 
-	   <div id="smallCategoryModal" class="modal">
-	       <div class="modal-content">
-	           <span class="close-button">&times;</span>
-	           <h4>품목소분류 검색</h4>
-	           <p>품목소분류 검색 컨텐츠가 들어갈 자리입니다.</p>
-	       </div>
-	   </div>
-
+	<div id="smallCategoryModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <h4>품목소분류 검색</h4>
+            <div class="modal-search-box">
+                <input type="text" id="modalSmallCategorySearch" placeholder="품목소분류명 검색">
+                <button type="button" id="modalSmallCategorySearchBtn">검색</button>
+            </div>
+            <table class="modal-table">
+                <thead>
+                    <tr>
+                        <th>코드</th>
+                        <th>소분류명</th>
+                    </tr>
+                </thead>
+                <tbody id="modalSmallCategoryTableBody">
+                    </tbody>
+            </table>
+        </div>
+    </div>
+	
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 	<script>
 	    // 팝업에서 선택된 창고 데이터를 받는 함수
@@ -374,31 +416,110 @@ h2 {
 	        }
 			
 			// --- 모달 관련 이벤트 처리 ---
-			       // 창고 검색 모달 열기
-				   $('#warehouseSearchBtn').on('click', function() {
-				       $('#warehouseModal').show();
-				   });
+			// 창고 검색 모달 열기
+			$('#warehouseSearchBtn').on('click', function() {
+				$('#warehouseModal').show();
+			});
 
-				   $('#smallCategorySearchBtn').on('click', function() {
-				       $('#smallCategoryModal').show();
-				   });
+			// 품목소분류 모달 열기
+			$('#smallCategorySearchBtn').on('click', function() {
+				$('#smallCategoryModal').show();
+			});
 
-			       // 모달 닫기 버튼 이벤트
-			       $('.modal .close-button').on('click', function() {
-			           $(this).closest('.modal').hide();
-			       });
-			       
-			       // 모달 외부 클릭 시 닫기
-			       $(window).on('click', function(event) {
-			           if ($(event.target).hasClass('modal')) {
-			               $(event.target).hide();
-			           }
-			       });
+			// 모달 닫기 버튼 이벤트
+			$('.modal .close-button').on('click', function() {
+				$(this).closest('.modal').hide();
+			});
+			
+			// 모달 외부 클릭 시 닫기
+			$(window).on('click', function(event) {
+				if ($(event.target).hasClass('modal')) {
+					$(event.target).hide();
+				}
+			});
+			
+            // --- 창고 검색 모달 AJAX 로직 ---
+            $('#modalWarehouseSearchBtn').on('click', function() {
+                const searchTerm = $('#modalWarehouseSearch').val();
+                $.ajax({
+                    url: '/stock-analysis/warehouses', // 실제 창고 검색 API 엔드포인트로 변경
+                    type: 'GET',
+                    data: { name: searchTerm },
+                    success: function(response) {
+                        displayModalWarehouseResults(response);
+                    },
+                    error: function(xhr, status, error) {
+                        console.error("창고 검색 오류:", status, error);
+                        $('#modalWarehouseTableBody').empty().append('<tr><td colspan="2">검색 중 오류가 발생했습니다.</td></tr>');
+                    }
+                });
+            });
+            
+            // 창고 검색 결과 표시
+            function displayModalWarehouseResults(data) {
+                const tableBody = $('#modalWarehouseTableBody');
+                tableBody.empty();
+                if (!data || data.length === 0) {
+                    tableBody.append('<tr><td colspan="2">검색 결과가 없습니다.</td></tr>');
+                    return;
+                }
+                data.forEach(item => {
+                    const row = `<tr data-id="${item.id}" data-name="${item.name}"><td>${item.id}</td><td>${item.name}</td></tr>`;
+                    tableBody.append(row);
+                });
+            }
+            
+            // 창고 검색 결과 클릭 시
+            $('#modalWarehouseTableBody').on('click', 'tr', function() {
+                const id = $(this).data('id');
+                const name = $(this).data('name');
+                setWarehouse(id, name);
+                $('#warehouseModal').hide();
+            });
+
+            // --- 품목소분류 검색 모달 AJAX 로직 ---
+            $('#modalSmallCategorySearchBtn').on('click', function() {
+                const searchTerm = $('#modalSmallCategorySearch').val();
+                $.ajax({
+                    url: '/stock-analysis/item-small-categories', // 실제 품목소분류 검색 API 엔드포인트로 변경
+                    type: 'GET',
+                    data: { name: searchTerm },
+                    success: function(response) {
+                        displayModalSmallCategoryResults(response);
+                    },
+                    error: function(xhr, status, error) {
+                        console.error("품목소분류 검색 오류:", status, error);
+                        $('#modalSmallCategoryTableBody').empty().append('<tr><td colspan="2">검색 중 오류가 발생했습니다.</td></tr>');
+                    }
+                });
+            });
+
+            // 품목소분류 검색 결과 표시
+            function displayModalSmallCategoryResults(data) {
+                const tableBody = $('#modalSmallCategoryTableBody');
+                tableBody.empty();
+                if (!data || data.length === 0) {
+                    tableBody.append('<tr><td colspan="2">검색 결과가 없습니다.</td></tr>');
+                    return;
+                }
+                data.forEach(item => {
+                    const row = `<tr data-code="${item.smallCategoryCode}" data-name="${item.smallCategoryName}"><td>${item.smallCategoryCode}</td><td>${item.smallCategoryName}</td></tr>`;
+                    tableBody.append(row);
+                });
+            }
+            
+            // 품목소분류 검색 결과 클릭 시
+            $('#modalSmallCategoryTableBody').on('click', 'tr', function() {
+                const code = $(this).data('code');
+                const name = $(this).data('name');
+                setSmallCategoryData({ smallCategoryCode: code, smallCategoryName: name });
+                $('#smallCategoryModal').hide();
+            });
+
 
 	        // 조회 버튼 클릭 이벤트
 	        $('#searchButton').on('click', function (event) {
-	                event.preventDefault();
-	            }
+	            event.preventDefault();
 	            
 	            // DTO에 맞게 데이터 수집
 	            const requestData = {
