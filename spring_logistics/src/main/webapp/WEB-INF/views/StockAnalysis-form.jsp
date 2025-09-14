@@ -375,14 +375,13 @@ h2 {
 			
 			// --- 모달 관련 이벤트 처리 ---
 			       // 창고 검색 모달 열기
-			       $('#stockAnalysisForm button.search-icon').eq(0).on('click', function() {
-			           $('#warehouseModal').show();
-			       });
+				   $('#warehouseSearchBtn').on('click', function() {
+				       $('#warehouseModal').show();
+				   });
 
-			       // 품목소분류 검색 모달 열기
-			       $('#stockAnalysisForm button.search-icon').eq(1).on('click', function() {
-			           $('#smallCategoryModal').show();
-			       });
+				   $('#smallCategorySearchBtn').on('click', function() {
+				       $('#smallCategoryModal').show();
+				   });
 
 			       // 모달 닫기 버튼 이벤트
 			       $('.modal .close-button').on('click', function() {
