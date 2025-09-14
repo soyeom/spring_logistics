@@ -44,14 +44,4 @@ public class StockAnalysisController {
         }
     }
 
-    // 팝업용 뷰를 반환하는 메서드
-    @GetMapping("/warehouse-search-popup")
-    public String showWarehouseSearchPopup() {
-        return "warehouseSearchPopup";
-    }
-    
-    @GetMapping("/item-sub-category-search-popup")
-    public String showitemSubCategorySearchPopup() {
-        return "itemSubCategorySearchPopup";
-    }
 }

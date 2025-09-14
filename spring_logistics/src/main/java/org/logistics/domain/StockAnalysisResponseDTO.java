@@ -1,33 +1,38 @@
 package org.logistics.domain;
 
 import java.math.BigDecimal;
+import java.util.List;
+
 import lombok.Data;
 
 @Data
 public class StockAnalysisResponseDTO {
-    // business_unit 테이블
-    private String buName;
 
-    // warehouse_detail 테이블
-    private String warehouseName;
+    // 품목 및 창고/사업단위 마스터 정보 (테이블의 고정된 왼쪽 컬럼)
+    private String buName; // 사업단위 이름
+    private String warehouseName; // 창고 이름
+    private String itemName; // 품명
+    private String spec; // 규격
+    private String baseUnit; // 단위
+    private String itemBigCategory; // 품목 대분류
+    private String itemMidCategory; // 품목 중분류
+    private String itemSmallCategory; // 품목 소분류
+    private String itemAssetClass; // 품목 자산분류
 
-    // item_master 테이블
-    private String itemName;
-    private String spec;
-    private String baseUnit;
-    private String itemBigCategory;
-    private String itemMidCategory;
-    private String itemSmallCategory;
-    private String itemAssetClass;
+    // 기간별 분석 결과를 담는 리스트
+    private List<PeriodData> periodDataList;
 
-    // 수량 및 금액 정보
-    // (재고 분석 로직을 통해 계산되는 값)
-    private BigDecimal beginningStock; // 기초 재고
-    private BigDecimal inboundQty; // 입고 수량
-    private BigDecimal outQty; // 출고 수량
-    private BigDecimal endingStock; // 기말 재고
-    private BigDecimal beginningAmount; // 기초 금액
-    private BigDecimal inboundAmount; // 입고 금액
-    private BigDecimal outAmount; // 출고 금액
-    private BigDecimal endingAmount; // 기말 금액
+    // PeriodData: 각 기간의 재고 분석 데이터를 담는 내부 클래스
+    @Data
+    public static class PeriodData {
+        private String period; // "1회차 비교", "2024년 1월" 등
+        private BigDecimal beginningStock;
+        private BigDecimal endingStock;
+        private BigDecimal inboundQty;
+        private BigDecimal outQty;
+        private BigDecimal beginningAmount;
+        private BigDecimal endingAmount;
+        private BigDecimal inboundAmount;
+        private BigDecimal outAmount;
+    }
 }

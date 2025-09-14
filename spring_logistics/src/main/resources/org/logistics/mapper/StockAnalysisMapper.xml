@@ -12,11 +12,11 @@
         <result column="itemBigCategory" property="itemBigCategory"/>
         <result column="itemMidCategory" property="itemMidCategory"/>
         <result column="itemSmallCategory" property="itemSmallCategory"/>
-        <result column="assetClass" property="itemAssetClass"/> <result column="beginningStock" property="beginningStock"/>
+        <result column="assetClass" property="itemAssetClass"/>
+        <result column="beginningStock" property="beginningStock"/>
         <result column="inboundQty" property="inboundQty"/>
         <result column="outQty" property="outQty"/>
         <result column="endingStock" property="endingStock"/>
-        
         <result column="beginningAmount" property="beginningAmount"/>
         <result column="inboundAmount" property="inboundAmount"/>
         <result column="outAmount" property="outAmount"/>
@@ -24,6 +24,34 @@
     </resultMap>
 
     <select id="getStockAnalysisData" parameterType="org.logistics.domain.StockAnalysisRequestDTO" resultMap="stockAnalysisResultMap">
+        WITH InboundData AS (
+            SELECT
+                bu_id,
+                warehouse_id,
+                item_id,
+                SUM(CASE WHEN created_at &lt; #{startDate} THEN qty ELSE 0 END) AS beginning_in_qty,
+                SUM(CASE WHEN created_at &lt; #{startDate} THEN amount ELSE 0 END) AS beginning_in_amount,
+                SUM(CASE WHEN created_at BETWEEN #{startDate} AND #{endDate} THEN qty ELSE 0 END) AS period_in_qty,
+                SUM(CASE WHEN created_at BETWEEN #{startDate} AND #{endDate} THEN amount ELSE 0 END) AS period_in_amount,
+                SUM(qty) AS total_in_qty,
+                SUM(amount) AS total_in_amount
+            FROM inbound_detail
+            GROUP BY bu_id, warehouse_id, item_id
+        ),
+        OutboundData AS (
+            SELECT
+                bu_id,
+                warehouse_id,
+                item_id,
+                SUM(CASE WHEN created_at &lt; #{startDate} THEN qty ELSE 0 END) AS beginning_out_qty,
+                SUM(CASE WHEN created_at &lt; #{startDate} THEN amount ELSE 0 END) AS beginning_out_amount,
+                SUM(CASE WHEN created_at BETWEEN #{startDate} AND #{endDate} THEN qty ELSE 0 END) AS period_out_qty,
+                SUM(CASE WHEN created_at BETWEEN #{startDate} AND #{endDate} AND is_charge_supply = 'N' THEN amount ELSE 0 END) AS period_out_amount,
+                SUM(qty) AS total_out_qty,
+                SUM(amount) AS total_out_amount
+            FROM out_detail
+            GROUP BY bu_id, warehouse_id, item_id
+        )
         SELECT
             bu.bu_name AS buName,
             whd.warehouse_name AS warehouseName,
@@ -34,77 +62,25 @@
             im.mid_category AS itemMidCategory,
             im.small_category AS itemSmallCategory,
             im.asset_class AS itemAssetClass,
-
-            (
-                SELECT NVL(SUM(qty), 0)
-                FROM inbound_detail
-                WHERE bu_id = im.bu_id AND item_id = im.item_id AND warehouse_id = whd.warehouse_id AND created_at &lt; #{startDate, jdbcType=DATE}
-            ) - (
-                SELECT NVL(SUM(qty), 0)
-                FROM out_detail
-                WHERE bu_id = im.bu_id AND item_id = im.item_id AND warehouse_id = whd.warehouse_id AND created_at &lt; #{startDate, jdbcType=DATE}
-            ) AS beginningStock,
             
-            (
-                SELECT NVL(SUM(qty), 0)
-                FROM inbound_detail
-                WHERE bu_id = im.bu_id AND item_id = im.item_id AND warehouse_id = whd.warehouse_id AND created_at BETWEEN #{startDate, jdbcType=DATE} AND #{endDate, jdbcType=DATE}
-            ) AS inboundQty,
+            NVL(id.beginning_in_qty, 0) - NVL(od.beginning_out_qty, 0) AS beginningStock,
+            NVL(id.period_in_qty, 0) AS inboundQty,
+            NVL(od.period_out_qty, 0) AS outQty,
+            NVL(id.total_in_qty, 0) - NVL(od.total_out_qty, 0) AS endingStock,
 
-            (
-                SELECT NVL(SUM(qty), 0)
-                FROM out_detail
-                WHERE bu_id = im.bu_id AND item_id = im.item_id AND warehouse_id = whd.warehouse_id AND created_at BETWEEN #{startDate, jdbcType=DATE} AND #{endDate, jdbcType=DATE}
-            ) AS outQty,
-
-            (
-                SELECT NVL(SUM(qty), 0)
-                FROM inbound_detail
-                WHERE bu_id = im.bu_id AND item_id = im.item_id AND warehouse_id = whd.warehouse_id AND created_at &lt;= #{endDate, jdbcType=DATE}
-            ) - (
-                SELECT NVL(SUM(qty), 0)
-                FROM out_detail
-                WHERE bu_id = im.bu_id AND item_id = im.item_id AND warehouse_id = whd.warehouse_id AND created_at &lt;= #{endDate, jdbcType=DATE}
-            ) AS endingStock,
-
-            (
-                SELECT NVL(SUM(amount), 0)
-                FROM inbound_detail
-                WHERE bu_id = im.bu_id AND item_id = im.item_id AND warehouse_id = whd.warehouse_id AND created_at &lt; #{startDate, jdbcType=DATE}
-            ) - (
-                SELECT NVL(SUM(amount), 0)
-                FROM out_detail
-                WHERE bu_id = im.bu_id AND item_id = im.item_id AND warehouse_id = whd.warehouse_id AND created_at &lt; #{startDate, jdbcType=DATE}
-            ) AS beginningAmount,
-            
-            (
-                SELECT NVL(SUM(amount), 0)
-                FROM inbound_detail
-                WHERE bu_id = im.bu_id AND item_id = im.item_id AND warehouse_id = whd.warehouse_id AND created_at BETWEEN #{startDate, jdbcType=DATE} AND #{endDate, jdbcType=DATE}
-            ) AS inboundAmount,
-
-            (
-                SELECT NVL(SUM(amount), 0)
-                FROM out_detail
-                WHERE bu_id = im.bu_id AND item_id = im.item_id AND warehouse_id = whd.warehouse_id AND created_at BETWEEN #{startDate, jdbcType=DATE} AND #{endDate, jdbcType=DATE}
-            ) AS outAmount,
-
-            (
-                SELECT NVL(SUM(amount), 0)
-                FROM inbound_detail
-                WHERE bu_id = im.bu_id AND item_id = im.item_id AND warehouse_id = whd.warehouse_id AND created_at &lt;= #{endDate, jdbcType=DATE}
-            ) - (
-                SELECT NVL(SUM(amount), 0)
-                FROM out_detail
-                WHERE bu_id = im.bu_id AND item_id = im.item_id AND warehouse_id = whd.warehouse_id AND created_at &lt;= #{endDate, jdbcType=DATE}
-            ) AS endingAmount
-
+            NVL(id.beginning_in_amount, 0) - NVL(od.beginning_out_amount, 0) AS beginningAmount,
+            NVL(id.period_in_amount, 0) AS inboundAmount,
+            NVL(od.period_out_amount, 0) AS outAmount,
+            NVL(id.total_in_amount, 0) - NVL(od.total_out_amount, 0) AS endingAmount
+        
         FROM item_master im
         LEFT JOIN business_unit bu ON im.bu_id = bu.bu_id
         LEFT JOIN warehouse_item wi ON im.bu_id = wi.bu_id AND im.item_id = wi.item_id
         LEFT JOIN warehouse_detail whd ON wi.bu_id = whd.bu_id AND wi.warehouse_id = whd.warehouse_id AND wi.warehouse_master_id = whd.warehouse_master_id
         LEFT JOIN warehouse_master whm ON whd.bu_id = whm.bu_id AND whd.warehouse_master_id = whm.warehouse_master_id
-
+        LEFT JOIN InboundData id ON im.bu_id = id.bu_id AND whd.warehouse_id = id.warehouse_id AND im.item_id = id.item_id
+        LEFT JOIN OutboundData od ON im.bu_id = od.bu_id AND whd.warehouse_id = od.warehouse_id AND im.item_id = od.item_id
+        
         WHERE 1=1
         <if test="buId != null">
             AND im.bu_id = #{buId}

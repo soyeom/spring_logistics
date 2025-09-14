@@ -144,6 +144,45 @@ h2 {
     border-bottom: 1px solid #e0e6ed;
     text-align: center;
 }
+
+/* 모달 배경 */
+.modal {
+    display: none; /* 기본적으로 숨겨져 있음 */
+    position: fixed; /* 고정 위치 */
+    z-index: 1000; /* 다른 요소 위에 표시 */
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto; /* 내용이 넘칠 경우 스크롤 허용 */
+    background-color: rgba(0,0,0,0.4); /* 반투명 검은 배경 */
+}
+
+/* 모달 내용 상자 */
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto; /* 상단에서 15% 위치, 중앙 정렬 */
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%; /* 원하는 너비 설정 */
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+/* 닫기 버튼 */
+.close-button {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close-button:hover,
+.close-button:focus {
+    color: #000;
+    text-decoration: none;
+    cursor: pointer;
+}
 /* --- 요청된 CSS 끝 --- */
 
 </style>
@@ -289,171 +328,193 @@ h2 {
             </tbody>
         </table>
     </div>
+	
+	<div id="warehouseModal" class="modal">
+	       <div class="modal-content">
+	           <span class="close-button">&times;</span>
+	           <h4>창고 검색</h4>
+	           <p>창고 검색 컨텐츠가 들어갈 자리입니다.</p>
+	       </div>
+	   </div>
 
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script>
-    // 팝업에서 선택된 창고 데이터를 받는 함수
-    function setWarehouse(id, name) {
-        $('#warehouseId').val(id);
-        $('#warehouseName').val(name);
-    }
-    
-    // 팝업에서 선택된 품목소분류 데이터를 받는 함수
-    function setSmallCategoryData(data) {
-        if (data && data.smallCategoryCode) {
-            $('#itemSmallCategory').val(data.smallCategoryCode);
-            $('#itemSmallCategoryName').val(data.smallCategoryName);
-        }
-    }
+	   <div id="smallCategoryModal" class="modal">
+	       <div class="modal-content">
+	           <span class="close-button">&times;</span>
+	           <h4>품목소분류 검색</h4>
+	           <p>품목소분류 검색 컨텐츠가 들어갈 자리입니다.</p>
+	       </div>
+	   </div>
 
-    $(document).ready(function () {
-        // 페이지 로딩 시 현재 월 설정
-        const today = new Date();
-        const year = today.getFullYear();
-        const month = String(today.getMonth() + 1).padStart(2, '0');
-        $('#currentMonth').val(`${year}-${month}`);
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	<script>
+	    // 팝업에서 선택된 창고 데이터를 받는 함수
+	    function setWarehouse(id, name) {
+	        $('#warehouseId').val(id);
+	        $('#warehouseName').val(name);
+	    }
+	    
+	    // 팝업에서 선택된 품목소분류 데이터를 받는 함수
+	    function setSmallCategoryData(data) {
+	        if (data && data.smallCategoryCode) {
+	            $('#itemSmallCategory').val(data.smallCategoryCode);
+	            $('#itemSmallCategoryName').val(data.smallCategoryName);
+	        }
+	    }
 
-        // 동적으로 드롭다운 옵션을 로드하는 함수 (실제 API 엔드포인트에 맞게 수정 필요)
-        function loadOptions(selectId, endpoint) {
-            // 이 부분은 실제 API가 존재할 때 작동합니다.
-            // 예: loadOptions('#buId', '/api/business-units');
-        }
+	    $(document).ready(function () {
+	        // 페이지 로딩 시 현재 월 설정
+	        const today = new Date();
+	        const year = today.getFullYear();
+	        const month = String(today.getMonth() + 1).padStart(2, '0');
+	        $('#currentMonth').val(`${year}-${month}`);
+	        
+	        // 동적으로 드롭다운 옵션을 로드하는 함수 (실제 API 엔드포인트에 맞게 수정 필요)
+	        function loadOptions(selectId, endpoint) {
+	            // 이 부분은 실제 API가 존재할 때 작동합니다.
+	        }
+			
+			// --- 모달 관련 이벤트 처리 ---
+			       // 창고 검색 모달 열기
+			       $('#stockAnalysisForm button.search-icon').eq(0).on('click', function() {
+			           $('#warehouseModal').show();
+			       });
 
-        // 페이지 로딩 시 필요한 드롭다운 옵션 로드
-        // loadOptions('#buId', '/api/business-units'); 
-        // loadOptions('#importanceLevel', '/api/importance-levels');
-        // loadOptions('#baseUnit', '/api/base-units');
+			       // 품목소분류 검색 모달 열기
+			       $('#stockAnalysisForm button.search-icon').eq(1).on('click', function() {
+			           $('#smallCategoryModal').show();
+			       });
 
-        // 조회 버튼 클릭 이벤트
-        $('#searchButton').on('click', function () {
-            if (!$('#stockStandard').val()) {
-                alert('재고기준을 선택하세요.');
-                $('#stockStandard').focus();
-                return;
-            }
-            if (!$('#analysisItem').val()) {
-                alert('분석항목을 선택하세요.');
-                $('#analysisItem').focus();
-                return;
-            }
-            
-            const requestData = {
-                buId: $('#buId').val(),
-                warehouseId: $('#warehouseId').val(),
-                stockStandard: $('#stockStandard').val(),
-                importanceLevel: $('#importanceLevel').val(),
-                itemAssetClass: $('#itemAssetClass').val(),
-                itemSmallCategory: $('#itemSmallCategory').val(),
-                itemName: $('#itemName').val(),
-                spec: $('#spec').val(),
-                baseUnit: $('#baseUnit').val(),
-                analysisPeriod: $('#analysisPeriod').val(),
-                analysisCount: $('#analysisCount').val(),
-                analysisItem: $('#analysisItem').val()
-            };
+			       // 모달 닫기 버튼 이벤트
+			       $('.modal .close-button').on('click', function() {
+			           $(this).closest('.modal').hide();
+			       });
+			       
+			       // 모달 외부 클릭 시 닫기
+			       $(window).on('click', function(event) {
+			           if ($(event.target).hasClass('modal')) {
+			               $(event.target).hide();
+			           }
+			       });
 
-            const currentMonth = $('#currentMonth').val();
-            if (currentMonth) {
-                const dateParts = currentMonth.split('-');
-                const year = parseInt(dateParts[0]);
-                const month = parseInt(dateParts[1]);
-                const firstDayOfMonth = new Date(year, month - 1, 1);
-                const lastDayOfMonth = new Date(year, month, 0);
+	        // 조회 버튼 클릭 이벤트
+	        $('#searchButton').on('click', function (event) {
+	                event.preventDefault();
+	            }
+	            
+	            // DTO에 맞게 데이터 수집
+	            const requestData = {
+	                buId: $('#buId').val(),
+	                warehouseId: $('#warehouseId').val(),
+	                stockStandard: $('#stockStandard').val(),
+	                importanceLevel: $('#importanceLevel').val(),
+	                itemAssetClass: $('#itemAssetClass').val(),
+	                itemSmallCategory: $('#itemSmallCategory').val(),
+	                itemName: $('#itemName').val(),
+	                spec: $('#spec').val(),
+	                baseUnit: $('#baseUnit').val(),
+	                currentMonth: $('#currentMonth').val(), // YYYY-MM 형식 그대로 전송
+	                analysisPeriod: parseInt($('#analysisPeriod').val(), 10),
+	                analysisCount: parseInt($('#analysisCount').val(), 10),
+	                analysisItem: $('#analysisItem').val()
+	            };
 
-                requestData.startDate = firstDayOfMonth.toISOString().slice(0, 10);
-                requestData.endDate = lastDayOfMonth.toISOString().slice(0, 10);
-            }
+	            $.ajax({
+	                url: '/stock-analysis/analysis',
+	                type: 'POST',
+	                contentType: 'application/json',
+	                data: JSON.stringify(requestData),
+	                success: function (response) {
+	                    console.log("AJAX 성공. 받은 데이터:", response);
+	                    displayDataInTable(response);
+	                },
+	                error: function (xhr, status, error) {
+	                    console.error("AJAX 오류:", status, error);
+	                    console.log("XHR:", xhr.responseText);
+	                    $('#resultTableContainer').html('<p style="text-align: center; color: #888;">데이터 조회 중 오류가 발생했습니다.</p>');
+	                }
+	            });
+	        });
 
-            $.ajax({
-                url: '/stock-analysis/analysis',
-                type: 'POST',
-                contentType: 'application/json',
-                data: JSON.stringify(requestData),
-                success: function (response) {
-                    console.log("AJAX 성공. 받은 데이터:", response);
-                    displayDataInTable(response);
-                },
-                error: function (xhr, status, error) {
-                    console.error("AJAX 오류:", status, error);
-                    console.log("XHR:", xhr.responseText);
-                    $('#resultTableContainer').html('<p style="text-align: center; color: #888;">데이터 조회 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.</p>');
-                }
-            });
-        });
+	        // 결과 테이블 출력 함수 (개선)
+	        function displayDataInTable(data) {
+	            const container = $('#resultTableContainer');
+	            container.empty();
 
-        // 결과 테이블 출력 함수
-        function displayDataInTable(data) {
-            const container = $('#resultTableContainer');
-            container.empty();
+	            if (!Array.isArray(data) || data.length === 0) {
+	                container.html('<p style="text-align: center; color: #888; padding: 20px;">조회된 데이터가 없습니다.</p>');
+	                return;
+	            }
 
-            if (Array.isArray(data) && data.length > 0) {
-                // 재고기준에 따라 동적으로 테이블 헤더와 데이터를 구성
-                const stockStandard = $('#stockStandard').val();
-                
-                let quantityColumns = ['beginningStock', 'inboundQty', 'outQty', 'endingStock'];
-                let amountColumns = ['beginningAmount', 'inboundAmount', 'outAmount', 'endingAmount'];
-                
-                let tableHeaderNames = {
-                    'itemBigCategory': '품목대분류',
-                    'itemMidCategory': '품목중분류',
-                    'itemAssetClass': '품목자산분류',
-                    'itemSmallCategory': '품목소분류',
-                    'itemName': '품명'
-                };
-                
-                let selectedColumns;
-                if (stockStandard === '금액') {
-                    selectedColumns = ['itemBigCategory', 'itemMidCategory', 'itemAssetClass', 'itemSmallCategory', 'itemName'].concat(amountColumns);
-                    tableHeaderNames['beginningAmount'] = '기초금액';
-                    tableHeaderNames['inboundAmount'] = '입고금액';
-                    tableHeaderNames['outAmount'] = '출고금액';
-                    tableHeaderNames['endingAmount'] = '기말금액';
-                } else { // 기본값: 수량
-                    selectedColumns = ['itemBigCategory', 'itemMidCategory', 'itemAssetClass', 'itemSmallCategory', 'itemName'].concat(quantityColumns);
-                    tableHeaderNames['beginningStock'] = '기초재고';
-                    tableHeaderNames['inboundQty'] = '입고량';
-                    tableHeaderNames['outQty'] = '출고량';
-                    tableHeaderNames['endingStock'] = '기말재고';
-                }
+	            const analysisItemName = $('#analysisItem option:selected').text();
+	            
+	            // 고정된 품목 정보 헤더
+	            const fixedHeaders = [
+	                '품목자산분류', '품목대분류', '품목중분류', 
+	                '품목소분류', '품명', '규격', '단위', '사업단위', '창고'
+	            ];
+	            
+	            let tableHtml = '<table><thead><tr>';
+	            
+	            // 고정 헤더 생성
+	            fixedHeaders.forEach(header => {
+	                tableHtml += `<th>${header}</th>`;
+	            });
 
-                let tableHtml = '<table><thead><tr>';
-                selectedColumns.forEach(key => {
-                    tableHtml += '<th>' + (tableHeaderNames[key] || key) + '</th>';
-                });
-                tableHtml += '</tr></thead><tbody>';
-                
-                data.forEach(item => {
-                    tableHtml += '<tr>';
-                    selectedColumns.forEach(key => {
-                        const value = item[key] !== null ? item[key] : '';
-                        tableHtml += '<td>' + value + '</td>';
-                    });
-                    tableHtml += '</tr>';
-                });
-                
-                tableHtml += '</tbody></table>';
-                container.html(tableHtml);
-            } else {
-                container.html('<p style="text-align: center; color: #888; padding: 20px;">조회된 데이터가 없습니다.</p>');
-            }
-        }
-    });
+	            // 동적 기간별 헤더 생성
+	            const analysisCount = parseInt($('#analysisCount').val(), 10);
+	            for (let i = 1; i <= analysisCount; i++) {
+	                tableHtml += `<th>${i}회차 ${analysisItemName}</th>`;
+	            }
 
-    // 창고 검색 팝업 함수
-    function openWarehouseSearchPopup() {
-        const url = 'warehouse-search-popup';
-        const name = 'warehousePopup';
-        const specs = 'width=600,height=500,scrollbars=yes,resizable=yes';
-        window.open(url, name, specs);
-    }
-    
-    // 품목소분류 검색 팝업 함수
-    function openSmallCategorySearchPopup() {
-        const url = 'item-sub-category-search-popup';
-        const name = 'smallCategoryPopup';
-        const specs = 'width=800,height=600,scrollbars=yes,resizable=yes';
-        window.open(url, name, specs);
-    }
-    </script>
+	            tableHtml += '</tr></thead><tbody>';
+
+	            // 테이블 바디 생성
+	            data.forEach(item => {
+	                tableHtml += '<tr>';
+	                // 고정된 품목 정보 셀
+	                tableHtml += `<td>${item.itemAssetClass || ''}</td>`;
+	                tableHtml += `<td>${item.itemBigCategory || ''}</td>`;
+	                tableHtml += `<td>${item.itemMidCategory || ''}</td>`;
+	                tableHtml += `<td>${item.itemSmallCategory || ''}</td>`;
+	                tableHtml += `<td>${item.itemName || ''}</td>`;
+	                tableHtml += `<td>${item.spec || ''}</td>`;
+	                tableHtml += `<td>${item.baseUnit || ''}</td>`;
+	                tableHtml += `<td>${item.buName || ''}</td>`;
+	                tableHtml += `<td>${item.warehouseName || ''}</td>`;
+	                
+	                // 동적 기간별 데이터 셀
+	                if (item.periodDataList && item.periodDataList.length > 0) {
+	                    item.periodDataList.forEach(periodData => {
+	                        // 선택된 분석 항목에 따라 값을 가져옴
+	                        let value;
+	                        switch ($('#analysisItem').val()) {
+	                            case 'averageStock':
+	                                value = periodData.averageStock;
+	                                break;
+	                            case 'turnoverRate':
+	                                value = periodData.turnoverRate;
+	                                break;
+	                            case 'totalInbound':
+	                                value = periodData.totalInbound;
+	                                break;
+	                            case 'totalOutbound':
+	                                value = periodData.totalOutbound;
+	                                break;
+	                            default:
+	                                value = '';
+	                                break;
+	                        }
+	                        tableHtml += `<td>${value !== null && value !== undefined ? value.toLocaleString() : ''}</td>`;
+	                    });
+	                }
+	                tableHtml += '</tr>';
+	            });
+	            
+	            tableHtml += '</tbody></table>';
+	            container.html(tableHtml);
+	        }
+	    });
+	</script>
+
 </body>
 </html>

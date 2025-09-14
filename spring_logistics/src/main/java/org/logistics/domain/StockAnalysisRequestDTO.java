@@ -1,37 +1,27 @@
+
 package org.logistics.domain;
+import java.time.LocalDate;
 
-import java.util.Date;
-import lombok.Data;
-
-@Data
 public class StockAnalysisRequestDTO {
-	// PK (Primary Key) 및 FK (Foreign Key)
-	private Long buId; 
-	private Long warehouseId; 
-	private Long warehouseMasterId;
-	private Long itemId;
 
-	// item_master 테이블의 필터링 조건
-	private String itemBigCategory;
-	private String itemMidCategory; 
-	private String itemSmallCategory; 
-	private String itemStatus; 
-	private String spec; 
-	private String itemName;
-	private String baseUnit; 
-	private String importanceLevel;
+    // 첫 번째 컨테이너: 조회 조건
+    private Long buId;
+    private Long warehouseId;
+    private String stockStandard; // 재고기준 (실재고, 자산재고)
+    private String importanceLevel; // 중요도 (A등급, B등급...)
+    private String itemAssetClass; // 품목자산분류
+    private String itemSmallCategory; // 품목소분류 (코드)
+    private String itemName; // 품명
+    private String itemId; // 품번
+    private String spec; // 규격
 
-	// currency_rate 테이블의 필터링 조건
-	private String currencyCode;
+    // 두 번째 컨테이너: 비교대상 기간설정
+    private LocalDate currentMonth; // 현재월
+    private int analysisPeriod; // 기간간격 (개월)
+    private int analysisCount; // 비교 횟수
+    private String analysisItem; // 분석항목 (평균재고량, 재고회전율 등)
 
-	// stock_analysis 관련 조건 (테이블과 직접 관련 없음)
-	private Integer analysisPeriod;
-	private Integer analysisCount;
-	private String analysisItem;
-	private String stockStandard;
-	private String itemAssetClass;
+    // Getter 및 Setter (생략)
 
-	// 기간 조회 조건
-	private Date startDate;
-	private Date endDate;
+    // toString(), equals(), hashCode() 메서드 (생략)
 }
