@@ -12,4 +12,5 @@ public class StockAnalysisRequestDTO {
     private String itemName;
     private String spec;
     private String baseUnit;
+    private String stockStandard;
 }

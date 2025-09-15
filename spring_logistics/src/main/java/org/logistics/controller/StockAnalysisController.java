@@ -38,6 +38,19 @@ public class StockAnalysisController {
         return "StockAnalysis-form";
     }
 
-   
+ // 📌 창고 선택 팝업 페이지 이동
+    @GetMapping("/warehouse-popup")
+    public String warehousePopup() {
+        return "warehouse-popup"; // warehouse-popup.jsp 로 이동
+    }
+
+ // 📌 소분류 팝업 페이지 이동
+    @GetMapping("/item-small-category-popup")
+    public String itemSmallCategoryPopup() {
+        return "item-small-category-popup"; // item-small-category-popup.jsp 로 이동
+    }
+
+
+
 
 }
