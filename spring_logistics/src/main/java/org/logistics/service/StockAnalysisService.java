@@ -7,4 +7,6 @@ import org.logistics.domain.StockAnalysisResponseDTO;
 
 public interface StockAnalysisService {
     List<StockAnalysisResponseDTO> getStockAnalysisData(StockAnalysisRequestDTO requestDTO);
+
+	
 }

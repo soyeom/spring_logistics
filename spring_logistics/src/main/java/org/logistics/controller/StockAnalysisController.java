@@ -1,12 +1,11 @@
 package org.logistics.controller;
 
 import java.util.List;
+
 import org.logistics.domain.StockAnalysisRequestDTO;
 import org.logistics.domain.StockAnalysisResponseDTO;
 import org.logistics.service.StockAnalysisService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,23 +24,20 @@ public class StockAnalysisController {
         this.stockAnalysisService = stockAnalysisService;
     }
 
-    // JSP 뷰를 반환하는 메서드
+    // 📌 Ajax에서 호출하는 API (DB 조회)
+    @PostMapping(value="/analysis", consumes = "application/json", produces = "application/json")
+    @ResponseBody
+    public List<StockAnalysisResponseDTO> getStockAnalysis(@RequestBody StockAnalysisRequestDTO requestDTO) {
+        return stockAnalysisService.getStockAnalysisData(requestDTO);
+    }
+
+    // 📌 JSP 화면 연결
     @GetMapping("/form")
-    public String showStockAnalysisForm() {
+    public String viewPage() {
+        // StockAnalysis-form.jsp 로 이동
         return "StockAnalysis-form";
     }
 
-    // JSON 데이터를 반환하는 RESTful API 메서드
-    @PostMapping("/analysis")
-    @ResponseBody
-    public ResponseEntity<List<StockAnalysisResponseDTO>> analyzeStock(@RequestBody StockAnalysisRequestDTO requestDTO) {
-        try {
-            List<StockAnalysisResponseDTO> analysisData = stockAnalysisService.getStockAnalysisData(requestDTO);
-            return new ResponseEntity<>(analysisData, HttpStatus.OK);
-        } catch (Exception e) {
-            System.err.println("재고 분석 중 오류가 발생했습니다: " + e.getMessage());
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
+   
 
 }

@@ -1,127 +1,40 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="org.logistics.mapper.StockAnalysisMapper">
 
-    <resultMap id="stockAnalysisResultMap" type="org.logistics.domain.StockAnalysisResponseDTO">
-        <result column="buName" property="buName"/>
-        <result column="warehouseName" property="warehouseName"/>
-        <result column="itemName" property="itemName"/>
-        <result column="spec" property="spec"/>
-        <result column="baseUnit" property="baseUnit"/>
-        <result column="itemBigCategory" property="itemBigCategory"/>
-        <result column="itemMidCategory" property="itemMidCategory"/>
-        <result column="itemSmallCategory" property="itemSmallCategory"/>
-        <result column="assetClass" property="itemAssetClass"/>
-        <result column="beginningStock" property="beginningStock"/>
-        <result column="inboundQty" property="inboundQty"/>
-        <result column="outQty" property="outQty"/>
-        <result column="endingStock" property="endingStock"/>
-        <result column="beginningAmount" property="beginningAmount"/>
-        <result column="inboundAmount" property="inboundAmount"/>
-        <result column="outAmount" property="outAmount"/>
-        <result column="endingAmount" property="endingAmount"/>
-    </resultMap>
+    <!-- 품목 조회 -->
+    <select id="getStockAnalysisData"
+        parameterType="org.logistics.domain.StockAnalysisRequestDTO"
+        resultType="org.logistics.domain.StockAnalysisResponseDTO">
+    SELECT 
+        im.asset_class    AS itemAssetClass,
+        im.big_category   AS itemBigCategory,
+        im.mid_category   AS itemMidCategory,
+        im.small_category AS itemSmallCategory,
+        im.item_id        AS itemId,
+        im.item_name      AS itemName,
+        im.spec           AS spec,
+        im.base_unit      AS baseUnit
+    FROM item_master im
+    WHERE 1=1
+    <if test="buId != null">
+        AND im.bu_id = #{buId}
+    </if>
+    <if test="itemName != null and itemName != ''">
+        AND im.item_name LIKE '%' || #{itemName} || '%'
+    </if>
+    <if test="spec != null and spec != ''">
+        AND im.spec LIKE '%' || #{spec} || '%'
+    </if>
+    ORDER BY im.item_name
+    <if test="itemAssetClass != null and itemAssetClass != ''">
+    AND im.asset_class = #{itemAssetClass}
+</if>
+    
+</select>
 
-    <select id="getStockAnalysisData" parameterType="org.logistics.domain.StockAnalysisRequestDTO" resultMap="stockAnalysisResultMap">
-        WITH InboundData AS (
-            SELECT
-                bu_id,
-                warehouse_id,
-                item_id,
-                SUM(CASE WHEN created_at &lt; #{startDate} THEN qty ELSE 0 END) AS beginning_in_qty,
-                SUM(CASE WHEN created_at &lt; #{startDate} THEN amount ELSE 0 END) AS beginning_in_amount,
-                SUM(CASE WHEN created_at BETWEEN #{startDate} AND #{endDate} THEN qty ELSE 0 END) AS period_in_qty,
-                SUM(CASE WHEN created_at BETWEEN #{startDate} AND #{endDate} THEN amount ELSE 0 END) AS period_in_amount,
-                SUM(qty) AS total_in_qty,
-                SUM(amount) AS total_in_amount
-            FROM inbound_detail
-            GROUP BY bu_id, warehouse_id, item_id
-        ),
-        OutboundData AS (
-            SELECT
-                bu_id,
-                warehouse_id,
-                item_id,
-                SUM(CASE WHEN created_at &lt; #{startDate} THEN qty ELSE 0 END) AS beginning_out_qty,
-                SUM(CASE WHEN created_at &lt; #{startDate} THEN amount ELSE 0 END) AS beginning_out_amount,
-                SUM(CASE WHEN created_at BETWEEN #{startDate} AND #{endDate} THEN qty ELSE 0 END) AS period_out_qty,
-                SUM(CASE WHEN created_at BETWEEN #{startDate} AND #{endDate} AND is_charge_supply = 'N' THEN amount ELSE 0 END) AS period_out_amount,
-                SUM(qty) AS total_out_qty,
-                SUM(amount) AS total_out_amount
-            FROM out_detail
-            GROUP BY bu_id, warehouse_id, item_id
-        )
-        SELECT
-            bu.bu_name AS buName,
-            whd.warehouse_name AS warehouseName,
-            im.item_name AS itemName,
-            im.spec,
-            im.base_unit AS baseUnit,
-            im.big_category AS itemBigCategory,
-            im.mid_category AS itemMidCategory,
-            im.small_category AS itemSmallCategory,
-            im.asset_class AS itemAssetClass,
-            
-            NVL(id.beginning_in_qty, 0) - NVL(od.beginning_out_qty, 0) AS beginningStock,
-            NVL(id.period_in_qty, 0) AS inboundQty,
-            NVL(od.period_out_qty, 0) AS outQty,
-            NVL(id.total_in_qty, 0) - NVL(od.total_out_qty, 0) AS endingStock,
 
-            NVL(id.beginning_in_amount, 0) - NVL(od.beginning_out_amount, 0) AS beginningAmount,
-            NVL(id.period_in_amount, 0) AS inboundAmount,
-            NVL(od.period_out_amount, 0) AS outAmount,
-            NVL(id.total_in_amount, 0) - NVL(od.total_out_amount, 0) AS endingAmount
-        
-        FROM item_master im
-        LEFT JOIN business_unit bu ON im.bu_id = bu.bu_id
-        LEFT JOIN warehouse_item wi ON im.bu_id = wi.bu_id AND im.item_id = wi.item_id
-        LEFT JOIN warehouse_detail whd ON wi.bu_id = whd.bu_id AND wi.warehouse_id = whd.warehouse_id AND wi.warehouse_master_id = whd.warehouse_master_id
-        LEFT JOIN warehouse_master whm ON whd.bu_id = whm.bu_id AND whd.warehouse_master_id = whm.warehouse_master_id
-        LEFT JOIN InboundData id ON im.bu_id = id.bu_id AND whd.warehouse_id = id.warehouse_id AND im.item_id = id.item_id
-        LEFT JOIN OutboundData od ON im.bu_id = od.bu_id AND whd.warehouse_id = od.warehouse_id AND im.item_id = od.item_id
-        
-        WHERE 1=1
-        <if test="buId != null">
-            AND im.bu_id = #{buId}
-        </if>
-        <if test="warehouseId != null">
-            AND whd.warehouse_id = #{warehouseId}
-        </if>
-        <if test="warehouseMasterId != null">
-            AND whd.warehouse_master_id = #{warehouseMasterId}
-        </if>
-        <if test="itemId != null">
-            AND im.item_id = #{itemId}
-        </if>
-        <if test="itemBigCategory != null and itemBigCategory != ''">
-            AND im.big_category = #{itemBigCategory}
-        </if>
-        <if test="itemMidCategory != null and itemMidCategory != ''">
-            AND im.mid_category = #{itemMidCategory}
-        </if>
-        <if test="itemSmallCategory != null and itemSmallCategory != ''">
-            AND im.small_category = #{itemSmallCategory}
-        </if>
-        <if test="itemName != null and itemName != ''">
-            AND im.item_name LIKE '%' || #{itemName} || '%'
-        </if>
-        <if test="spec != null and spec != ''">
-            AND im.spec LIKE '%' || #{spec} || '%'
-        </if>
-        <if test="baseUnit != null and baseUnit != ''">
-            AND im.base_unit = #{baseUnit}
-        </if>
-        <if test="importanceLevel != null and importanceLevel != ''">
-            AND im.importance_level = #{importanceLevel}
-        </if>
-        <if test="itemAssetClass != null and itemAssetClass != ''">
-            AND im.asset_class = #{itemAssetClass}
-        </if>
-        <if test="currencyCode != null and currencyCode != ''">
-            AND im.currency = #{currencyCode}
-        </if>
-        
-        GROUP BY bu.bu_name, whd.warehouse_name, im.item_name, im.spec, im.base_unit, im.big_category, im.mid_category, im.small_category, im.asset_class
-    </select>
 </mapper>
