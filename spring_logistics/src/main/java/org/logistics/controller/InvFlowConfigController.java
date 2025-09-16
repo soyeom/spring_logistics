@@ -9,7 +9,10 @@ import org.logistics.domain.WareHouseContactListVO;
 import org.logistics.domain.WareHouseItemListVO;
 import org.logistics.service.InvFlowConfigService;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -25,35 +28,33 @@ public class InvFlowConfigController {
 
 	private InvFlowConfigService invFlowConfigService;
 		
-	// 창고별 재고 부족 허용여부 설정하기
 	@GetMapping("/invflowconfig")
-	public void invFlowConfig() {
-	}
-	
-	@GetMapping("/item_popup")
-	public void item_Popup() {
-	}
-	
-	@GetMapping("/contact_popup")
-	public void contact_Popup() {
+	public void invFlowConfig(Model model) { 	
+		model.addAttribute("bu_Id", invFlowConfigService.business_UnitList());
+		model.addAttribute("wareHouse_Master_Id", invFlowConfigService.wareHouse_MasterList());
+		
+		model.addAttribute("list", invFlowConfigService.getList());	// 마스터 조회
 	}
 	
 	@GetMapping("/list")
 	@ResponseBody
-	public List<InvFlowConfigVO> list() {
-		return invFlowConfigService.getList();
+	public List<InvFlowConfigVO> list(@RequestParam(required = false) String bu_Id, @RequestParam(required = false) String wareHouse_Master_Id) {
+		return invFlowConfigService.getList2(bu_Id, wareHouse_Master_Id);
 	}
 	
 	@GetMapping("/item_list")
 	@ResponseBody
-	public List<WareHouseItemListVO> item_List(@RequestParam("wareHouse_Id") String wareHouse_Id) {
-		return invFlowConfigService.getWareHouseItemList(wareHouse_Id);
+	public List<WareHouseItemListVO> item_List(@RequestParam(required = false) String bu_Id, @RequestParam(required = false) String wareHouse_Id) {
+		return invFlowConfigService.getWareHouseItemList(bu_Id, wareHouse_Id);
 	}
 	
 	@GetMapping("/contact_list")
 	@ResponseBody
-	public List<WareHouseContactListVO> contact_List(@RequestParam("wareHouse_Id") String wareHouse_Id) {
-		return invFlowConfigService.getWareHouseContactList(wareHouse_Id);
+	public List<WareHouseContactListVO> contact_List(@RequestParam(required = false) String bu_Id, @RequestParam(required = false) String wareHouse_Id) {
+		
+		log.info(invFlowConfigService.getWareHouseContactList(bu_Id, wareHouse_Id));
+		
+		return invFlowConfigService.getWareHouseContactList(bu_Id, wareHouse_Id);
 	}
 	
 	// 출고 처리하기
@@ -81,6 +82,14 @@ public class InvFlowConfigController {
 		return invFlowConfigService.getOutBoundDetail2(bu_Id, out_Id);
 	}
 	
+	@PostMapping("/outbound_save")
+	@ResponseBody
+	public String ountBound_Save(@ModelAttribute OutBoundMasterVO obm) {
+		invFlowConfigService.outBoundMasterSave(obm);
+		
+		return "success";
+	}
+	
 	
 	// 공통팝업
 	// 아이템목록 조회
@@ -89,4 +98,6 @@ public class InvFlowConfigController {
 	public List<PopupItemVO> popup_Item() {
 		return invFlowConfigService.popupItemList();
 	}
+	
+	
 }
