@@ -7,17 +7,6 @@
 
 <!DOCTYPE html>
 <html>
-<style>
-	.dataTables_scrollHeadInner {
-		width: 100% !important;  /* 헤드 너비 강제 조정 */
-	}
-	.dataTables_scrollBody > table {
-		width: 100% !important;
-	}
-	table.dataTable {
-  		table-layout: fixed;
-	}
-</style>
 <head>
 	<meta charset="UTF-8">
     <title>창고별 재고 부족 허용여부 설정 - 팜스프링 ERP</title>
@@ -477,6 +466,18 @@
   	
  	// 팝업에서 선택된 데이터를 받을 함수
   	function item_RowData(data) {
+ 		
+  		var tbody = document.getElementById("result-tbody2");
+  		var rows = tbody.querySelectorAll("tr");
+  		
+  		rows.forEach((tr, index) => {
+	      	const data = Array.from(tr.cells).map(td => td.textContent.trim());
+	      	console.log("Row", index, ":", data);
+	  	});
+  		
+//   	    
+  	    
+//   	  	
  		
  		console.log(data[0]);
  		
