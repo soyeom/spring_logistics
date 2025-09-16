@@ -1,0 +1,102 @@
+package org.logistics.service;
+
+import java.util.List;
+
+import org.logistics.domain.CommonVO;
+import org.logistics.domain.InvFlowConfigVO;
+import org.logistics.domain.OutBoundMasterVO;
+import org.logistics.domain.PopupItemVO;
+import org.logistics.domain.WareHouseContactListVO;
+import org.logistics.domain.WareHouseItemListVO;
+import org.logistics.mapper.InvFlowConfigMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import lombok.Setter;
+
+@Service
+public class InvFlowConfigServiceImpl implements InvFlowConfigService {
+
+	
+
+	@Setter(onMethod_= @Autowired)
+	private InvFlowConfigMapper invFlowConfigMapper;
+	
+	@Override
+	public List<InvFlowConfigVO> getList() {
+		
+		return invFlowConfigMapper.getList();
+	}
+	
+	@Override
+	public List<InvFlowConfigVO> getList2(String bu_Id, String wareHouse_Master_Id) {
+		
+		return invFlowConfigMapper.getList2(bu_Id, wareHouse_Master_Id);
+	}
+
+	@Override
+	public List<WareHouseItemListVO> getWareHouseItemList(String bu_Id, String wareHouse_Id) {
+	
+		return invFlowConfigMapper.getWareHouseItemList(bu_Id, wareHouse_Id);
+	}
+
+	@Override
+	public List<WareHouseContactListVO> getWareHouseContactList(String bu_Id, String wareHouse_Id) {
+
+		return invFlowConfigMapper.getWareHouseContactList(bu_Id, wareHouse_Id);
+	}
+	
+	
+	// 출고처리
+	// 출고목록 조회
+	@Override
+	public List<OutBoundMasterVO> getOutBoundMaster() {
+		// TODO Auto-generated method stub
+		return invFlowConfigMapper.getOutBoundMaster();
+	}
+
+	// 출고 마스터 조회
+	@Override
+	public List<OutBoundMasterVO> getOutBoundDetail1(String bu_Id, String out_Id) {
+		// TODO Auto-generated method stub
+		return invFlowConfigMapper.getOutBoundDetail1(bu_Id, out_Id);
+	}
+
+	// 출고 디테일 조회
+	@Override
+	public List<OutBoundMasterVO> getOutBoundDetail2(String bu_Id, String out_Id) {
+		// TODO Auto-generated method stub
+		return invFlowConfigMapper.getOutBoundDetail2(bu_Id, out_Id);
+	}
+	
+	// 출고 마스터 저장
+	@Override
+	public void outBoundMasterSave(OutBoundMasterVO obm) {
+		invFlowConfigMapper.outBoundMasterSave(obm);
+	}
+	
+	// 조회조건 - 사업단위 조회
+	@Override
+	public List<CommonVO> business_UnitList() {
+		return invFlowConfigMapper.business_UnitList();
+	}
+	
+	// 조회조건 - 창고구분 조회
+	@Override
+	public List<CommonVO> wareHouse_MasterList() {
+		// TODO Auto-generated method stub
+		return invFlowConfigMapper.wareHouse_MasterList();
+	}
+
+	@Override
+	public List<PopupItemVO> popupItemList() {
+		// TODO Auto-generated method stub
+		return invFlowConfigMapper.popupItemList();
+	}
+
+	
+
+	
+
+	
+}

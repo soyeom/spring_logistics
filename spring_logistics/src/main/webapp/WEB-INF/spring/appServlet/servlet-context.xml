@@ -18,4 +18,12 @@
 	
 	<context:component-scan base-package="org.logistics" />
 	
+<<<<<<< HEAD
 </beans:beans>
+=======
+	<beans:bean id="multipartResolver" class="org.springframework.web.multipart.support.StandardServletMultipartResolver">
+	
+	</beans:bean>
+	
+</beans:beans>
+>>>>>>> refs/remotes/origin/gijin2ya
