@@ -7,4 +7,5 @@ public class WareHouseContactListVO {
 	
 	private String contact_Name;
 	private String wareHouse_Name;
+	private String department;
 }
