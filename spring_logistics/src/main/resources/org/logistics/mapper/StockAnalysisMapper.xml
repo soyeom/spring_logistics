@@ -46,31 +46,35 @@
         ON od.bu_id = otc_out.bu_id
        AND otc_out.txn_type = 'OUT'
 
-    WHERE 1=1
-        <if test="buId != null">
-            AND im.bu_id = #{buId}
-        </if>
-        <if test="itemAssetClass != null and itemAssetClass != ''">
-            AND im.asset_class = #{itemAssetClass}
-        </if>
-        <if test="importanceLevel != null and importanceLevel != ''">
-            AND im.importance_level = #{importanceLevel}
-        </if>
-        <if test="itemName != null and itemName != ''">
-            AND im.item_name LIKE '%' || #{itemName} || '%'
-        </if>
-        <if test="spec != null and spec != ''">
-            AND im.spec LIKE '%' || #{spec} || '%'
-        </if>
+   WHERE 1=1
+    <if test="buId != null">
+        AND im.bu_id = #{buId}
+    </if>
+    <if test="itemAssetClass != null and itemAssetClass != ''">
+        AND im.asset_class = #{itemAssetClass}
+    </if>
+    <if test="importanceLevel != null and importanceLevel != ''">
+        AND im.importance_level = #{importanceLevel}
+    </if>
+    <if test="itemId != null and itemId != ''">
+        AND im.item_id LIKE '%' || #{itemId} || '%'
+    </if>
+    <if test="itemName != null and itemName != ''">
+        AND im.item_name LIKE '%' || #{itemName} || '%'
+    </if>
+    <if test="spec != null and spec != ''">
+        AND im.spec LIKE '%' || #{spec} || '%'
+    </if>
 
-        <choose>
-            <when test="stockStandard == 'ASSET'">
-                AND (
-                    otc_in.adjust_in = 'Y'
-                    OR otc_out.adjust_out = 'Y'
-                )
-            </when>
-        </choose>
+    <choose>
+        <when test="stockStandard == 'ASSET'">
+            AND (
+                otc_in.adjust_in = 'Y'
+                OR otc_out.adjust_out = 'Y'
+            )
+        </when>
+    </choose>
+
 
     GROUP BY im.item_id, im.item_name, im.spec, 
              im.asset_class, im.big_category, im.mid_category, 
