@@ -134,9 +134,9 @@
 	    				<label for="itemBigCategory" class="block text-sm font-medium text-gray-700">품목대분류</label>
 	    				<div class="flex items-center space-x-2 mt-1">
 	        				<input type="text" id="itemBigCategory" name="itemBigCategory" class="block w-full rounded-md border border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" readonly>
-	        				<button id="open-big-category-modal-btn" type="button" class="px-3 py-2 bg-gray-200 text-gray-800 rounded-md shadow-sm hover:bg-gray-300 focus:outline-none">
-	            				🔍
-	        				</button>
+	        		        <button id="search-big-category-btn" type="button" class="px-3 py-2 bg-gray-200 text-gray-800 rounded-md shadow-sm hover:bg-gray-300 focus:outline-none">
+					            🔍
+					        </button>
 	    				</div>
 	    				<!-- 입력 필드에 readonly 속성을 추가하여 사용자가 직접 타이핑할 수 없게 만듬 -->
 					</div>
@@ -145,8 +145,8 @@
 					    <label for="itemMidCategory" class="block text-sm font-medium text-gray-700">품목중분류</label>
 					    <div class="flex items-center space-x-2 mt-1">
 					        <input type="text" id="itemMidCategory" name="itemMidCategory" class="block w-full rounded-md border border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" readonly>
-					        <button id="open-mid-category-modal-btn" type="button" class="px-3 py-2 bg-gray-200 text-gray-800 rounded-md shadow-sm hover:bg-gray-300 focus:outline-none">
-					        	🔍
+					        <button id="search-mid-category-btn" type="button" class="px-3 py-2 bg-gray-200 text-gray-800 rounded-md shadow-sm hover:bg-gray-300 focus:outline-none">
+					            🔍
 					        </button>
 					    </div>
 					    <!-- 입력 필드에 readonly 속성을 추가하여 사용자가 직접 타이핑할 수 없게 만듬 -->
@@ -156,8 +156,8 @@
 					    <label for="itemSmallCategory" class="block text-sm font-medium text-gray-700">품목소분류</label>
 					    <div class="flex items-center space-x-2 mt-1">
 					        <input type="text" id="itemSmallCategory" name="itemSmallCategory" class="block w-full rounded-md border border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" readonly>
-					        <button id="open-small-category-modal-btn" type="button" class="px-3 py-2 bg-gray-200 text-gray-800 rounded-md shadow-sm hover:bg-gray-300 focus:outline-none">
-								🔍
+					        <button id="search-small-category-btn" type="button" class="px-3 py-2 bg-gray-200 text-gray-800 rounded-md shadow-sm hover:bg-gray-300 focus:outline-none">
+					            🔍
 					        </button>
 					    </div>
 					    <!-- 입력 필드에 readonly 속성을 추가하여 사용자가 직접 타이핑할 수 없게 만듬 -->
@@ -345,15 +345,10 @@
 	</div>
 	<!-- end of 모달 전체 배경 컨테이너 -->
 	
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script>
     // 문서가 로딩되면 실행
     $(document).ready(function() {
-
-        // 어떤 카테고리의 모달이 열려 있는지 상태를 저장하는 변수
-        let currentCategoryModal = '';
 
         // 추가 조회 조건 토글
         $('#toggle-criteria-btn').on('click', function() {
@@ -383,130 +378,25 @@
      	
      	// 초기 로드 시 조회 함수 호출
         searchStockSummary();
-
-        // 모달 닫기
-        function closeModal() {
-            $('#item-search-modal').addClass('hidden');
-            $('#modal-search-input').val('');
-            $('#modal-result-table-head').empty();
-            $('#modal-result-table-body').empty();
-        }
-
-        // 모달 열기
-        function openModal(categoryType) {
-            currentCategoryModal = categoryType;
-            const modalTitle = $('#item-search-modal .font-semibold');
-            const modalTableHead = $('#modal-result-table-head');
-            
-            // 모달 제목과 테이블 헤더를 동적으로 설정
-            if (categoryType === 'big') {
-                modalTitle.text('품목대분류 조회');
-                modalTableHead.html('<tr class="bg-gray-50 text-left text-xs font-semibold uppercase tracking-wider text-gray-500"><th class="px-4 py-2">품목대분류</th></tr>');
-            } else if (categoryType === 'mid') {
-                modalTitle.text('품목중분류 조회');
-                modalTableHead.html('<tr class="bg-gray-50 text-left text-xs font-semibold uppercase tracking-wider text-gray-500"><th class="px-4 py-2">품목대분류</th><th class="px-4 py-2">품목중분류</th></tr>');
-            } else if (categoryType === 'small') {
-                modalTitle.text('품목소분류 조회');
-                modalTableHead.html('<tr class="bg-gray-50 text-left text-xs font-semibold uppercase tracking-wider text-gray-500"><th class="px-4 py-2">품목대분류</th><th class="px-4 py-2">품목중분류</th><th class="px-4 py-2">품목소분류</th></tr>');
-            }
-
-            // 모달 표시
-            $('#item-search-modal').removeClass('hidden');
-
-            // 모달을 열 때 전체 목록을 불러옴
-            fetchAndDisplayCategories(categoryType);
-        }
-
-        // 모달 검색 버튼 클릭 이벤트
-        $('#modal-search-btn').on('click', function() {
-            const searchTerm = $('#modal-search-input').val();
-            fetchAndDisplayCategories(currentCategoryModal, searchTerm);
+     	
+     	// 품목 대분류 팝업창 열기
+        $('#search-big-category-btn').on('click', function() {
+            const popupUrl = '/stock/popup/category?type=big';
+            window.open(popupUrl, 'bigCategoryPopup', 'width=600,height=500');
         });
 
-        // 모달 닫기 버튼 이벤트
-        // X 버튼과 모달 외부 클릭 시 닫기
-        $('#item-search-modal .text-gray-400, #item-search-modal').on('click', function(event) {
-            if ($(event.target).is('#item-search-modal') || $(event.target).closest('.text-gray-400').length > 0) {
-                closeModal();
-            }
+        // 품목 중분류 팝업창 열기
+        $('#search-mid-category-btn').on('click', function() {
+            const popupUrl = '/stock/popup/category?type=mid';
+            window.open(popupUrl, 'midCategoryPopup', 'width=600,height=500');
         });
 
-        // 항목 선택 이벤트
-        $('#modal-result-table-body').on('click', 'tr', function() {
-            if (currentCategoryModal === 'big') {
-                const bigCategory = $(this).find('td:nth-child(1)').text();
-                $('#itemBigCategory').val(bigCategory);
-                $('#itemMidCategory').val('');
-                $('#itemSmallCategory').val('');
-            } else if (currentCategoryModal === 'mid') {
-                const bigCategory = $(this).find('td:nth-child(1)').text();
-                const midCategory = $(this).find('td:nth-child(2)').text();
-                $('#itemBigCategory').val(bigCategory);
-                $('#itemMidCategory').val(midCategory);
-                $('#itemSmallCategory').val('');
-            } else if (currentCategoryModal === 'small') {
-                const bigCategory = $(this).find('td:nth-child(1)').text();
-                const midCategory = $(this).find('td:nth-child(2)').text();
-                const smallCategory = $(this).find('td:nth-child(3)').text();
-                $('#itemBigCategory').val(bigCategory);
-                $('#itemMidCategory').val(midCategory);
-                $('#itemSmallCategory').val(smallCategory);
-            }
-            closeModal();
+        // 품목 소분류 팝업창 열기
+        $('#search-small-category-btn').on('click', function() {
+            const popupUrl = '/stock/popup/category?type=small';
+            window.open(popupUrl, 'smallCategoryPopup', 'width=600,height=500');
         });
-
-        // 각 버튼에 모달 열기 이벤트 리스너 연결
-        $('#open-big-category-modal-btn').on('click', function() {
-            openModal('big');
-        });
-        $('#open-mid-category-modal-btn').on('click', function() {
-            openModal('mid');
-        });
-        $('#open-small-category-modal-btn').on('click', function() {
-            openModal('small');
-        });
-
-        // 카테고리 데이터를 불러와 모달에 표시하는 함수
-        function fetchAndDisplayCategories(categoryType, searchTerm = '') {
-            const $listBody = $('#modal-result-table-body');
-            const $noDataMessage = $('#noDataMessage');
-
-            $noDataMessage.addClass('hidden');
-            $listBody.empty();
-
-            $.ajax({
-                url: `/stock/categories/${categoryType}`,
-                type: 'GET',
-                data: {
-                    searchTerm: searchTerm
-                },
-                dataType: 'json',
-                success: function(response) {
-                    if (response && response.length > 0) {
-                        $.each(response, function(i, item) {
-                            const row = $('<tr></tr>').addClass('cursor-pointer hover:bg-gray-100');
-                            if (item.bigCategory) {
-                                row.append(`<td class="border px-4 py-2">${item.bigCategory}</td>`);
-                            }
-                            if (item.midCategory) {
-                                row.append(`<td class="border px-4 py-2">${item.midCategory}</td>`);
-                            }
-                            if (item.smallCategory) {
-                                row.append(`<td class="border px-4 py-2">${item.smallCategory}</td>`);
-                            }
-                            $listBody.append(row);
-                        });
-                    } else {
-                        $noDataMessage.removeClass('hidden');
-                    }
-                },
-                error: function(xhr, status, error) {
-                    console.error('데이터를 불러오는 중 오류 발생:', status, error);
-                    $noDataMessage.removeClass('hidden').text('데이터를 불러오는 중 오류가 발생했습니다.');
-                }
-            });
-        }
-
+     	
         // 조회 함수 시작
         function searchStockSummary() {
             const criteria = {
