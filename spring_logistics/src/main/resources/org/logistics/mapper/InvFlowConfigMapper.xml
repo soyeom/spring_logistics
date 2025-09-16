@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace = "org.logistics.mapper.InvFlowConfigMapper">
+	
+	<select id = "getList" resultType = "org.logistics.domain.InvFlowConfigVO">
+		select a.bu_id, a.bu_name, a.warehouse_master_id, a.warehouse_internal_code
+		     , b.warehouse_id, b.warehouse_name
+		from (
+		    select a.bu_id, a.bu_name, b.warehouse_master_id, b.warehouse_internal_code
+		    from business_unit a, warehouse_master b
+		    where a.bu_id = b.bu_id
+		) a, warehouse_detail b
+		where a.bu_id = b.bu_id
+		and a.warehouse_master_id = b.warehouse_master_id
+	</select>
+	
+	<select id = "getWareHouseItemList" resultType = "org.logistics.domain.WareHouseItemListVO">
+		
+		select *
+		from (
+		    select a.*, b.item_id
+		    from warehouse_detail a, warehouse_item b
+		    where a.bu_id = b.bu_id
+		    and a.warehouse_id = b.warehouse_id
+		) a, item_master b
+		where a.bu_id = b.bu_id
+		and a.item_id = b.item_id
+		and a.warehouse_id = #{wareHouse_Id}
+			
+	</select>
+	
+	<select id = "getWareHouseContactList" resultType = "org.logistics.domain.WareHouseContactListVO">
+		
+		select bu_id, contact_id, (select contact_name from contact where bu_id = a.bu_id and contact_id = a.contact_id) as contact_name
+		     , warehouse_id, (select warehouse_name from warehouse_detail where bu_id = a.bu_id and warehouse_id = a.warehouse_id) as warehouse_name
+		from warehouse_contact a
+		where warehouse_id = #{wareHouse_Id}
+	
+	</select>
+		
+	<select id = "getOutBoundMaster" resultType = "org.logistics.domain.OutBoundMasterVO">
+		select a.bu_id, b.bu_name, a.out_id
+		from out_master a, business_unit b
+		where a.bu_id = b.bu_id	
+	</select>
+	
+	<select id = "getOutBoundDetail1" resultType = "org.logistics.domain.OutBoundMasterVO">
+		select out_id, bu_id, to_char(out_date, 'yyyy-MM-dd') as out_Date, local_flag
+		     , party_id, (select party_name from party where bu_id = a.bu_id and party_id = a.party_Id) as party_Name
+		     , contact_id, (select contact_name from contact where bu_id = a.bu_id and contact_id = a.contact_id) as contact_Name
+		     , (select department from contact where bu_id = a.bu_id and contact_id = a.contact_id) as department
+		     , out_type, consignment_gubun, out_complete, created_at
+		from out_master a
+		where bu_id = #{bu_Id}
+		and out_id = #{out_Id}
+	</select>
+	
+	<select id = "getOutBoundDetail2" resultType = "org.logistics.domain.OutBoundMasterVO">
+		select a.item_id, b.item_name, b.spec
+		     , a.party_id, (select party_name from party where party_id = a.party_id) as party_name
+		     , a.qty, b.sales_unit
+		     , a.unit_price
+		     , a.surtax_yn
+		     , case when surtax_yn = 'N' then a.qty * a.unit_price else round(a.qty * a.unit_price * 100 / 110, 0) end as sales_price
+		     , case when surtax_yn = 'N' then a.qty * a.unit_price / 10 else round(a.qty * a.unit_price * 10 / 110, 0) end as surtax_Price
+		     , case when surtax_yn = 'N' then (a.qty * a.unit_price) + (a.qty * a.unit_price / 10) else round(a.qty * a.unit_price * 100 / 110, 0) + round(a.qty * a.unit_price * 10 / 110, 0) end as sales_Price_Sum
+		     , b.base_unit, b.storage_location, a.special_note, a.lot_no, a.other_out_code
+		     , a.is_charge_supply, b.asset_class, a.asset_proc_type
+		from out_detail a, item_master b
+		where a.bu_id = b.bu_id
+		and a.item_id = b.item_id
+		and a.bu_id = #{bu_Id}
+		and a.out_id = #{out_Id}
+	</select>
+	
+	<select id = "popupItemList" resultType = "org.logistics.domain.PopupItemVO">
+		select item_Id, bu_Id, item_Name, spec, safety_Stock_Qty, storage_Location, asset_Class, asset_Name, big_Category, mid_Category, small_Category
+		     , base_Unit, sales_Unit, lot_Control_Flag, manufacturer, currency, english_Name, importance_Level
+		from item_master
+	</select>
+	
+</mapper>

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace = "org.logistics.mapper.PopupMapper">
+	
+	<select id = "item_List" resultType = "org.logistics.domain.PopupVO">
+		
+		select item_Id as column1, spec as column2, item_name as column3
+		     , asset_class as column4
+		     , small_category as column5
+		     , base_unit as column6 
+		     , sales_unit as column7 
+		     , english_name as column8 
+		from item_master
+		
+		<where>
+	        <if test = "gubun == 10">
+	            item_Id like '%' ||  #{text} || '%'
+	        </if>
+	        <if test = "gubun == 20">
+	        	item_name like '%' ||  #{text} || '%'
+	        </if>
+    	</where>
+		
+	</select>
+	
+	<select id = "contact_List" resultType = "org.logistics.domain.PopupVO">
+	
+		select contact_id as column1
+		     , contact_name column2
+		     , department as column3
+		     , phone as column4
+		     , mobile as column5
+		     , email as column6
+		from contact
+		<where>
+	        <if test = "gubun == 10">
+	            contact_id like '%' ||  #{text} || '%'
+	        </if>
+	        <if test = "gubun == 20">
+	        	contact_name like '%' ||  #{text} || '%'
+	        </if>
+    	</where>
+	
+	</select>
+	
+</mapper>
