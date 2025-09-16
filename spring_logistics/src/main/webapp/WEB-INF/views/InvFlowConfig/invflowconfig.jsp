@@ -2,27 +2,11 @@
     pageEncoding="UTF-8"%>
     
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-    
-<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.5/css/jquery.dataTables.css">
-<link rel="stylesheet" href="https://cdn.datatables.net/select/1.7.0/css/select.dataTables.min.css">
 
 <script type="text/javascript" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script type="text/javascript" src="https://cdn.datatables.net/1.13.5/js/jquery.dataTables.min.js"></script>
-<script src="https://cdn.datatables.net/select/1.7.0/js/dataTables.select.min.js"></script>
 
 <!DOCTYPE html>
 <html>
-<style>
-	.dataTables_scrollHeadInner {
-		width: 100% !important;  /* 헤드 너비 강제 조정 */
-	}
-	.dataTables_scrollBody > table {
-		width: 100% !important;
-	}
-	table.dataTable {
-  		table-layout: fixed;
-	}
-</style>
 <head>
 	<meta charset="UTF-8">
     <title>창고별 재고 부족 허용여부 설정 - 팜스프링 ERP</title>
@@ -459,10 +443,7 @@
 	} 
 	
   	function open_Item() {
-  		
-	   // 예: 첫 번째 셀 값 가져오기
-	   // var rowId = row.cells[0].innerText;
-	
+  	
 	   // 팝업 크기 설정
 	   var popupWidth = 900;
 	   var popupHeight = 600;
@@ -473,7 +454,7 @@
 	
 	   // 팝업창 열기
 		window.open(
-			"item_popup",
+			"../popup/contact_popup",
 	     	"popupWindow",
 	     	"width=" + popupWidth +
 	     	",height=" + popupHeight +
@@ -484,39 +465,53 @@
 	}
   	
  	// 팝업에서 선택된 데이터를 받을 함수
-  	function setSelectedRow1(data) {
+  	function item_RowData(data) {
  		
-  	    var result1 = $("#table2").DataTable().rows().data().toArray();
-  	    var data = {item_Id: data.item_id, item_Name: '', spec: '', safety_Stock_Qty: '', storage_Location: ''};
+  		var tbody = document.getElementById("result-tbody2");
+  		var rows = tbody.querySelectorAll("tr");
+  		
+  		rows.forEach((tr, index) => {
+	      	const data = Array.from(tr.cells).map(td => td.textContent.trim());
+	      	console.log("Row", index, ":", data);
+	  	});
+  		
+//   	    
   	    
-  	    for (var i = 0; i < result1.length; i++) {
-  	    	if (result1[i].item_Id != null) {
-  	    		result1.splice(i, 0, data);
-  	    		break;
-  	    	}
-  	    }
+//   	  	
+ 		
+ 		console.log(data[0]);
+ 		
+//   	    var result1 = $("#table2").DataTable().rows().data().toArray();
+//   	    var data = {item_Id: data.item_id, item_Name: '', spec: '', safety_Stock_Qty: '', storage_Location: ''};
+  	    
+//   	    for (var i = 0; i < result1.length; i++) {
+//   	    	if (result1[i].item_Id != null) {
+//   	    		result1.splice(i, 0, data);
+//   	    		break;
+//   	    	}
+//   	    }
   
-  		// 기존 DataTable 초기화
-        if ($.fn.DataTable.isDataTable('#table2')) {
-            $('#table2').DataTable().clear().destroy();
-        }
+//   		// 기존 DataTable 초기화
+//         if ($.fn.DataTable.isDataTable('#table2')) {
+//             $('#table2').DataTable().clear().destroy();
+//         }
   		
 
-        $("#table2").DataTable({
-            lengthChange: false, // 표시건수기능
-            searching: false,    // 검색 기능
-            ordering: false,     // 정렬 기능
-            info: false,         // 정보 표시
-            paging: false,       // 페이징기능
-            data: result1,
-            columns: [
-                { data: "item_Id" },
-                { data: "item_Name" },
-                { data: "spec" },
-                { data: "safety_Stock_Qty" },
-                { data: "storage_Location" }
-            ]
-        });
+//         $("#table2").DataTable({
+//             lengthChange: false, // 표시건수기능
+//             searching: false,    // 검색 기능
+//             ordering: false,     // 정렬 기능
+//             info: false,         // 정보 표시
+//             paging: false,       // 페이징기능
+//             data: result1,
+//             columns: [
+//                 { data: "item_Id" },
+//                 { data: "item_Name" },
+//                 { data: "spec" },
+//                 { data: "safety_Stock_Qty" },
+//                 { data: "storage_Location" }
+//             ]
+//         });
  	}
  	
   	function openPopup2(row) {

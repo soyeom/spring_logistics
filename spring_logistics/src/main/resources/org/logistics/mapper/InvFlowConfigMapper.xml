@@ -6,11 +6,47 @@
 	
 	<select id = "getList" resultType = "org.logistics.domain.InvFlowConfigVO">
 		select a.bu_id, a.bu_name, a.warehouse_master_id, a.warehouse_internal_code
-		     , b.warehouse_id, b.warehouse_name
+		     , b.warehouse_id, b.warehouse_name 
+		     , b.site_department            
+		     , b.outsourcing_party_id       
+		     , b.consignment_party_id       
+		     , b.manager_party_id           
+		     , b.bu_dependent_flag          
+		     , b.allow_stock_shortage       
+		     , b.manager_control_flag       
+		     , b.address                    
+		     , b.exclude_from_available     
+		     , b.available_control_flag     
+		     , b.use_yn                     
 		from (
 		    select a.bu_id, a.bu_name, b.warehouse_master_id, b.warehouse_internal_code
 		    from business_unit a, warehouse_master b
 		    where a.bu_id = b.bu_id
+		) a, warehouse_detail b
+		where a.bu_id = b.bu_id
+		and a.warehouse_master_id = b.warehouse_master_id
+	</select>
+	
+	<select id = "getList2" resultType = "org.logistics.domain.InvFlowConfigVO">
+		select a.bu_id, a.bu_name, a.warehouse_master_id, a.warehouse_internal_code
+		     , b.warehouse_id, b.warehouse_name 
+		     , b.site_department            
+		     , b.outsourcing_party_id       
+		     , b.consignment_party_id       
+		     , b.manager_party_id           
+		     , b.bu_dependent_flag          
+		     , b.allow_stock_shortage       
+		     , b.manager_control_flag       
+		     , b.address                    
+		     , b.exclude_from_available     
+		     , b.available_control_flag     
+		     , b.use_yn                     
+		from (
+		    select a.bu_id, a.bu_name, b.warehouse_master_id, b.warehouse_internal_code
+		    from business_unit a, warehouse_master b
+		    where a.bu_id = b.bu_id
+		    and a.bu_id like '%' || #{bu_Id} || '%'
+			and b.warehouse_master_Id like '%' || #{wareHouse_Master_Id} || '%'
 		) a, warehouse_detail b
 		where a.bu_id = b.bu_id
 		and a.warehouse_master_id = b.warehouse_master_id
@@ -27,23 +63,26 @@
 		) a, item_master b
 		where a.bu_id = b.bu_id
 		and a.item_id = b.item_id
+		and a.bu_Id = #{bu_Id}
 		and a.warehouse_id = #{wareHouse_Id}
 			
 	</select>
 	
 	<select id = "getWareHouseContactList" resultType = "org.logistics.domain.WareHouseContactListVO">
 		
-		select bu_id, contact_id, (select contact_name from contact where bu_id = a.bu_id and contact_id = a.contact_id) as contact_name
-		     , warehouse_id, (select warehouse_name from warehouse_detail where bu_id = a.bu_id and warehouse_id = a.warehouse_id) as warehouse_name
-		from warehouse_contact a
-		where warehouse_id = #{wareHouse_Id}
+        select a.bu_id, a.contact_id, b.contact_name, b.department
+		from warehouse_contact a, contact b
+		where a.bu_id = b.bu_id
+		and a.contact_id = b.contact_id
+		and a.bu_Id = #{bu_Id} 
+        and a.warehouse_id = #{wareHouse_Id}
 	
 	</select>
 		
 	<select id = "getOutBoundMaster" resultType = "org.logistics.domain.OutBoundMasterVO">
 		select a.bu_id, b.bu_name, a.out_id
 		from out_master a, business_unit b
-		where a.bu_id = b.bu_id	
+		where a.bu_id = b.bu_id
 	</select>
 	
 	<select id = "getOutBoundDetail1" resultType = "org.logistics.domain.OutBoundMasterVO">
@@ -74,6 +113,27 @@
 		and a.bu_id = #{bu_Id}
 		and a.out_id = #{out_Id}
 	</select>
+	
+	<select id = "getOutId" resultType = "org.logistics.domain.OutBoundMasterVO">
+		(select nvl(max(out_id), 0) + 1 as out_Id from out_master where bu_id = #{bu_Id})
+	</select>
+	
+	<select id = "business_UnitList" resultType = "org.logistics.domain.CommonVO">
+		select bu_id as value, bu_name as text from business_unit
+	</select>
+	
+	<select id = "wareHouse_MasterList" resultType = "org.logistics.domain.CommonVO">
+		select warehouse_master_id as value, warehouse_internal_code as text from warehouse_master
+	</select>
+	
+	<insert id = "outBoundMasterSave" >
+	
+		insert into out_master (out_id, bu_id, out_date, local_flag, party_id)
+		values (#{out_Id}, #{bu_Id}, sysdate, '10', '10')
+	
+<!-- 		insert into out_matser (out_id, bu_id, out_date, local_flag, party_id, contact_id, out_type, consignment_gubun) -->
+<!-- 		values (#{out_Id}, #{bu_Id}, #{out_Date}, #{local_Flag}, #{party_Id}, #{contact_Id}, #{out_Type}, #{consignment_Gubun}); -->
+	</insert>
 	
 	<select id = "popupItemList" resultType = "org.logistics.domain.PopupItemVO">
 		select item_Id, bu_Id, item_Name, spec, safety_Stock_Qty, storage_Location, asset_Class, asset_Name, big_Category, mid_Category, small_Category
