@@ -357,6 +357,7 @@ tbody tr:hover { background: #f7f9fd; }
 .table-single-select tbody tr {
   	cursor: pointer;
   	transition: background 0.2s;
+  	height: 27.5px;
 }
 
 .table-single-select tbody tr:hover {

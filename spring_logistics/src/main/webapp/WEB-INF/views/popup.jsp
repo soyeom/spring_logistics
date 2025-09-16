@@ -14,13 +14,13 @@
     </section>
 
     <!-- 검색바 -->
-    <section class="popup-content search-bar">
-        <select>
+    <section class="popup-content">
+        <select class = "search-bar">
             <option>전체</option>
             <option>상품명</option>
             <option>출하번호</option>
         </select>
-        <input type="text" placeholder="검색어를 입력하세요" autocomplete="off">
+        <input class = "search-text" type="text" placeholder="검색어를 입력하세요" autocomplete="off">
         <button class="btn-primary">검색</button>
     </section>
 
