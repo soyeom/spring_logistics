@@ -5,83 +5,81 @@
 
 <mapper namespace="org.logistics.mapper.StockAnalysisMapper">
 
+  <!-- 기본 아이템 리스트 -->
+  <select id="getBaseItemList"
+          parameterType="org.logistics.domain.StockAnalysisRequestDTO"
+          resultType="org.logistics.domain.StockAnalysisResponseDTO">
+    SELECT
+      im.item_id          AS itemId,
+      im.item_name        AS itemName,
+      im.spec             AS spec,
+      im.asset_class      AS itemAssetClass,
+      im.big_category     AS itemBigCategory,
+      im.mid_category     AS itemMidCategory,
+      im.small_category   AS itemSmallCategory,
+      im.base_unit        AS baseUnit,
+      im.importance_level AS importanceLevel
+    FROM item_master im
+    WHERE 1=1
+      <if test="buId != null">
+        AND im.bu_id = #{buId}
+      </if>
+      <if test="itemAssetClass != null and itemAssetClass != ''">
+        AND im.asset_class = #{itemAssetClass}
+      </if>
+      <if test="importanceLevel != null and importanceLevel != ''">
+        AND im.importance_level = #{importanceLevel}
+      </if>
+      <if test="itemId != null and itemId != ''">
+        AND im.item_id LIKE '%' || #{itemId} || '%'
+      </if>
+      <if test="itemName != null and itemName != ''">
+        AND im.item_name LIKE '%' || #{itemName} || '%'
+      </if>
+      <if test="spec != null and spec != ''">
+        AND im.spec LIKE '%' || #{spec} || '%'
+      </if>
+    ORDER BY im.item_name
+  </select>
 
-
-<select id="getStockAnalysisData"
-        parameterType="org.logistics.domain.StockAnalysisRequestDTO"
-        resultType="org.logistics.domain.StockAnalysisResponseDTO">
-
-    SELECT 
-        im.item_id        AS itemId,
-        im.item_name      AS itemName,
-        im.spec           AS spec,
-        im.asset_class    AS itemAssetClass,
-        im.big_category   AS itemBigCategory,
-        im.mid_category   AS itemMidCategory,
-        im.small_category AS itemSmallCategory,
-        im.base_unit      AS baseUnit,
-        im.importance_level AS importanceLevel,
-
-        NVL(SUM(ibd.qty), 0) AS inboundQty,
-        NVL(SUM(od.qty), 0)  AS outQty,
-        NVL(SUM(ibd.qty), 0) - NVL(SUM(od.qty), 0) AS endingStock,
-
-        -- 조정 여부 (other_txn_category 참조)
-        MAX(otc_in.adjust_in)   AS adjustIn,
-        MAX(otc_out.adjust_out) AS adjustOut
-
+  <!-- 기간별 값 조회 (startMonth, endMonth 는 "YYYYMM" 형식) -->
+  <select id="getPeriodValue" parameterType="map" resultType="double">
+    SELECT
+      <choose>
+        <when test="analysisItem == 'totalIn'">
+          NVL(SUM(ibd.qty), 0)
+        </when>
+        <when test="analysisItem == 'totalOut'">
+          NVL(SUM(od.qty), 0)
+        </when>
+        <when test="analysisItem == 'averageStock'">
+          ( NVL(SUM(ibd.qty),0) - NVL(SUM(od.qty),0) ) / 2
+        </when>
+        <when test="analysisItem == 'turnoverRate'">
+          CASE
+            WHEN ( (NVL(SUM(ibd.qty),0) - NVL(SUM(od.qty),0)) / 2 ) = 0 THEN 0
+            ELSE ( NVL(SUM(od.qty),0) / ( (NVL(SUM(ibd.qty),0) - NVL(SUM(od.qty),0)) / 2 ) ) * 100
+          END
+        </when>
+        <otherwise>
+          0
+        </otherwise>
+      </choose>
     FROM item_master im
     LEFT JOIN inbound_detail ibd
-        ON im.item_id = ibd.item_id
-       AND im.bu_id = ibd.bu_id
+      ON im.item_id = ibd.item_id
+     AND im.bu_id = ibd.bu_id
+    LEFT JOIN inbound_master ibm
+      ON ibd.inbound_id = ibm.inbound_id
+     AND TO_CHAR(ibm.inbound_date, 'YYYYMM') BETWEEN #{startMonth} AND #{endMonth}
     LEFT JOIN out_detail od
-        ON im.item_id = od.item_id
-       AND im.bu_id = od.bu_id
-
-    -- 입고/출고 카테고리와 조정 여부 매핑
-    LEFT JOIN other_txn_category otc_in
-        ON ibd.bu_id = otc_in.bu_id
-       AND otc_in.txn_type = 'IN'
-    LEFT JOIN other_txn_category otc_out
-        ON od.bu_id = otc_out.bu_id
-       AND otc_out.txn_type = 'OUT'
-
-   WHERE 1=1
-    <if test="buId != null">
-        AND im.bu_id = #{buId}
-    </if>
-    <if test="itemAssetClass != null and itemAssetClass != ''">
-        AND im.asset_class = #{itemAssetClass}
-    </if>
-    <if test="importanceLevel != null and importanceLevel != ''">
-        AND im.importance_level = #{importanceLevel}
-    </if>
-    <if test="itemId != null and itemId != ''">
-        AND im.item_id LIKE '%' || #{itemId} || '%'
-    </if>
-    <if test="itemName != null and itemName != ''">
-        AND im.item_name LIKE '%' || #{itemName} || '%'
-    </if>
-    <if test="spec != null and spec != ''">
-        AND im.spec LIKE '%' || #{spec} || '%'
-    </if>
-
-    <choose>
-        <when test="stockStandard == 'ASSET'">
-            AND (
-                otc_in.adjust_in = 'Y'
-                OR otc_out.adjust_out = 'Y'
-            )
-        </when>
-    </choose>
-
-
-    GROUP BY im.item_id, im.item_name, im.spec, 
-             im.asset_class, im.big_category, im.mid_category, 
-             im.small_category, im.base_unit, im.importance_level
-    ORDER BY im.item_name
-
-</select>
-
+      ON im.item_id = od.item_id
+     AND im.bu_id = od.bu_id
+    LEFT JOIN out_master om
+      ON od.out_id = om.out_id
+     AND TO_CHAR(om.out_date, 'YYYYMM') BETWEEN #{startMonth} AND #{endMonth}
+    WHERE im.item_id = #{itemId}
+      AND im.bu_id = #{buId}
+  </select>
 
 </mapper>

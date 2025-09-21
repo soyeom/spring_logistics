@@ -9,7 +9,7 @@
 <title>재고변동추이분석</title>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <style>
-/* ===== 상단 헤더 (변경 없음) ===== */
+/* ===== 상단 헤더 ===== */
 .page-header {
 	display: flex;
 	justify-content: space-between;
@@ -17,8 +17,8 @@
 	background: #4b5563;
 	color: #fff;
 	padding: 10px 16px;
-	margin: 12px; /* ✅ search-container랑 동일 margin */
-	border-radius: 4px; /* ✅ search-container처럼 모서리 둥글게 */
+	margin: 12px;
+	border-radius: 4px;
 	box-sizing: border-box;
 }
 
@@ -26,66 +26,55 @@
 	margin: 0;
 	font-size: 21px;
 	font-weight: 600;
-	line-height: 1; /* 👈 줄 높이 딱 맞추기 */
+	line-height: 1;
 }
 
-/* 헤더의 조회 버튼은 작게 유지 */
 .page-header .btn-search {
 	background: transparent;
 	color: #fff;
 	border: none;
 	font-size: 18px;
-	padding: 4px 10px; /* 위아래 여백 줄임 */
-	height: 26px; /* 👈 h2 기준 맞춤 */
-	line-height: 26px; /* 글자 수직 가운데 */
+	padding: 4px 10px;
+	height: 26px;
+	line-height: 26px;
 	cursor: pointer;
 }
 
-/* ===== 조회조건 컨테이너 그리드화 ===== */
+/* ===== 조회조건 (grid) ===== */
 .search-container {
 	background: #fff;
 	border: 1px solid #ddd;
 	border-radius: 4px;
-	margin: 12px;
-	padding: 14px 16px;
+	margin: 8px 12px;
+	padding: 10px 12px;
 	box-sizing: border-box;
-	/* 핵심: label열 + control열 을 한쌍으로 4개 만들기 => 총 8컬럼 */
 	display: grid;
+	/* label열 + control열 묶음을 4세트 => 총 8컬럼 */
 	grid-template-columns: repeat(4, minmax(90px, 130px) 1fr);
-	column-gap: 16px;
-	row-gap: 10px;
+	column-gap: 12px;
+	row-gap: 8px;
 	align-items: center;
 }
 
-/* search-header(타이틀)는 전체 가로를 차지하도록 */
+/* search header spans full width only in search-container */
 .search-container .search-header {
 	grid-column: 1/-1;
 	font-weight: 600;
 	font-size: 15px;
 	color: #222;
 	margin-bottom: 8px;
-	padding: 0; /* 좌우 여백 제거 */
+	padding: 0 0 8px 0;
 	border-bottom: 1px solid #eee;
 }
 
-.search-container button {
-	line-height: 20px; /* height: 26px에 맞춤 */
-	cursor: pointer;
-	background: #f9f9f9;
-}
-
-.search-container button:hover {
-	background: #f0f0f0;
-}
-
-/* 사용자가 넣어둔 그룹용 div를 평평하게 만들어 자식들이 그리드에 직접 참여하게 함 */
-.search-container>div {
+/* flatten search fields (keeps label/control pairs in grid cells) */
+.search-container>.field {
 	display: contents;
 }
 
-/* 라벨은 오른쪽 정렬(셀 내 오른쪽 끝에 위치) */
+/* labels inside search-container (right aligned) */
 .search-container label {
-	justify-self: end; /* label 컬럼의 오른쪽 끝으로 */
+	justify-self: end;
 	text-align: right;
 	font-size: 13px;
 	color: #333;
@@ -93,37 +82,7 @@
 	align-self: center;
 }
 
-/* 입력/셀렉트/버튼은 control 컬럼을 채우도록 */
-.search-container select, .search-container input[type="text"],
-	.search-container input[type="hidden"], .search-container button {
-	width: 100%;
-	box-sizing: border-box;
-	height: 26px;
-	padding: 2px 8px;
-	font-size: 13px;
-	border: 1px solid #ccc;
-	border-radius: 3px;
-	background: #fff;
-}
-
-/* 컨테이너 내부의 버튼은 작고 단정하게 (단, 헤더 btn-search 제외) */
-.search-container {
-	display: grid;
-	grid-template-columns: repeat(4, minmax(90px, 130px) 1fr);
-	gap: 12px 16px;
-}
-
-.search-container .field {
-	display: contents; /* 라벨과 컨트롤이 그리드에 직접 배치되도록 */
-}
-
-.search-container label {
-	justify-self: end;
-	align-self: center;
-	font-size: 13px;
-	color: #333;
-}
-
+/* search inputs/selects/buttons: full width in their grid cell */
 .search-container select, .search-container input, .search-container button
 	{
 	width: 100%;
@@ -133,24 +92,139 @@
 	border: 1px solid #ccc;
 	border-radius: 3px;
 	background: #fff;
+	box-sizing: border-box;
 }
-/* 규격 같은 단독 항목이 왼쪽부터 시작하게 하려면,
-   마지막 label/input 쌍이 자동으로 다음 가용 셀에 배치됩니다. 필요시 강제 위치 지정 가능. */
-/* 검색 그룹 (입력창 + 버튼) */
-/* 검색 그룹 (입력창 + 버튼) */
+
+/* ===== 비교대상 기간설정 (flex 한줄) ===== */
+.compare-container {
+	background-color: #f9f9ff;
+	border: 1px solid #ddd;
+	border-radius: 4px;
+	margin: 8px 12px;
+	padding: 10px 12px;
+	box-sizing: border-box;
+}
+
+/* header for compare-container - not grid-based */
+.compare-container .search-header {
+	display: block;
+	font-weight: 600;
+	font-size: 15px;
+	color: #222;
+	margin-bottom: 8px;
+	padding: 0 0 8px 0;
+	border-bottom: 1px solid #eee;
+}
+
+/* 실제 항목을 한 줄로 놓을 wrapper */
+.compare-row {
+	display: flex;
+	align-items: center;
+	gap: 16px;
+	flex-wrap: nowrap; /* 데스크탑에서는 한 줄 */
+}
+
+/* 라벨은 inline 형태 (오른쪽 정렬이 아닌 일반 텍스트로) */
+.compare-row label {
+	margin: 0;
+	font-size: 13px;
+	color: #333;
+	min-width: 70px; /* 라벨 너비 고정하면 컬럼 정렬감이 생김 */
+}
+
+/* compare inputs/selects: 자동 너비 (컨테이너에 따라 늘어나지 않도록) */
+.compare-row input, .compare-row select {
+	width: auto;
+	min-width: 60px;
+	height: 26px;
+	padding: 2px 8px;
+	font-size: 13px;
+	border: 1px solid #ccc;
+	border-radius: 3px;
+	box-sizing: border-box;
+}
+
+/* input + 단위 조합 */
+.field-inline {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+}
+
+.field-inline input {
+	width: 60px;
+	text-align: right;
+	box-sizing: border-box;
+}
+
+.field-inline span {
+	font-size: 13px;
+	color: #333;
+	line-height: 26px;
+}
+
+/* 컨트롤 공통 버튼 (search 컨테이너에서 사용) */
+.search-container button {
+	line-height: 20px;
+	cursor: pointer;
+	background: #f9f9f9;
+}
+
+.search-container button:hover {
+	background: #f0f0f0;
+}
+
+/* ===== 결과 컨테이너 ===== */
+.result-container {
+	margin: 8px 12px;
+	padding: 10px 12px;
+	box-sizing: border-box;
+	background: #fff;
+	border-radius: 4px;
+	border: 1px solid #ddd;
+}
+
+/* 결과 테이블 */
+.result-container table {
+	width: 100%;
+	border-collapse: collapse;
+	font-size: 13px;
+	background: #fff;
+}
+
+.result-container th, .result-container td {
+	border: 1px solid #ddd;
+	padding: 6px 8px;
+	text-align: center;
+	vertical-align: middle;
+}
+
+.result-container th {
+	background: #f0f2f5;
+	font-weight: 600;
+	color: #333;
+}
+
+/* 라벨 강조용 */
+.label {
+	color: red;
+	margin-left: 10px;
+	margin-right: 5px;
+}
+
+/* ===== 검색 그룹 (input + button) ===== */
 .input-group {
 	display: flex;
 	align-items: center;
 	width: 100%;
-	max-width: 220px; /* 필요시 조정 */
+	max-width: 220px;
 	border: 1px solid #ccc;
 	border-radius: 4px;
-	overflow: hidden; /* 일체형 모서리 */
+	overflow: hidden;
 	background: #fff;
 	height: 26px;
 }
 
-/* 입력창 */
 .input-group input {
 	flex: 1;
 	border: none;
@@ -161,7 +235,6 @@
 	background: transparent;
 }
 
-/* 돋보기 버튼 */
 .input-group button {
 	width: 34px;
 	height: 100%;
@@ -173,53 +246,40 @@
 	justify-content: center;
 	color: #666;
 	font-size: 14px;
-	border-left: 1px solid #ccc; /* 입력창과 구분선 */
+	border-left: 1px solid #ccc;
 }
 
 .input-group button:hover {
 	background: #e3e5e7;
 }
 
-/* ===== 결과 테이블 스타일 ===== */
-table {
-	width: calc(100% - 24px); /* 좌우 margin(12px)과 맞추기 */
-	margin: 12px auto;
-	border-collapse: collapse;
-	font-size: 13px;
-	background: #fff;
-	box-sizing: border-box;
-}
-
-th, td {
-	border: 1px solid #ddd;
-	padding: 6px 8px;
-	text-align: center;
-	vertical-align: middle;
-}
-
-th {
-	background: #f0f2f5;
-	font-weight: 600;
-	color: #333;
-}
-
+/* ===== 반응형 ===== */
 @media ( max-width : 900px) {
 	.search-container {
 		grid-template-columns: repeat(2, minmax(80px, 120px) 1fr);
+	}
+	.compare-row {
+		flex-wrap: wrap; /* 좁아지면 줄바꿈 */
+		gap: 10px;
 	}
 }
 
 @media ( max-width : 520px) {
 	.search-container {
-		grid-template-columns: minmax(80px, 120px) 1fr; /* 1열 (label+control) */
+		grid-template-columns: minmax(80px, 120px) 1fr;
 		row-gap: 8px;
 	}
 	.search-container label {
-		justify-self: end;
 		font-size: 12px;
 	}
 	.page-header h2 {
 		font-size: 14px;
+	}
+	.compare-row {
+		gap: 8px;
+	}
+	.compare-row label {
+		min-width: 60px;
 	}
 }
 </style>
@@ -231,12 +291,15 @@ th {
 		<button class="btn-search" id="btnSearch">조회</button>
 	</div>
 
-	<!-- ✅ 조회조건 컨테이너 -->
-
+	<!-- 1) 조회조건 컨테이너 -->
 	<div class="search-container">
 		<div class="field">
 			<div class="search-header">조회조건</div>
 		</div>
+
+		<!-- hidden fields for popups -->
+		<input type="hidden" id="warehouseId" /> <input type="hidden"
+			id="itemSmallCategory" />
 
 		<div class="field">
 			<label>사업단위</label> <select id="buId">
@@ -255,7 +318,6 @@ th {
 			</div>
 		</div>
 
-
 		<div class="field">
 			<label>재고기준</label> <select id="stockStandard">
 				<option value="REAL">실재고</option>
@@ -271,6 +333,7 @@ th {
 				<option value="C">C등급</option>
 			</select>
 		</div>
+
 		<div class="field">
 			<label>품목자산분류</label> <select id="itemAssetClass">
 				<option value="">-- 선택 --</option>
@@ -298,123 +361,186 @@ th {
 		<div class="field">
 			<label>품명</label> <input type="text" id="itemName" />
 		</div>
+
 		<div class="field">
-			<label>품번</label> <input type="text" id="itemCode" />
+			<label>품번</label> <input type="number" id="itemId" />
 		</div>
+
 		<div class="field">
 			<label>규격</label> <input type="text" id="spec" />
 		</div>
-
 	</div>
-	<!--컨테이너  -->
-	<!-- ✅ 결과 테이블 -->
-	<table>
-		<thead>
-			<tr>
-				<th>품목자산분류</th>
-				<th>품목대분류</th>
-				<th>품목중분류</th>
-				<th>품목소분류</th>
-				<th>품번</th>
-				<th>품명</th>
-				<th>규격</th>
-				<th>기초재고</th>
-				<th>입고수량</th>
-				<th>출고수량</th>
-				<th>기말재고</th>
-			</tr>
-		</thead>
-		<tbody id="resultBody">
-			<!-- Ajax로 데이터 채움 -->
-		</tbody>
-	</table>
-</body>
+
+	<!-- 2) 비교대상 기간설정 컨테이너 (한 줄 레이아웃) -->
+	<div class="compare-container">
+		<div class="search-header">비교대상 기간설정</div>
+
+		<div class="compare-row">
+			<label>현재월</label>
+<input type="month" id="currentMonth"
+       value="<%= new java.text.SimpleDateFormat("yyyy-MM").format(new java.util.Date()) %>"
+       readonly>
 
 
+			<label>기간간격</label>
+			<div class="field-inline">
+				<input type="number" id="periodMonths" value="3" readonly> <span>개월</span>
+			</div>
+
+			<div class="field-inline">
+				<input type="number" id="periodCount" value="4" min="1"> <span>회
+					비교</span>
+			</div>
+
+			<label>분석항목</label> <select id="analysisItem">
+				<option>평균재고량</option>
+				<option>재고회전율(%)</option>
+				<option>총입고량</option>
+				<option>총출고량</option>
+			</select>
+		</div>
+	</div>
+
+	<!-- 3) 결과 컨테이너 -->
+	<div class="result-container">
+		<table>
+			<thead>
+				<tr id="resultHeadRow">
+					<th>품목자산분류</th>
+					<th>품목대분류</th>
+					<th>품목소분류</th>
+					<th>품번</th>
+					<th>품명</th>
+					<th>규격</th>
+					<th>품목중분류</th>
+					<th>단위</th>
+					<!--  yyyy-MM(1회) yyyy-MM(2회) yyyy-MM(3회) yyyy-MM(4회)의 값을 빈 공간에 집어넣을것 -->
+				</tr>
+			</thead>
+			<tbody id="resultBody">
+				<!-- Ajax로 데이터 채움 -->
+			</tbody>
+		</table>
+	</div>
 
 <script>
-$(document).ready(function() {
-	  $("#btnSearch").click(function() {
-	    let requestData = {
-	      buId: $("#buId").val(),
-	      itemName: $("#itemName").val(),
-	      spec: $("#spec").val(),
-	      itemAssetClass: $("#itemAssetClass").val(),
-	      importanceLevel: $("#importanceLevel").val(),
-	      stockStandard: $("#stockStandard").val(),
-	      itemId: $("#itemId").val()
-	    };
-	    $.ajax({
-	      url: "${pageContext.request.contextPath}/stock-analysis/analysis",
-	      type: "POST",
-	      contentType: "application/json",
-	      data: JSON.stringify(requestData),
-	      success: function(data) {
-	        let tbody = $("#resultBody");
-	        tbody.empty();
-	        if (data.length === 0) {
-	          tbody.append("<tr><td colspan='9'>조회 결과가 없습니다.</td></tr>");
-	          return;
-	        }
-	        $.each(data, function(index, item) {
-	          let row = "<tr>"
-	            + "<td>" + (item.itemAssetClass || '') + "</td>"
-	            + "<td>" + (item.itemBigCategory || '') + "</td>"
-	            + "<td>" + (item.itemMidCategory || '') + "</td>"
-	            + "<td>" + (item.itemSmallCategory || '') + "</td>"
-	            + "<td>" + (item.itemId || '') + "</td>"
-	            + "<td>" + (item.itemName || '') + "</td>"
-	            + "<td>" + (item.spec || '') + "</td>"
-	            + "<td>" + (item.beginningStock || 0) + "</td>"
-	            + "<td>" + (item.inboundQty || 0) + "</td>"
-	            + "<td>" + (item.outQty || 0) + "</td>"
-	            + "<td>" + (item.endingStock || 0) + "</td>"
-	            + "</tr>";
-	          tbody.append(row);
-	        });
-	      },
-	      error: function(xhr, status, error) {
-	        alert("데이터 조회 중 오류 발생: " + error);
-	      }
-	    });
-	  });
-	});
+/* contextPath 안전하게 가져오기 */
+var ctx = '${pageContext.request.contextPath}';
 
-	// 📌 창고 선택 팝업 열기
-	$("#btnWarehouse").click(function() {
-	  window.open(
-	    "${pageContext.request.contextPath}/stock-analysis/warehouse-popup",
-	    "warehousePopup",
-	    "width=600,height=400,scrollbars=yes,resizable=no"
-	  );
-	});
+$(document).ready(function () {
+  const analysisMap = {
+    '평균재고량': 'averageStock',
+    '재고회전율(%)': 'turnoverRate',
+    '총입고량': 'totalIn',
+    '총출고량': 'totalOut'
+  };
 
-	$(document).on("click", "#warehouseTable tr", function() {
-	  let id = $(this).data("id");
-	  let name = $(this).data("name");
-	  window.opener.document.getElementById("warehouseId").value = id;
-	  window.opener.document.getElementById("btnWarehouse").innerText = name;
-	  window.close();
-	});
+  $("#btnSearch").click(function () {
+    let sel = $("#analysisItem").val();
+    let analysisItem = analysisMap[sel] || sel;
 
-	// 📌 소분류 선택 팝업 열기
-	$("#btnItemSmallCategory").click(function() {
-	  window.open(
-	    "${pageContext.request.contextPath}/stock-analysis/item-small-category-popup",
-	    "itemSmallCategoryPopup",
-	    "width=700,height=500,scrollbars=yes,resizable=no"
-	  );
-	});
+    let requestData = {
+      buId: $("#buId").val(),
+      itemName: $("#itemName").val(),
+      spec: $("#spec").val(),
+      itemAssetClass: $("#itemAssetClass").val(),
+      importanceLevel: $("#importanceLevel").val(),
+      stockStandard: $("#stockStandard").val(),
+      itemId: $("#itemId").val(),
+      currentMonth: $("#currentMonth").val(),
+      analysisItem: analysisItem
+    };
 
-	// 📌 소분류 선택 이벤트
-	$(document).on("click", "#smallCategoryTable tr", function() {
-	  let id = $(this).data("id");
-	  let name = $(this).data("name");
-	  window.opener.document.getElementById("itemSmallCategory").value = id;
-	  window.opener.document.getElementById("btnItemSmallCategory").innerText = name;
-	  window.close();
-	});
+    $.ajax({
+      url: ctx + '/stock-analysis/analysis',
+      type: "POST",
+      contentType: "application/json",
+      data: JSON.stringify(requestData),
+      success: function (data) {
+        let tbody = $("#resultBody");
+        tbody.empty();
+
+        // data는 List<Map<String,Object>>
+        let periods = [];
+        if (data.length > 0) {
+          let sample = data[0];
+          $.each(sample, function (key, value) {
+            if (/^\d{4}-\d{2}$/.test(key)) periods.push(key);
+          });
+          periods.sort(); // 오름차순(원하면 reverse)
+        }
+
+        // 헤더 갱신
+        let theadRow = $("#resultHeadRow");
+        theadRow.find("th.dynamic").remove();
+        $.each(periods, function (i, p) {
+          theadRow.append("<th class='dynamic'>" + p + "</th>");
+        });
+
+        if (!data || data.length === 0) {
+          tbody.append("<tr><td colspan='" + (8 + periods.length) + "'>조회 결과가 없습니다.</td></tr>");
+          return;
+        }
+
+        // 로우 구성
+        $.each(data, function (idx, item) {
+          let row = "<tr>"
+            + "<td>" + (item.itemAssetClass || "") + "</td>"
+            + "<td>" + (item.itemBigCategory || "") + "</td>"
+            + "<td>" + (item.itemSmallCategory || "") + "</td>"
+            + "<td>" + (item.itemId || "") + "</td>"
+            + "<td>" + (item.itemName || "") + "</td>"
+            + "<td>" + (item.spec || "") + "</td>"
+            + "<td>" + (item.itemMidCategory || "") + "</td>"
+            + "<td>" + (item.baseUnit || "") + "</td>";
+
+          $.each(periods, function (i, p) {
+            let cell = item[p];
+            if (cell === null || typeof cell === 'undefined') cell = '';
+            row += "<td>" + cell + "</td>";
+          });
+
+          row += "</tr>";
+          tbody.append(row);
+        });
+      },
+      error: function (xhr, status, error) {
+        console.error("AJAX ERROR:", status, error);
+        console.error("Response Text:", xhr.responseText);
+        alert("데이터 조회 중 오류가 발생했습니다. 콘솔을 확인하세요.");
+      }
+    });
+  }); // $("#btnSearch").click 끝
+
+  // 창고 선택 팝업 열기 (contextPath 사용)
+  $("#btnWarehouse").click(function () {
+    window.open(
+      ctx + '/popup/contact_popup',
+      "item_popup",
+      "width=600,height=400,scrollbars=yes,resizable=no"
+    );
+  });
+
+  // 소분류 선택 팝업 열기
+  $("#btnItemSmallCategory").click(function () {
+    window.open(
+      ctx + '/popup/item_popup',
+      "contact_popup",
+      "width=700,height=500,scrollbars=yes,resizable=no"
+    );
+  });
+
+  // 엔터 누르면 무조건 조회 실행
+  $(document).on("keydown", function (e) {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      $("#btnSearch").trigger("click");
+    }
+  });
+}); // document.ready 끝
 
 </script>
-</body>
+
+
+
 </html>

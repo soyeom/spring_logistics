@@ -3,8 +3,6 @@ package org.logistics.controller;
 import java.util.List;
 
 import org.logistics.domain.PopupVO;
-import org.logistics.domain.WareHouseContactListVO;
-import org.logistics.service.InvFlowConfigService;
 import org.logistics.service.PopupService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -24,7 +22,7 @@ public class PopupController {
 	
 	private PopupService popupService;
 	
-	// 품번
+	// 창고
 	@GetMapping("/item_popup")
 	public void item_Popup(Model model, @RequestParam(required = false) String gubun, @RequestParam(required = false) String text) {
 		model.addAttribute("list", popupService.item_List(gubun, text));	// 마스터 조회
@@ -36,7 +34,7 @@ public class PopupController {
 		return popupService.item_List(gubun, text);
 	}
 	
-	// 담당자
+	// 소분류
 	@GetMapping("/contact_popup")
 	public void contact_Popup(Model model, @RequestParam(required = false) String gubun, @RequestParam(required = false) String text) {
 		model.addAttribute("list", popupService.contact_List(gubun, text));	// 마스터 조회

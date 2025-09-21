@@ -23,4 +23,26 @@ public class StockAnalysisResponseDTO {
     // 조정 관련 (추가)
     private String adjustIn;          // 재고실사조정(입고)
     private String adjustOut;         // 재고실사조정(출고)
+    
+    // 계산값
+    private int totalInbound;      // 총입고량
+    private int totalOutbound;     // 총출고량
+
+    // 계산용
+    private double averageStock;   // 평균재고량
+    private double turnoverRatio;  // 재고회전율(%)
+
+    public double getAverageStock() {
+        // 평균재고량 = (기초재고 + 기말재고) / 2
+        // 기초재고(beginningStock)는 필요하다면 Service에서 set
+        int beginningStock = this.beginningStock;  // 따로 넣어줄 값
+        return (beginningStock + this.endingStock) / 2.0;
+    }
+
+    public double getTurnoverRatio() {
+        double avg = getAverageStock();
+        if (avg == 0) return 0;
+        return (this.totalOutbound / avg) * 100.0;
+    }
+
 }

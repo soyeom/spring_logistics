@@ -14,4 +14,8 @@ public class StockAnalysisRequestDTO {
     private String baseUnit;
     private String stockStandard;
     private String itemId;
+    private String currentMonth;   // 예: "2025-09"
+    private String prevYearMonth; // 계산용, service에서 자동 채움
+    private String analysisItem; // "averageStock", "turnoverRate", "totalIn", "totalOut"
+
 }

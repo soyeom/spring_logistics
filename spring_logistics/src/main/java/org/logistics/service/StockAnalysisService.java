@@ -1,12 +1,11 @@
 package org.logistics.service;
 
 import java.util.List;
+import java.util.Map;
 
 import org.logistics.domain.StockAnalysisRequestDTO;
-import org.logistics.domain.StockAnalysisResponseDTO;
 
 public interface StockAnalysisService {
-    List<StockAnalysisResponseDTO> getStockAnalysisData(StockAnalysisRequestDTO requestDTO);
-
-	
+    List<Map<String, Object>> getStockAnalysisData(StockAnalysisRequestDTO requestDTO);
 }
+
