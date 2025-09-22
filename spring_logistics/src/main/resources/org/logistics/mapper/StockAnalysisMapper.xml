@@ -5,11 +5,13 @@
 
 <mapper namespace="org.logistics.mapper.StockAnalysisMapper">
 
-  <!-- 기본 아이템 리스트 -->
+  <!-- 기본 아이템 리스트
+       - warehouseId가 있을 때는 warehouse_item과 JOIN 하여 해당 창고의 품목만 조회
+       - itemSmallCategory(품목소분류)로도 필터링 가능 -->
   <select id="getBaseItemList"
           parameterType="org.logistics.domain.StockAnalysisRequestDTO"
           resultType="org.logistics.domain.StockAnalysisResponseDTO">
-    SELECT
+    SELECT DISTINCT
       im.item_id          AS itemId,
       im.item_name        AS itemName,
       im.spec             AS spec,
@@ -20,6 +22,14 @@
       im.base_unit        AS baseUnit,
       im.importance_level AS importanceLevel
     FROM item_master im
+    <!-- 창고 필터가 있을 경우 warehouse_item과 조인 -->
+    <if test="warehouseId != null">
+      INNER JOIN warehouse_item wi
+        ON im.item_id = wi.item_id
+       AND im.bu_id = wi.bu_id
+       AND wi.warehouse_id = #{warehouseId}
+    </if>
+
     WHERE 1=1
       <if test="buId != null">
         AND im.bu_id = #{buId}
@@ -39,11 +49,18 @@
       <if test="spec != null and spec != ''">
         AND im.spec LIKE '%' || #{spec} || '%'
       </if>
+      <!-- 품목소분류 필터 (추가) -->
+      <if test="itemSmallCategory != null and itemSmallCategory != ''">
+        AND im.small_category = #{itemSmallCategory}
+      </if>
     ORDER BY im.item_name
   </select>
 
-  <!-- 기간별 값 조회 (startMonth, endMonth 는 "YYYYMM" 형식) -->
-  <select id="getPeriodValue" parameterType="map" resultType="double">
+  <!-- 기간별 값 조회 (startMonth, endMonth : "YYYYMM") 
+       - inbound_detail / out_detail에 warehouseId가 있으면 해당 창고로 한정 -->
+  <select id="getPeriodValue"
+          parameterType="org.logistics.domain.StockAnalysisRequestDTO"
+          resultType="double">
     SELECT
       <choose>
         <when test="analysisItem == 'totalIn'">
@@ -69,17 +86,27 @@
     LEFT JOIN inbound_detail ibd
       ON im.item_id = ibd.item_id
      AND im.bu_id = ibd.bu_id
+     <!-- inbound_detail 창고필터 (동적) -->
+     <if test="warehouseId != null">
+       AND ibd.warehouse_id = #{warehouseId}
+     </if>
     LEFT JOIN inbound_master ibm
       ON ibd.inbound_id = ibm.inbound_id
      AND TO_CHAR(ibm.inbound_date, 'YYYYMM') BETWEEN #{startMonth} AND #{endMonth}
     LEFT JOIN out_detail od
       ON im.item_id = od.item_id
      AND im.bu_id = od.bu_id
+     <!-- out_detail 창고필터 (동적) -->
+     <if test="warehouseId != null">
+       AND od.warehouse_id = #{warehouseId}
+     </if>
     LEFT JOIN out_master om
       ON od.out_id = om.out_id
      AND TO_CHAR(om.out_date, 'YYYYMM') BETWEEN #{startMonth} AND #{endMonth}
     WHERE im.item_id = #{itemId}
-      AND im.bu_id = #{buId}
+      <if test="buId != null">
+        AND im.bu_id = #{buId}
+      </if>
   </select>
 
 </mapper>

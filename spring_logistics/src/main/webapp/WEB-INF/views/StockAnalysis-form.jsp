@@ -312,6 +312,7 @@
 			<label>창고</label>
 			<div class="input-group">
 				<input type="text" id="warehouseName" placeholder="창고 선택" readonly />
+				<input type="hidden" id="warehouseId" />			
 				<button type="button" id="btnWarehouse">
 					<i class="fa fa-search"></i>
 				</button>
@@ -352,6 +353,7 @@
 			<div class="input-group">
 				<input type="text" id="itemSmallCategoryName" placeholder="소분류 선택"
 					readonly />
+				<input type="hidden" id="itemSmallCategory"/>
 				<button type="button" id="btnItemSmallCategory">
 					<i class="fa fa-search"></i>
 				</button>
@@ -435,6 +437,9 @@ $(document).ready(function () {
     '총출고량': 'totalOut'
   };
 
+  // ==============================
+  // 조회 버튼 클릭 시 AJAX
+  // ==============================
   $("#btnSearch").click(function () {
     let sel = $("#analysisItem").val();
     let analysisItem = analysisMap[sel] || sel;
@@ -448,7 +453,9 @@ $(document).ready(function () {
       stockStandard: $("#stockStandard").val(),
       itemId: $("#itemId").val(),
       currentMonth: $("#currentMonth").val(),
-      analysisItem: analysisItem
+      analysisItem: analysisItem,
+      warehouseId: $("#warehouseId").val()  
+      itemSmallCategory: $("itemSmallCategory").val()
     };
 
     $.ajax({
@@ -467,7 +474,7 @@ $(document).ready(function () {
           $.each(sample, function (key, value) {
             if (/^\d{4}-\d{2}$/.test(key)) periods.push(key);
           });
-          periods.sort(); // 오름차순(원하면 reverse)
+          periods.sort(); // 오름차순
         }
 
         // 헤더 갱신
@@ -507,21 +514,37 @@ $(document).ready(function () {
       error: function (xhr, status, error) {
         console.error("AJAX ERROR:", status, error);
         console.error("Response Text:", xhr.responseText);
-        alert("데이터 조회 중 오류가 발생했습니다. 콘솔을 확인하세요.");
+        alert("데이터 조회 중 오류가 발생했습니다. 필수값(사업단위)을 입력하세요.");
       }
     });
-  }); // $("#btnSearch").click 끝
+  });
 
-  // 창고 선택 팝업 열기 (contextPath 사용)
+  // ==============================
+  // 창고 선택 팝업 열기
+  // ==============================
   $("#btnWarehouse").click(function () {
     window.open(
-      ctx + '/popup/contact_popup',
-      "item_popup",
+      ctx + '/popup/warehouse_popup',
+      "warehouse_popup",
       "width=600,height=400,scrollbars=yes,resizable=no"
     );
   });
 
+  // ==============================
+  // 팝업에서 선택된 창고 데이터 받기
+  // ==============================
+  window.setWarehouseData = function (data) {
+    // data = [창고ID, 창고명, 사업단위, 창고구분, 사업단위코드, 창고구분코드]
+    console.log("팝업에서 받은 값:", data);
+    // 화면 표시
+    $("#warehouseName").val(data[1]);
+    // hidden 값 (검색용)
+    $("#warehouseId").val(data[0]);
+  };
+
+  // ==============================
   // 소분류 선택 팝업 열기
+  // ==============================
   $("#btnItemSmallCategory").click(function () {
     window.open(
       ctx + '/popup/item_popup',
@@ -529,15 +552,25 @@ $(document).ready(function () {
       "width=700,height=500,scrollbars=yes,resizable=no"
     );
   });
+  
+ window.setItemSmallCategoryData = function (data) {
+	 console.log("소분류 팝업에서 받은 값: ", data);
+	 $("itemsmallcategoryName").val(data[1]);
+	 @("#itemsmallcategory").val(data[0]);
+ };
+  
 
-  // 엔터 누르면 무조건 조회 실행
+  // ==============================
+  // 엔터 키 → 조회 실행
+  // ==============================
   $(document).on("keydown", function (e) {
     if (e.key === "Enter") {
       e.preventDefault();
       $("#btnSearch").trigger("click");
     }
   });
-}); // document.ready 끝
+});
+
 
 </script>
 

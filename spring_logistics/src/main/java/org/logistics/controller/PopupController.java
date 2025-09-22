@@ -22,7 +22,6 @@ public class PopupController {
 	
 	private PopupService popupService;
 	
-	// 창고
 	@GetMapping("/item_popup")
 	public void item_Popup(Model model, @RequestParam(required = false) String gubun, @RequestParam(required = false) String text) {
 		model.addAttribute("list", popupService.item_List(gubun, text));	// 마스터 조회
@@ -33,8 +32,20 @@ public class PopupController {
 	public List<PopupVO> item_list(@RequestParam(required = false) String gubun, @RequestParam(required = false) String text) {
 		return popupService.item_List(gubun, text);
 	}
+
+	// 창고
+	@GetMapping("/warehouse_popup")
+	public void warehouse_List(Model model, @RequestParam(required = false) String gubun, @RequestParam(required = false) String text) {
+		model.addAttribute("list", popupService.warehouse_List(gubun, text));	// 마스터 조회
+	}
 	
-	// 소분류
+	@GetMapping("/warehouse_List")
+	@ResponseBody
+	public List<PopupVO> warehouse_List(@RequestParam(required = false) String gubun, @RequestParam(required = false) String text) {
+		return popupService.warehouse_List(gubun, text);
+	}
+	
+	
 	@GetMapping("/contact_popup")
 	public void contact_Popup(Model model, @RequestParam(required = false) String gubun, @RequestParam(required = false) String text) {
 		model.addAttribute("list", popupService.contact_List(gubun, text));	// 마스터 조회
