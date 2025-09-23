@@ -11,12 +11,19 @@ public class AvailableItemVO {
 	private String spec;
 	private int itemId;
 	private String baseUnit;
-	
 	private Integer safetyQty;
-    private Integer totalQty;                
+	
+    private Integer totalQty;
+    private Integer totalOutQty;
     private Integer requestQty;    
     private Integer orderQty;       
     private Integer transferQty;     
     private Integer inboundQty;  
-    private Integer expectedQty;      
+    private Integer expectedQty;
+    
+    private Integer receivedQty;
+    private Integer deliveryQty;
+    private Integer shipmentQty;
+    private Integer otherQty;
+    private Integer expectedOutQty;
 }
