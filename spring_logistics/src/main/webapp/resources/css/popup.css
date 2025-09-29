@@ -88,4 +88,5 @@ body {
 .popup-body {
 	background-color: #fff;
 	padding: 10px;
+	max-width: 900px;
 }

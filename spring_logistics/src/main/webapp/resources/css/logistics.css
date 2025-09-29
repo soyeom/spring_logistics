@@ -72,6 +72,11 @@ a:hover {
     object-fit: contain;
 }
 
+.search-icon {
+	width: 25px;
+    height: 25px;
+    object-fit: contain;
+}
 
 /* --------------------------------------
    사이드바

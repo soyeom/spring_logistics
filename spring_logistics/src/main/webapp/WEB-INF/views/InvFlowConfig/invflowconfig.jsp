@@ -80,7 +80,7 @@
 	            <div><h1>창고수불속성설정</h1></div>
 	            <div>
 		            <button class="btn btn-secondary search-btn" id = "search" onclick = "search()">조회</button>
-					<button class="btn btn-secondary search-btn" id = "save" onclick = "save_OutBound()">저장</button>
+					<button class="btn btn-secondary search-btn" id = "save" onclick = "save()">저장</button>
 				</div>
 	        </div>
 	        <div class="filters">
@@ -115,29 +115,30 @@
 	            		<div class = "filters-text">창고명</div>
 	            		<div class = "filters-value">
 	            			<input type = "text" id = "wareHouse_Name">
+	            			<img src="https://cdn-icons-png.flaticon.com/512/16799/16799970.png" alt="search" class="search-icon">
 	            		</div>
             		</div>
    			    </div>
 			</div>
 			<div class = "table-container" style = "height: 300px;">
-				<table class="table-single-select" style = "width: 100%">
+				<table class="table-single-select">
 					<thead>
 						<tr>
-					    	<th>사업단위</th>
-					        <th>창고구분내부코드</th>
-					        <th>창고구분</th>
-					        <th>창고내부코드</th>
-					        <th>창고명</th>
-					        <th>현장부서</th>
-					        <th>외주거래처</th>
-					        <th>위탁거래처</th>
-					        <th>담당자</th>
-					        <th>재고부족허용</th>
-					        <th>창고담당자통제</th>
-					        <th>창고담당자등록</th>
-					        <th>가용재고미포함</th>
-					        <th>가용재고통제</th>
-					        <th>사용안함</th>
+					    	<th style = "width: 135px">사업단위</th>
+					        <th style = "width: 140px">창고구분내부코드</th>
+					        <th style = "width: 105px">창고구분</th>
+					        <th style = "width: 105px">창고내부코드</th>
+					        <th style = "width: 105px">창고명</th>
+					        <th style = "width: 90px">현장부서</th>
+					        <th style = "width: 90px">외주거래처</th>
+					        <th style = "width: 90px">위탁거래처</th>
+					        <th style = "width: 90px">담당자</th>
+					        <th style = "width: 105px">재고부족허용</th>
+					        <th style = "width: 125px">창고담당자통제</th>
+					        <th style = "width: 125px">창고담당자등록</th>
+					        <th style = "width: 125px">가용재고미포함</th>
+					        <th style = "width: 105px">가용재고통제</th>
+					        <th style = "width: 90px">사용안함</th>
 				        </tr>
 				    </thead>
 				    <tbody id = "result-tbody1">
@@ -153,22 +154,22 @@
 				    			<td><c:out value = "${board.consignment_Party_Id}"/></td>
 				    			<td><c:out value = "${board.manager_Party_Id}"/></td>
 				    			<td class="text-center">
-									<input type="checkbox" name="bu_Dependent_Flag" value="Y" <c:if test="${board.bu_Dependent_Flag == 'Y'}">checked</c:if> />
+									<input type="checkbox" name="allow_Stock_Shortage" value="Y" <c:if test="${board.allow_Stock_Shortage == 'Y'}">checked</c:if> />
 								</td>
 								<td class="text-center">
-									<input type="checkbox" <c:if test="${board.allow_Stock_Shortage == 'Y'}">checked</c:if> />
+									<input type="checkbox" name = "manager_Control_Flag" <c:if test="${board.manager_Control_Flag == 'Y'}">checked</c:if> />
 								</td>
 								<td class="text-center">
-									<input type="checkbox" disabled = "disabled" <c:if test="${board.manager_Control_Flag == 'Y'}">checked</c:if> />
+									<input type="checkbox" name = "manager_Regist_Yn" disabled = "disabled" <c:if test="${board.manager_Regist_Yn== 'Y'}">checked</c:if> />
 								</td>
 								<td class="text-center">
-									<input type="checkbox" <c:if test="${board.exclude_From_Available == 'Y'}">checked</c:if> />
+									<input type="checkbox" name = "exclude_From_Available" <c:if test="${board.exclude_From_Available == 'Y'}">checked</c:if> />
 								</td>
 				    			<td class="text-center">
-									<input type="checkbox" <c:if test="${board.available_Control_Flag == 'Y'}">checked</c:if> />
+									<input type="checkbox" name = "available_Control_Flag" <c:if test="${board.available_Control_Flag == 'Y'}">checked</c:if> />
 								</td>
 				    			<td class="text-center">
-									<input type="checkbox" <c:if test="${board.use_Yn == 'Y'}">checked</c:if> />
+									<input type="checkbox" name = "use_Yn" value="${board.use_Yn}" <c:if test="${board.use_Yn == 'Y'}">checked</c:if> />
 								</td>
 					    	</tr>
 				    	</c:forEach>
@@ -197,11 +198,11 @@
 		    			<table class="table-single-select" style = "width: 100%">
 					        <thead>
 					            <tr>
-					                <th>품명</th>
-					                <th>품번</th>
-					                <th>규격</th>
-					                <th>안전재고수량</th>
-					                <th>보관위치</th>
+					                <th style = "width: 80px;">품명</th>
+					                <th style = "width: 100px;">품번</th>
+					                <th style = "width: px;">규격</th>
+					                <th style = "width: 110px;">안전재고수량</th>
+					                <th style = "width: 100px;">보관위치</th>
 					            </tr>
 					        </thead>
 					        <tbody id = "result-tbody2">
@@ -217,9 +218,10 @@
 			        	</div>
 			    	</div>
 			    	<div class = "table-container" style = "height: 295px;">
-		    			<table id="table3">
+		    			<table class="table-single-select" style = "width: 100%">
 					        <thead>
 					            <tr>
+					                <th>사원번호</th>
 					                <th>창고담당자</th>
 					                <th>부서</th>
 					            </tr>
@@ -235,7 +237,7 @@
 </body>
 </html>
 
-<script type="text/javascript" src="/resources/js/logistics.js"></script>
+<script type="text/javascript" src="../resources/js/logistics.js"></script>
 
 <script>
 	
@@ -249,11 +251,11 @@
 	        const tr = e.target.closest('tr');
 	        if (!tr) return;
 	
-	        if (selectedRow === tr) {
-	            tr.classList.remove('tr-selected');
-	            selectedRow = null;
-	            return;
-	        }
+// 	        if (selectedRow === tr) {
+// 	            tr.classList.remove('tr-selected');
+// 	            selectedRow = null;
+// 	            return;
+// 	        }
 	
 	        if (selectedRow) selectedRow.classList.remove('tr-selected');
 	
@@ -292,9 +294,9 @@
 	                    '<td>' + (board.outsourcing_Party_Id || '') + '</td>' +
 	                    '<td>' + (board.consignment_Party_Id || '') + '</td>' +
 	                    '<td>' + (board.manager_Party_Id || '') + '</td>' +
-	                    '<td class="text-center"><input type="checkbox"' + (board.bu_Dependent_Flag === 'Y' ? ' checked' : '') + '></td>' +
 	                    '<td class="text-center"><input type="checkbox"' + (board.allow_Stock_Shortage === 'Y' ? ' checked' : '') + '></td>' +
-	                    '<td class="text-center"><input type="checkbox" disabled' + (board.manager_Control_Flag === 'Y' ? ' checked' : '') + '></td>' +
+	                    '<td class="text-center"><input type="checkbox"' + (board.manager_Control_Flag === 'Y' ? ' checked' : '') + '></td>' +
+	                    '<td class="text-center"><input type="checkbox" disabled' + (board.manager_Regist_Yn === 'Y' ? ' checked' : '') + '></td>' +
 	                    '<td class="text-center"><input type="checkbox"' + (board.exclude_From_Available === 'Y' ? ' checked' : '') + '></td>' +
 	                    '<td class="text-center"><input type="checkbox"' + (board.available_Control_Flag === 'Y' ? ' checked' : '') + '></td>' +
 	                    '<td class="text-center"><input type="checkbox"' + (board.use_Yn === 'Y' ? ' checked' : '') + '></td>';
@@ -322,7 +324,7 @@
 	
 	function row_Click(row) { 
 		
-		const data = Array.from(row.cells).map(td => {
+		const data = Array.from(row.cells).map(function(td) {
 	        const checkbox = td.querySelector('input[type=checkbox]');
 	        
 	        if(checkbox) return checkbox.checked ? 'Y' : 'N';  // 체크 여부 Y/N
@@ -336,11 +338,11 @@
 
 		document.getElementById("wareHouse_Name2").value = data[4];
 		
-		item_Search(data);
-		contact_Search(data);
+		search_Detail1(data);
+		search_Detail2(data);
 	}
 	
-	function item_Search(data) {
+	function search_Detail1(data) {
 	    
 		var formData = {
 			bu_Id: data[0],
@@ -368,10 +370,10 @@
 	                    '<td class="text-center">' + (board.item_Name || '') + '</td>' +
 	                    '<td class="text-center">' + (board.spec || '') + '</td>' +
 	                    '<td class="text-center">' + (board.safety_Stock_Qty || '') + '</td>' +
-	                    '<td class="text-center">' + (board. storage_Location || '') + '</td>';
+	                    '<td class="text-center">' + (board.storage_Location || '') + '</td>';
 	                    
                     tr.ondblclick = function() {
-                    	open_Item(this);
+                    	open_Item();
                     }
 	                    
 	                tbody.appendChild(tr);
@@ -382,9 +384,8 @@
 	            for (let i = 0; i < emptyRows; i++) {
 	                const tr = document.createElement("tr");
 	                tr.innerHTML = '<td class="text-center">&nbsp;</td>'.repeat(5); // 컬럼 수 만큼 빈 칸
-                    
 	                tr.ondblclick = function() {
-                   		open_Item(this);
+                   		open_Item();
                     }
 	                    
 	                tbody.appendChild(tr);
@@ -393,7 +394,7 @@
 		});	
 	}
 	
-	function contact_Search(data) {
+	function search_Detail2(data) {
 	    
 		var formData = {
 			bu_Id: data[0],
@@ -415,18 +416,14 @@
 	         	// result 배열 반복
 	            result.forEach(function(board) {
 	            	const tr = document.createElement("tr");
-	
 	                tr.innerHTML = 
+	                    '<td class="text-center">' + (board.contact_Id || '') + '</td>' +
 	                    '<td class="text-center">' + (board.contact_Name || '') + '</td>' +
 	                    '<td class="text-center">' + (board.department || '') + '</td>';
 	                    
-//                     tr.onclick = function() {
-//                     	// this → 클릭된 tr
-//                         const data = Array.from(this.cells).map(td => td.textContent);
-                        
-//                     	row_Click(data); // td 값 배열 전달
-//                     }
-	                    
+                    tr.onclick = function() {
+                    	open_contact(); // td 값 배열 전달
+                    }
 	                tbody.appendChild(tr);
 	            });
 	            
@@ -435,142 +432,310 @@
 	            for (let i = 0; i < emptyRows; i++) {
 	                const tr = document.createElement("tr");
 	                tr.innerHTML = 
-	                    '<td class="text-center">&nbsp;</td>'.repeat(2); // 컬럼 수 만큼 빈 칸
+	                    '<td class="text-center">&nbsp;</td>'.repeat(3); // 컬럼 수 만큼 빈 칸
+                    tr.ondblclick = function() {
+                    	open_contact();
+                    }
 	                tbody.appendChild(tr);
 	            }
 	        }
 	    }); 
-	} 
+	}
 	
-  	function open_Item() {
+	function save() {
+		
+	    var selectedRow = document.querySelector('#result-tbody1 .tr-selected');
+	    
+	    if (!selectedRow) {
+	        alert("선택된 행이 없습니다.");
+	        return;
+	    }
+
+	    // td 안에 체크박스 있는 경우 값 변환
+	    var data = Array.from(selectedRow.cells).map(function(td, index) {
+	    	// 첫 번째 td(hidden 값만)
+	        if (index === 0) {
+	            var hidden = td.querySelector("input[type=hidden]");
+	            return hidden ? hidden.value : "";
+	        }
+
+	        // 체크박스 처리
+	        var checkbox = td.querySelector("input[type=checkbox]");
+	        if (checkbox) {
+	            return checkbox.checked ? "Y" : "N";
+	        }
+
+	        // 일반 텍스트
+	        return td.textContent.trim();
+	    });
+
+	    var formData = {
+    		bu_Id: data[0],
+            wareHouse_Master_Id: data[1],
+            wareHouse_Id: data[3],
+            allow_Stock_Shortage: data[9],
+            manager_Control_Flag: data[10],
+            exclude_From_Available: data[11],
+            available_Control_Flag: data[12],
+            use_Yn: data[13]	
+	    }
+	    
+	    // AJAX 호출
+	    $.ajax({
+	        url: '/InvFlowConfig/save',           // Spring @PostMapping 매핑
+	        type: 'POST',
+	        data: formData,
+	        success: function(result) {
+	        	save_Detail1(data[0], data[1], data[3]);
+	        },
+	        error: function(xhr, status, error) {
+	            console.error("저장 실패123:", error);
+	        }
+	    });
+	}
+	
+	function save_Detail1(bu_Id, wm_id, w_id) {
+		
+		var tbody = document.getElementById("result-tbody2");
+
+		// tbody 안 모든 tr 순회
+	    var allData = Array.from(tbody.rows)
+	        .filter(function(tr) {
+	            var firstValue = tr.cells[0].textContent.trim();
+	            return firstValue !== null && firstValue !== "";
+	        })
+	        .map(function(tr) {
+	            // 기존 td 텍스트 수집
+	            var rowData = Array.from(tr.cells).map(function(td) {
+	                return td.textContent.trim();
+	            });
+	
+	            // bu_Id, wm_id, w_id를 앞에 추가
+	            rowData.unshift(w_id);   // w_id
+	            rowData.unshift(wm_id);  // wm_id
+	            rowData.unshift(bu_Id);  // bu_Id
+	
+	            return rowData;
+	        });
+		
+		// AJAX 호출
+	    $.ajax({
+	        url: '/InvFlowConfig/save_detail1',           // Spring @PostMapping 매핑
+	        type: 'POST',
+	        contentType: 'application/json', // JSON 전송
+	        data: JSON.stringify(allData),    // 2차원 배열 → JSON 문자열
+	        success: function(result) {
+	        	save_Detail2(bu_Id, wm_id, w_id);
+	        },
+	        error: function(xhr, status, error) {
+	            console.error("저장 실패:", error);
+	        }
+	    });
+	}
+	
+	function save_Detail2(bu_Id, wm_id, w_id) {
+		
+		var tbody = document.getElementById("result-tbody3");
+
+		// tbody 안 모든 tr 순회
+	    var allData = Array.from(tbody.rows)
+	        .filter(function(tr) {
+	            var firstValue = tr.cells[0].textContent.trim();
+	            return firstValue !== null && firstValue !== "";
+	        })
+	        .map(function(tr) {
+	            // 기존 td 텍스트 수집
+	            var rowData = Array.from(tr.cells).map(function(td) {
+	                return td.textContent.trim();
+	            });
+	
+	            // bu_Id, wm_id, w_id를 앞에 추가
+	            rowData.unshift(w_id);   // w_id
+	            rowData.unshift(wm_id);  // wm_id
+	            rowData.unshift(bu_Id);  // bu_Id
+	
+	            return rowData;
+	        });
+		
+		// AJAX 호출
+	    $.ajax({
+	        url: '/InvFlowConfig/save_detail2',           // Spring @PostMapping 매핑
+	        type: 'POST',
+	        contentType: 'application/json', // JSON 전송
+	        data: JSON.stringify(allData),    // 2차원 배열 → JSON 문자열
+	        success: function(result) {
+	        	alert("저장되었습니다.");
+	        },
+	        error: function(xhr, status, error) {
+	            console.error("저장 실패:", error);
+	        }
+	    });
+	}
+	
+	
+	function open_Item() {
   	
-	   // 팝업 크기 설정
-	   var popupWidth = 900;
-	   var popupHeight = 600;
+	    // 팝업 크기 설정
+	    var popupWidth = 900;
+	    var popupHeight = 600;
 	
-	   // 화면 중앙 좌표 계산
-	   var left = (screen.width - popupWidth) / 2;
-	   var top = (screen.height - popupHeight) / 2;
+	    // 화면 중앙 좌표 계산
+	    var left = (screen.width - popupWidth) / 2;
+	    var top = (screen.height - popupHeight) / 2;
 	
-	   // 팝업창 열기
+		// 팝업창 열기
 		window.open(
-			"../popup/contact_popup",
+			"../popup/item_popup",
 	     	"popupWindow",
 	     	"width=" + popupWidth +
 	     	",height=" + popupHeight +
 	     	",left=" + left +
 	     	",top=" + top +
-	     	",scrollbars=yes,resizable=yes"
+	     	",scrollbars=no,resizable=yes"
 	   );
 	}
   	
  	// 팝업에서 선택된 데이터를 받을 함수
   	function item_RowData(data) {
- 		
-  		var tbody = document.getElementById("result-tbody2");
-  		var rows = tbody.querySelectorAll("tr");
-  		
-  		rows.forEach((tr, index) => {
-	      	const data = Array.from(tr.cells).map(td => td.textContent.trim());
-	      	console.log("Row", index, ":", data);
-	  	});
-  		
-//   	    
-  	    
-//   	  	
- 		
- 		console.log(data[0]);
- 		
-//   	    var result1 = $("#table2").DataTable().rows().data().toArray();
-//   	    var data = {item_Id: data.item_id, item_Name: '', spec: '', safety_Stock_Qty: '', storage_Location: ''};
-  	    
-//   	    for (var i = 0; i < result1.length; i++) {
-//   	    	if (result1[i].item_Id != null) {
-//   	    		result1.splice(i, 0, data);
-//   	    		break;
-//   	    	}
-//   	    }
-  
-//   		// 기존 DataTable 초기화
-//         if ($.fn.DataTable.isDataTable('#table2')) {
-//             $('#table2').DataTable().clear().destroy();
-//         }
-  		
+	    
+ 		var tbody = document.getElementById("result-tbody2");
+ 		// 첫 번째 td 값이 비어있지 않은 tr만 필터링
+ 	    var filteredRows = Array.from(tbody.querySelectorAll("tr"))
+ 	        .filter(function(tr) {
+ 	            var firstValue = tr.cells[0].textContent.trim();
+ 	            return firstValue !== null && firstValue !== "";
+ 	        });
 
-//         $("#table2").DataTable({
-//             lengthChange: false, // 표시건수기능
-//             searching: false,    // 검색 기능
-//             ordering: false,     // 정렬 기능
-//             info: false,         // 정보 표시
-//             paging: false,       // 페이징기능
-//             data: result1,
-//             columns: [
-//                 { data: "item_Id" },
-//                 { data: "item_Name" },
-//                 { data: "spec" },
-//                 { data: "safety_Stock_Qty" },
-//                 { data: "storage_Location" }
-//             ]
-//         });
- 	}
- 	
-  	function openPopup2(row) {
- 	   // 예: 첫 번째 셀 값 가져오기
- 	   // var rowId = row.cells[0].innerText;
- 	
- 	   // 팝업 크기 설정
- 	   var popupWidth = 900;
- 	   var popupHeight = 600;
- 	
- 	   // 화면 중앙 좌표 계산
- 	   var left = (screen.width - popupWidth) / 2;
- 	   var top = (screen.height - popupHeight) / 2;
- 	
- 	   // 팝업창 열기
- 	   window.open(
- 	     "contact_popup",
- 	     "popupWindow",
- 	     "width=" + popupWidth +
- 	     ",height=" + popupHeight +
- 	     ",left=" + left +
- 	     ",top=" + top +
- 	     ",scrollbars=yes,resizable=yes"
- 	   );
- 	}
-  	
-	function setSelectedRow2(data) {
+ 	    // 각 tr의 td 값만 2차원 배열로 수집
+ 	    var allData = filteredRows.map(function(tr) {
+ 	        return Array.from(tr.cells).map(function(td) {
+ 	            return td.textContent.trim();
+ 	        });
+ 	    });
+ 	    
+ 	    for (var i = 0; i < allData.length; i++) {
+ 	    	if (allData[i][0] == data[0]) {
+ 	    		return;
+ 	    	}
+ 	    }
+ 
+		var newData = [data[0], data[1], data[2], data[8], data[9]];
+ 	   
+ 		// 중복이 없으면 추가
+ 	    allData.push(newData);
  		
-  	    var result1 = $("#table2").DataTable().rows().data().toArray();
-  	    var data = {item_Id: data.item_id, item_Name: '', spec: '', safety_Stock_Qty: '', storage_Location: ''};
-  	    
-  	    for (var i = 0; i < result1.length; i++) {
-  	    	if (result1[i].item_Id != null) {
-  	    		result1.splice(i, 0, data);
-  	    		break;
-  	    	}
-  	    }
-  
-  		// 기존 DataTable 초기화
-        if ($.fn.DataTable.isDataTable('#table2')) {
-            $('#table2').DataTable().clear().destroy();
-        }
-  		
-
-        $("#table2").DataTable({
-            lengthChange: false, // 표시건수기능
-            searching: false,    // 검색 기능
-            ordering: false,     // 정렬 기능
-            info: false,         // 정보 표시
-            paging: false,       // 페이징기능
-            data: result1,
-            columns: [
-                { data: "item_Id" },
-                { data: "item_Name" },
-                { data: "spec" },
-                { data: "safety_Stock_Qty" },
-                { data: "storage_Location" }
-            ]
-        });
+ 	   	tbody.innerHTML = ""; // 기존 내용 초기화
+       
+       	const totalRows = allData.length + 3; // 테이블에 항상 4개의 로우 유지
+       
+    	// result 배열 반복
+       	allData.forEach(function(board) {
+		const tr = document.createElement("tr");
+        	tr.innerHTML = 
+               '<td class="text-center">' + (board[0] || '') + '</td>' +
+               '<td class="text-center">' + (board[1] || '') + '</td>' +
+               '<td class="text-center">' + (board[2] || '') + '</td>' +
+               '<td class="text-center">' + (board[3] || '') + '</td>' +
+               '<td class="text-center">' + (board[4] || '') + '</td>';
+               
+            tr.onclick = function() {
+				open_Item(); // td 값 배열 전달
+           	}
+               
+           	tbody.appendChild(tr);
+       });
+       
+    	// 빈 로우 추가
+       const emptyRows = totalRows - allData.length;
+       for (let i = 0; i < emptyRows; i++) {
+           	const tr = document.createElement("tr");
+           	tr.innerHTML = 
+               '<td class="text-center">&nbsp;</td>'.repeat(5); // 컬럼 수 만큼 빈 칸
+			tr.ondblclick = function() {
+   				open_item();
+   			}
+            tbody.appendChild(tr);
+       }
+	}
+ 	
+	function open_contact() {
+		// 팝업 크기 설정
+ 	   	var popupWidth = 900;
+ 	   	var popupHeight = 600;
+ 	
+ 	   	// 화면 중앙 좌표 계산
+ 	   	var left = (screen.width - popupWidth) / 2;
+ 	   	var top = (screen.height - popupHeight) / 2;
+ 	
+ 	   	// 팝업창 열기
+		window.open(
+			"../popup/contact_popup",
+ 	     	"popupWindow",
+ 	     	"width=" + popupWidth +
+ 	     	",height=" + popupHeight +
+ 	     	",left=" + left +
+ 	     	",top=" + top +
+ 	     	",scrollbars=no,resizable=yes"
+ 	   	);
  	}
+	
+	function contact_RowData(data) {
+		var tbody = document.getElementById("result-tbody3");
+ 		// 첫 번째 td 값이 비어있지 않은 tr만 필터링
+ 	    var filteredRows = Array.from(tbody.querySelectorAll("tr"))
+ 	        .filter(function(tr) {
+ 	            var firstValue = tr.cells[0].textContent.trim();
+ 	            return firstValue !== null && firstValue !== "";
+ 	        });
+
+ 	    // 각 tr의 td 값만 2차원 배열로 수집
+ 	    var allData = filteredRows.map(function(tr) {
+ 	        return Array.from(tr.cells).map(function(td) {
+ 	            return td.textContent.trim();
+ 	        });
+ 	    });
+ 	    
+ 	    for (var i = 0; i < allData.length; i++) {
+ 	    	if (allData[i][0] == data[0]) {
+ 	    		return;
+ 	    	}
+ 	    }
+ 
+		var newData = [data[0], data[1], data[2]];
+ 	   
+ 		// 중복이 없으면 추가
+ 	    allData.push(newData);
+ 		
+ 	   	tbody.innerHTML = ""; // 기존 내용 초기화
+       
+       	const totalRows = allData.length + 3; // 테이블에 항상 4개의 로우 유지
+       
+    	// result 배열 반복
+       	allData.forEach(function(board) {
+		const tr = document.createElement("tr");
+        	tr.innerHTML = 
+               '<td class="text-center">' + (board[0] || '') + '</td>' +
+               '<td class="text-center">' + (board[1] || '') + '</td>' +
+               '<td class="text-center">' + (board[2] || '') + '</td>';
+               
+            tr.onclick = function() {
+				open_contact(); // td 값 배열 전달
+           	}
+               
+           	tbody.appendChild(tr);
+       });
+       
+    	// 빈 로우 추가
+       const emptyRows = totalRows - allData.length;
+       for (let i = 0; i < emptyRows; i++) {
+           const tr = document.createElement("tr");
+           	tr.innerHTML = 
+               	'<td class="text-center">&nbsp;</td>'.repeat(3); // 컬럼 수 만큼 빈 칸
+			tr.ondblclick = function() {
+				open_contact();
+			}
+           	tbody.appendChild(tr);
+       }
+	}
 
 </script>

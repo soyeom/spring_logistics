@@ -6,13 +6,17 @@
 	
 	<select id = "item_List" resultType = "org.logistics.domain.PopupVO">
 		
-		select item_Id as column1, spec as column2, item_name as column3
+		select item_Id as column1
+		     , item_name as column2
+		     , spec as column3
 		     , asset_class as column4
 		     , small_category as column5
 		     , base_unit as column6 
 		     , sales_unit as column7 
-		     , english_name as column8 
-		from item_master
+		     , english_name as column8
+		     , safety_stock_qty as column9
+		     , (select warehouse_name from warehouse_detail where bu_id = a.bu_id and warehouse_id = a.storage_location) as column10
+		from item_master a
 		
 		<where>
 	        <if test = "gubun == 10">

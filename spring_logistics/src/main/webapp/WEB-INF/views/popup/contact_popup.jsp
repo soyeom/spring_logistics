@@ -141,12 +141,13 @@
 	        alert("선택된 행이 없습니다!");
 	        return;
 	    }
-	
-	    // td 안의 텍스트를 배열로 수집
-	    const data = Array.from(selectedRow.querySelectorAll("td")).map(td => td.textContent.trim());
-	
+	 	// td 안의 텍스트를 배열로 수집
+	    const data = Array.from(selectedRow.querySelectorAll("td")).map(function(td) {
+		    return td.textContent.trim();
+		});
+	    
 	 	// 부모창 함수 호출 + 데이터 전달
-		window.opener.item_RowData(data);
+		window.opener.contact_RowData(data);
 		// 팝업 닫기
 	  	window.close();
 	}	
