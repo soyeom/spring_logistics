@@ -282,8 +282,8 @@
 	    LEFT JOIN business_unit BU ON T.bu_id = BU.bu_id
 	    LEFT JOIN warehouse_detail WH_IN ON T.inbound_warehouse_id = WH_IN.warehouse_id AND T.bu_id = WH_IN.bu_id
 	    LEFT JOIN warehouse_detail WH_OUT ON T.outbound_warehouse_id = WH_OUT.warehouse_id AND T.bu_id = WH_OUT.bu_id
-	    LEFT JOIN party P ON T.customer_party_id = P.party_id <!--AND T.bu_id = P.bu_id -->
-	    LEFT JOIN contact C ON T.processor_contact_id = C.contact_id <!-- AND T.bu_id = C.bu_id -->
+	    LEFT JOIN party P ON T.customer_party_id = P.party_id AND T.bu_id = P.bu_id
+	    LEFT JOIN contact C ON T.processor_contact_id = C.contact_id AND T.bu_id = C.bu_id
 	    WHERE 1=1
 	    <if test="searchPeriodStart != null">
 	        AND T.transaction_date &gt;= #{searchPeriodStart, jdbcType=DATE}

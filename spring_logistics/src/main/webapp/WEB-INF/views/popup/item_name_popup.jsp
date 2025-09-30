@@ -27,8 +27,7 @@
 	            	<option value = "10">품명</option>
 	            	<option value = "20">품번</option>
 	            	<option value = "30">규격</option>
-	            	<option value = "40">품명@@규격</option>
-	            	<option value = "50">영문명</option>
+	            	<option value = "40">영문명</option>
 	        	</select>
 	     	</div>
 	     	<div style = "flex: 7;">
@@ -108,7 +107,7 @@
 		}
 		
 		$.ajax({
-			url: '/popup/item_name',
+			url: '/popup/item_name_list',
 			data: formData,
 			type: 'GET',
 			dataType: 'json',
@@ -127,7 +126,7 @@
 	                    '<td class="text-center">' + (board.column4 || '') + '</td>' +
 	                    '<td class="text-center">' + (board.column5 || '') + '</td>' +
 	                    '<td class="text-center">' + (board.column6 || '') + '</td>' +
-	                    '<td class="text-center">' + (board.column7 || '') + '</td>' +
+	                    '<td class="text-center">' + (board.column7 || '') + '</td>';
 	                   
 	                tbody.appendChild(tr);
 	            });
