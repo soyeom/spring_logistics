@@ -21,4 +21,6 @@ public interface PopupService {
 	public List<PopupVO> itemname_List(String gubun, String text);
     public List<PopupVO> warehousecode_List(String gubun, String text);
     public List<PopupVO> warehousename_List(String gubun, String text);
+	 // ✅ 수주번호 (inbound_master) 진형
+    public List<PopupVO> inboundMaster_List(String gubun, String text);
 }

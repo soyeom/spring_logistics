@@ -3,8 +3,6 @@ package org.logistics.controller;
 import java.util.List;
 
 import org.logistics.domain.PopupVO;
-import org.logistics.domain.WareHouseContactListVO;
-import org.logistics.service.InvFlowConfigService;
 import org.logistics.service.PopupService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -135,5 +133,18 @@ public class PopupController {
 			@RequestParam(required = false) String text) {
 		return popupService.warehousename_List(gubun, text);
 	}
+	
+	// 수주 진형
+	@GetMapping("/inbound_popup")
+	public void inbound_Popup(Model model, @RequestParam(required = false) String gubun,
+			@RequestParam(required = false) String text) {
+		model.addAttribute("list", popupService.inboundMaster_List(gubun, text));
+	}
 
+	@GetMapping("/inbound_list")
+	@ResponseBody
+	public List<PopupVO> inbound_list(@RequestParam(required = false) String gubun,
+			@RequestParam(required = false) String text) {
+		return popupService.inboundMaster_List(gubun, text);
+	}
 }

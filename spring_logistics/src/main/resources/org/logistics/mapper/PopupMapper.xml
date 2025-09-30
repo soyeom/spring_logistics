@@ -136,9 +136,56 @@
                 w.warehouse_name LIKE '%' || #{text} || '%'
             </if>
         </where>
-    </select>
-
-    
-   
+  </select>
 	
+	
+	 <!-- ================== 수주번호 (inbound_master) ================진형== --> 
+ <select id="inboundMaster_List" resultType="org.logistics.domain.PopupVO">
+    SELECT ib.inbound_id       AS column1,
+           bu.bu_name          AS column2,
+           TO_CHAR(ib.inbound_date, 'YYYY-MM-DD') AS column3,
+           ib.local_flag       AS column4,
+           p.party_name        AS column5,
+           c.contact_name      AS column6,
+           ib.inbound_type     AS column7,
+           ib.inbound_complete AS column8,
+           TO_CHAR(ib.created_at, 'YYYY-MM-DD') AS column9,
+           p.party_id          AS column10,   -- 거래처번호
+           c.department        AS column11,    -- 부서
+           bu.bu_id            AS column12
+    FROM inbound_master ib
+    JOIN business_unit bu ON ib.bu_id = bu.bu_id
+    JOIN party p          ON ib.party_id = p.party_id
+    JOIN contact c        ON ib.contact_id = c.contact_id  <!-- ✅ INNER JOIN -->
+    <where>
+        <if test="gubun == '10'">
+            ib.inbound_id LIKE '%' || #{text} || '%'
+        </if>
+        <if test="gubun == '20'">
+            bu.bu_name LIKE '%' || #{text} || '%'
+        </if>
+        <if test="gubun == '30'">
+            TO_CHAR(ib.inbound_date, 'YYYY-MM-DD') LIKE '%' || #{text} || '%'
+        </if>
+        <if test="gubun == '40'">
+            ib.local_flag LIKE '%' || #{text} || '%'
+        </if>
+        <if test="gubun == '50'">
+            p.party_name LIKE '%' || #{text} || '%'
+        </if>
+        <if test="gubun == '60'">
+            c.contact_name LIKE '%' || #{text} || '%'
+        </if>
+        <if test="gubun == '70'">
+            ib.inbound_type LIKE '%' || #{text} || '%'
+        </if>
+        <if test="gubun == '80'">
+            ib.inbound_complete LIKE '%' || #{text} || '%'
+        </if>
+        <if test="gubun == '90'">
+            TO_CHAR(ib.created_at, 'YYYY-MM-DD') LIKE '%' || #{text} || '%'
+        </if>
+    </where>
+</select>
+
 </mapper>

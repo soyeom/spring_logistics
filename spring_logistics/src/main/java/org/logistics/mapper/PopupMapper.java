@@ -23,4 +23,6 @@ public interface PopupMapper {
     public List<PopupVO> warehousecode_List(@Param("gubun") String gubun, @Param("text") String text);
     public List<PopupVO> warehousename_List(@Param("gubun") String gubun, @Param("text") String text);
     public List<PopupVO> assetclass_List(@Param("gubun") String gubun, @Param("text") String text);
+	// ✅ 수주번호 (inbound_master) 조회 진형
+    public List<PopupVO> inboundMaster_List(@Param("gubun") String gubun, @Param("text") String text);
 }
