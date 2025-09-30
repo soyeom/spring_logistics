@@ -18,10 +18,6 @@
 		, i.base_unit AS baseUnit
 		,
 		i.safety_stock_qty AS safetyQty
-		, SUM(CASE WHEN im.inbound_complete =
-		'Y' THEN id.qty END) AS totalQty <!-- 입고완료(Y) 건의 수량 합계 -->
-		, SUM(CASE WHEN om.out_complete = 'Y' THEN od.qty END) AS totalOutQty <!-- 
-			출고완료(Y) 건의 수량 합계 -->
 		, SUM(CASE WHEN im.inbound_complete = 'N' AND im.inbound_type = '생산의뢰'
 		THEN id.qty END) AS requestQty <!-- 입고 미완료(N) + '생산의뢰' 유형 -->
 		, SUM(CASE WHEN im.inbound_complete = 'N' AND im.inbound_type = '구매발주'
@@ -89,12 +85,6 @@
 		, i.item_id AS itemId
 		, i.base_unit AS baseUnit
 		, i.safety_stock_qty AS safetyQty
-
-		-- ✅ 입고/출고 완료 합계
-		, SUM(CASE WHEN im.inbound_complete = 'Y' THEN id.qty END) AS totalQty
-		, SUM(CASE WHEN om.out_complete = 'Y' THEN od.qty END) AS totalOutQty
-
-		-- ✅ 입고 미완료 유형별
 		, SUM(CASE WHEN im.inbound_complete = 'N' AND im.inbound_type = '생산의뢰'
 		THEN id.qty END) AS requestQty
 		, SUM(CASE WHEN im.inbound_complete = 'N' AND im.inbound_type = '구매발주'
@@ -105,8 +95,6 @@
 		'기타입고요청' THEN id.qty END) AS inboundQty
 		, SUM(CASE WHEN im.inbound_complete = 'N' THEN id.qty END) AS
 		expectedQty
-
-		-- ✅ 출고 미완료 유형별
 		, SUM(CASE WHEN om.out_complete = 'N' AND om.out_type = '수주' THEN
 		od.qty END) AS receivedQty
 		, SUM(CASE WHEN om.out_complete = 'N' AND om.out_type = '적송요청' THEN

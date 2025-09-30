@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.logistics.mapper.WarehouseStockMapper">
+
+<select id="getWarehouseStocks" parameterType="map"
+        resultType="org.logistics.domain.WarehouseStockVO">
+    SELECT
+      i.asset_class        AS assetClass,
+      i.item_id            AS itemId,
+      i.item_name          AS itemName,
+      i.spec               AS spec,
+      i.base_unit          AS baseUnit,
+      i.big_category       AS bigCategory,
+      i.mid_category       AS midCategory,
+      i.small_category     AS smallCategory,
+      i.importance_level   AS importanceLevel,
+      NVL(wd_in.warehouse_name, wd_out.warehouse_name) AS warehouseName,
+
+      <choose>
+        <!-- 가용재고 -->
+        <when test="criteria == 'available'">
+          (
+            (SUM(CASE WHEN im.inbound_complete = 'Y' THEN id.qty ELSE 0 END)
+           - SUM(CASE WHEN om.out_complete    = 'Y' THEN od.qty ELSE 0 END))
+          + (SUM(CASE WHEN im.inbound_complete = 'N' THEN id.qty ELSE 0 END)
+           - SUM(CASE WHEN om.out_complete    = 'N' THEN od.qty ELSE 0 END))
+          ) AS stockQty
+        </when>
+
+        <!-- 자산재고 -->
+        <when test="criteria == 'asset'">
+          (SUM(CASE WHEN im.inbound_complete = 'Y' THEN id.qty ELSE 0 END)
+         - SUM(CASE WHEN om.out_complete    = 'Y' THEN od.qty ELSE 0 END)) AS stockQty
+        </when>
+
+        <!-- 실재고 (기본값) -->
+        <otherwise>
+          (SUM(CASE WHEN im.inbound_complete = 'Y' THEN id.qty ELSE 0 END)
+         - SUM(CASE WHEN om.out_complete    = 'Y' THEN od.qty ELSE 0 END)) AS stockQty
+        </otherwise>
+      </choose>
+
+    FROM item_master i
+    LEFT JOIN inbound_detail id   ON i.item_id = id.item_id
+    LEFT JOIN inbound_master im   ON id.inbound_id = im.inbound_id
+    LEFT JOIN out_detail od       ON i.item_id = od.item_id
+    LEFT JOIN out_master om       ON od.out_id = om.out_id
+    LEFT JOIN warehouse_detail wd_in  ON id.warehouse_id = wd_in.warehouse_id
+    LEFT JOIN warehouse_detail wd_out ON od.warehouse_id = wd_out.warehouse_id
+    LEFT JOIN warehouse_master wm
+           ON wm.warehouse_master_id = NVL(wd_in.warehouse_master_id, wd_out.warehouse_master_id)
+
+    <where>
+      <if test="criteria == 'actual'">
+        AND wm.actual_stock_flag = 'Y'
+      </if>
+      <if test="criteria == 'available'">
+        AND wm.available_stock_flag = 'Y'
+      </if>
+      <if test="criteria == 'asset'">
+        AND wm.asset_stock_flag = 'Y'
+      </if>
+    </where>
+
+    GROUP BY
+      i.asset_class, i.item_id, i.item_name, i.spec, i.base_unit,
+      i.big_category, i.mid_category, i.small_category, i.importance_level,
+      NVL(wd_in.warehouse_name, wd_out.warehouse_name)
+
+    ORDER BY
+      i.item_id ASC,
+      NVL(wd_in.warehouse_name, wd_out.warehouse_name) ASC
+</select>
+
+
+
+<select id="search" parameterType="map"
+        resultType="org.logistics.domain.WarehouseStockVO">
+    SELECT
+      i.asset_class        AS assetClass,
+      i.item_id            AS itemId,
+      i.item_name          AS itemName,
+      i.spec               AS spec,
+      i.base_unit          AS baseUnit,
+      i.big_category       AS bigCategory,
+      i.mid_category       AS midCategory,
+      i.small_category     AS smallCategory,
+      i.importance_level   AS importanceLevel,
+      NVL(wd_in.warehouse_name, wd_out.warehouse_name) AS warehouseName,
+
+      <choose>
+        <!-- 가용재고 -->
+        <when test="criteria == 'available'">
+          (
+            (SUM(CASE WHEN im.inbound_complete = 'Y' THEN id.qty ELSE 0 END)
+           - SUM(CASE WHEN om.out_complete    = 'Y' THEN od.qty ELSE 0 END))
+          + (SUM(CASE WHEN im.inbound_complete = 'N' THEN id.qty ELSE 0 END)
+           - SUM(CASE WHEN om.out_complete    = 'N' THEN od.qty ELSE 0 END))
+          ) AS stockQty
+        </when>
+
+        <!-- 실재고 / 자산재고 -->
+        <otherwise>
+          (SUM(CASE WHEN im.inbound_complete = 'Y' THEN id.qty ELSE 0 END)
+         - SUM(CASE WHEN om.out_complete    = 'Y' THEN od.qty ELSE 0 END)) AS stockQty
+        </otherwise>
+      </choose>
+
+    FROM item_master i
+    LEFT JOIN inbound_detail id   ON i.item_id = id.item_id
+    LEFT JOIN inbound_master im   ON id.inbound_id = im.inbound_id
+    LEFT JOIN out_detail od       ON i.item_id = od.item_id
+    LEFT JOIN out_master om       ON od.out_id = om.out_id
+    LEFT JOIN warehouse_detail wd_in  ON id.warehouse_id = wd_in.warehouse_id
+    LEFT JOIN warehouse_detail wd_out ON od.warehouse_id = wd_out.warehouse_id
+    LEFT JOIN warehouse_master wm
+           ON wm.warehouse_master_id = NVL(wd_in.warehouse_master_id, wd_out.warehouse_master_id)
+
+    <where>
+      <if test="buId != null and buId != ''">
+        AND wm.bu_id = #{buId}
+      </if>
+      <if test="warehouseName != null and warehouseName != ''">
+        AND NVL(wd_in.warehouse_name, wd_out.warehouse_name) LIKE '%' || #{warehouseName} || '%'
+      </if>
+      <if test="assetClass != null and assetClass != ''">
+        AND i.asset_class LIKE '%' || #{assetClass} || '%'
+      </if>
+      <if test="importanceLevel != null and importanceLevel != ''">
+        AND i.importance_level LIKE '%' || #{importanceLevel} || '%'
+      </if>
+      <if test="bigCategory != null and bigCategory != ''">
+        AND i.big_category = #{bigCategory}
+      </if>
+      <if test="midCategory != null and midCategory != ''">
+        AND i.mid_category = #{midCategory}
+      </if>
+      <if test="smallCategory != null and smallCategory != ''">
+        AND i.small_category = #{smallCategory}
+      </if>
+      <if test="itemName != null and itemName != ''">
+        AND i.item_name LIKE '%' || #{itemName} || '%'
+      </if>
+      <if test="itemId != null and itemId != ''">
+        AND i.item_id LIKE '%' || #{itemId} || '%'
+      </if>
+      <if test="spec != null and spec != ''">
+        AND i.spec LIKE '%' || #{spec} || '%'
+      </if>
+
+      <!-- 기준 flag -->
+      <if test="criteria == 'actual'">
+        AND wm.actual_stock_flag = 'Y'
+      </if>
+      <if test="criteria == 'available'">
+        AND wm.available_stock_flag = 'Y'
+      </if>
+      <if test="criteria == 'asset'">
+        AND wm.asset_stock_flag = 'Y'
+      </if>
+    </where>
+
+    GROUP BY
+      i.asset_class, i.item_id, i.item_name, i.spec, i.base_unit,
+      i.big_category, i.mid_category, i.small_category, i.importance_level,
+      NVL(wd_in.warehouse_name, wd_out.warehouse_name)
+
+    ORDER BY
+      i.item_id ASC,
+      NVL(wd_in.warehouse_name, wd_out.warehouse_name) ASC
+</select>
+
+
+
+	<select id="getBusinessUnits" resultType="map">
+		SELECT bu_id AS BU_ID,
+		bu_name AS BU_NAME
+		FROM business_unit
+		ORDER BY bu_id
+	</select>
+
+	<select id="getWarehouseNames" resultType="map">
+		SELECT DISTINCT
+		w.warehouse_name AS WAREHOUSE_NAME,
+		w.warehouse_id AS WAREHOUSE_ID
+		FROM
+		warehouse_detail w
+		ORDER BY w.warehouse_name
+	</select>
+
+	<select id="getAssetClasses" resultType="map">
+		SELECT DISTINCT
+		asset_class AS ASSET_CLASS
+		FROM item_master
+		ORDER BY asset_class
+	</select>
+
+	<select id="getImportanceLevels" resultType="map">
+		SELECT DISTINCT
+		importance_level AS IMPORTANCE_LEVEL
+		FROM item_master
+		ORDER BY
+		importance_level
+	</select>
+
+	<select id="getBigCategorys" resultType="map">
+		SELECT DISTINCT
+		big_category AS BIG_CATEGORY
+		FROM item_master
+		ORDER BY big_category
+	</select>
+
+	<select id="getMidCategorys" resultType="map">
+		SELECT DISTINCT
+		mid_category AS MID_CATEGORY
+		FROM item_master
+		ORDER BY mid_category
+	</select>
+
+	<select id="getSmallCategorys" resultType="map">
+		SELECT DISTINCT
+		small_category AS SMALL_CATEGORY
+		FROM item_master
+		ORDER BY
+		small_category
+	</select>
+
+	<select id="getItemNames" resultType="map">
+		SELECT item_id AS ITEM_ID,
+		item_name AS ITEM_NAME
+		FROM item_master
+		ORDER BY item_id
+	</select>
+
+	<select id="getSpecs" resultType="map">
+		SELECT spec AS SPEC
+		FROM
+		item_master
+		ORDER BY spec
+	</select>
+
+</mapper>

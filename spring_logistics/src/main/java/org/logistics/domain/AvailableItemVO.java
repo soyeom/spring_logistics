@@ -13,8 +13,6 @@ public class AvailableItemVO {
 	private String baseUnit;
 	private Integer safetyQty;
 	
-    private Integer totalQty;
-    private Integer totalOutQty;
     private Integer requestQty;    
     private Integer orderQty;       
     private Integer transferQty;     
