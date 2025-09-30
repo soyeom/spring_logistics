@@ -45,6 +45,98 @@
 	
 	</select>
 	
+	<select id = "category_List_Big" resultType = "org.logistics.domain.PopupVO">
+	
+		select item_id as column1
+		     , big_category as column2
+		from item_master
+		<where>
+	        <if test = "gubun == 10">
+	            big_category like '%' ||  #{text} || '%'
+	        </if>
+    	</where>
+	
+	</select>
+	
+	<select id = "category_List_Mid" resultType = "org.logistics.domain.PopupVO">
+	
+		select item_id as column1
+		     , big_category as column2
+		     , mid_category as column3
+		from item_master
+		<where>
+	        <if test = "gubun == 10">
+	            mid_category like '%' ||  #{text} || '%'
+	        </if>
+    	</where>
+	
+	</select>
+	
+	<select id = "category_List_Small" resultType = "org.logistics.domain.PopupVO">
+	
+		select item_id as column1
+		     , big_category as column2
+		     , mid_category as column3
+		     , small_category as column4
+		from item_master
+		<where>
+	        <if test = "gubun == 10">
+	            small_category like '%' ||  #{text} || '%'
+	        </if>
+    	</where>
+	
+	</select>
+	
+	<select id = "itemname_List" resultType = "org.logistics.domain.PopupVO">
+	
+		select item_id as column1
+			, spec as column2
+			, item_name as column3
+			, asset_class as column4
+			, small_category as column5
+			, base_unit as column6
+			, english_name as column7
+		from item_master
+		
+		<where>
+			<if test = "gubun == 10">
+				item_name like '%' || #{text} || '%'
+			</if>
+			<if test = "gubun == 20">
+				item_id like '%' || #{text} || '%'
+			</if>
+			<if test = "gubun == 30">
+				spec like '%' || #{text} || '%'
+			</if>
+			<if test = "gubun == 40">
+				english_name like '%' || #{text} || '%'
+			</if>
+		</where>
+	
+	</select>
+    
+        <select id="warehousecode_List" resultType="org.logistics.domain.PopupVO">
+        SELECT DISTINCT warehouse_internal_code AS column1
+             , warehouse_internal_code           AS column2
+        FROM warehouse_master
+        <where>
+            <if test="gubun == '10'">
+                warehouse_internal_code LIKE '%' || #{text} || '%'
+            </if>
+        </where>
+    </select>
+    
+        <select id="warehousename_List" resultType="org.logistics.domain.PopupVO">
+        SELECT DISTINCT w.warehouse_id   AS column1
+             , w.warehouse_name          AS column2
+             , w.bu_id                   AS column3
+        FROM warehouse_detail w
+        <where>
+            <if test="gubun == '10'">
+                w.warehouse_name LIKE '%' || #{text} || '%'
+            </if>
+        </where>
+  </select>
 	
 	
 	 <!-- ================== 수주번호 (inbound_master) ================진형== --> 
@@ -95,8 +187,5 @@
         </if>
     </where>
 </select>
-
-
-
 
 </mapper>
