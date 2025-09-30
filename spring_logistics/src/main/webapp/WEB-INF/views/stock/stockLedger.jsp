@@ -229,7 +229,7 @@
         	
         	console.log(`[콜백] 품명 적용 완료: ${itemName}, 품번 적용 완료: ${itemId}`);
         	
-        	// 데이터 처리 후 currentCategoryType 초기화
+        	// 데이터 처리 후 currentCategoryType 초기화.
         	currentCategoryType = '';
         }
     	
