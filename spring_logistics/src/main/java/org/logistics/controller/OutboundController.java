@@ -27,9 +27,6 @@ public class OutboundController {
 
         List<OutboundVO> list = outboundService.getByItemId(params);
 
-        // ✅ 컨트롤러 로그
-        System.out.println(">>> OutboundController result size: " + list.size());
-
         return list;
     }
 }

@@ -15,13 +15,16 @@
 		</section>
 
 		<!-- 검색바 -->
-		<section class="popup-content">
-			<select class="search-bar" id="searchOption">
-				<option value="name">품목소분류</option>
-			</select> <input class="search-text" id="searchKeyword" type="text"
-				placeholder="검색어를 입력하세요" autocomplete="off">
-			<button class="btn-primary" onclick="filterTable()">검색</button>
+		<section class="popup-search-bar">
+			<div class="search-bar">
+				<select id="searchOption">
+					<option value="name">품목소분류</option>
+				</select> <input class="search-text" id="searchKeyword" type="text"
+					placeholder="검색어를 입력하세요" autocomplete="off">
+				<button class="btn-primary" onclick="filterTable()">검색</button>
+			</div>
 		</section>
+
 
 		<!-- 검색 결과 테이블 -->
 		<section class="popup-body">
@@ -33,7 +36,7 @@
 				</thead>
 				<tbody id="category-tbody">
 					<c:forEach var="sc" items="${smallCategoryList}">
-						  <tr onclick="selectSmallCategory('${sc.SMALL_CATEGORY}')">
+						<tr onclick="selectSmallCategory('${sc.SMALL_CATEGORY}')">
 							<td>${sc.SMALL_CATEGORY}</td>
 						</tr>
 					</c:forEach>
