@@ -123,5 +123,31 @@
 		</where>
 	
 	</select>
+    
+        <select id="warehousecode_List" resultType="org.logistics.domain.PopupVO">
+        SELECT DISTINCT warehouse_internal_code AS column1
+             , warehouse_internal_code           AS column2
+        FROM warehouse_master
+        <where>
+            <if test="gubun == '10'">
+                warehouse_internal_code LIKE '%' || #{text} || '%'
+            </if>
+        </where>
+    </select>
+    
+        <select id="warehousename_List" resultType="org.logistics.domain.PopupVO">
+        SELECT DISTINCT w.warehouse_id   AS column1
+             , w.warehouse_name          AS column2
+             , w.bu_id                   AS column3
+        FROM warehouse_detail w
+        <where>
+            <if test="gubun == '10'">
+                w.warehouse_name LIKE '%' || #{text} || '%'
+            </if>
+        </where>
+    </select>
+
+    
+   
 	
 </mapper>

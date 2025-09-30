@@ -51,4 +51,17 @@ public class PopupServiceImpl implements PopupService {
 		
 		return popupMapper.itemname_List(gubun, text);
 	}
+	
+	@Override
+	public List<PopupVO> warehousecode_List(String gubun, String text) {
+		
+		return popupMapper.warehousecode_List(gubun, text);
+	}
+	
+	@Override
+	public List<PopupVO> warehousename_List(String gubun, String text) {
+		
+		return popupMapper.warehousename_List(gubun, text);
+	}
+	
 }

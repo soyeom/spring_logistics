@@ -19,4 +19,8 @@ public interface PopupMapper {
 	public List<PopupVO> category_List_Mid(@Param ("gubun") String gubun, @Param ("text") String text);
 	public List<PopupVO> category_List_Small(@Param ("gubun") String gubun, @Param ("text") String text);
 	public List<PopupVO> itemname_List(@Param ("gubun") String gubun, @Param ("text") String text);
+    public List<PopupVO> businessunit_List(@Param("gubun") String gubun, @Param("text") String text);
+    public List<PopupVO> warehousecode_List(@Param("gubun") String gubun, @Param("text") String text);
+    public List<PopupVO> warehousename_List(@Param("gubun") String gubun, @Param("text") String text);
+    public List<PopupVO> assetclass_List(@Param("gubun") String gubun, @Param("text") String text);
 }
