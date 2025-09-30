@@ -19,12 +19,12 @@ public class StockLedgerResultDto {
 	private BigDecimal outboundQty; // 출고수량 out_detail.qty
 	private BigDecimal stockQty; // 재고수량 입고와 출고를 쿼리로 만들어서 구함
 	private String managementId;// 관리번호
-	private String businessUnit; // 사업단위 business_unit.bu_name
+	private String buName; // 사업단위 business_unit.bu_name
 	private String inboundWarehouse; // 입고창고 inbound_detail.warehouse_id 를 기준으로 warehouse_detail.warehouse_name 조인
 	private String outboundWarehouse; // 출고창고 inbound_detail.warehouse_id 를 기준으로 warehouse_detail.warehouse_name 조인
-	private String customer; // 거래처 out_master.party_id 를 기준으로 party.party_name 조인
-	private String processingDepartment; // 처리부서
-	private String processor; // 처리자
+	private String partyName; // 거래처 out_master.party_id 를 기준으로 party.party_name 조인
+	private String department; // 처리부서
+	private String contactName; // 처리자
 	private String transactionType; // 거래 타입 (입고/출고 구분)
 	private Long transactionId; // 고유 ID (관리번호 생성용)
 }

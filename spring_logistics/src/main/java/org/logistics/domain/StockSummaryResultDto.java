@@ -7,7 +7,7 @@ import lombok.Data;
 @Data
 public class StockSummaryResultDto {
 
-    private String itemInternalCode; // 품번 - item_master item_id로 바꿔야함
+    private Long itemId; // 품번 - item_master item_id로 바꿔야함
     private String itemAssetClass; // 품목자산분류 - item_master asset_class
     private String itemBigCategory; // 품목대분류 - item_master big_category
     private String itemMidCategory; // 품목중분류 - item_master mid_category

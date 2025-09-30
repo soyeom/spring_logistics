@@ -4,7 +4,6 @@ import java.math.BigDecimal;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
-import org.logistics.domain.ItemCategoryDto;
 import org.logistics.domain.SearchCriteriaDto;
 import org.logistics.domain.StockLedgerResultDto;
 import org.logistics.domain.StockSummaryResultDto;

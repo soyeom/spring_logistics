@@ -3,38 +3,44 @@
 <mapper namespace="org.logistics.mapper.StockSummaryMapper">
 
 <!--
-<mapper> 및 <resultMap> 태그
+<mapper> 태그
 	<mapper namespace="org.logistics.mapper.StockSummaryMapper">:
 	이 XML 파일이 어떤 Java 인터페이스에 연결되는지 정의합니다.
 	namespace 속성 값은 반드시 StockSummaryMapper.java의 전체 경로와 일치해야 합니다.
-	
-	<resultMap id="stockSummaryResultMap" ...
 -->
 
 	<!-- 메인 조회 쿼리 -->
 	<resultMap id="stockSummaryResultMap" type="org.logistics.domain.StockSummaryResultDto">
-    	<result column="ITEM_INTERNAL_CODE" property="itemInternalCode"/>
-    	<result column="ITEM_ASSET_CLASS" property="itemAssetClass"/>
-    	<result column="ITEM_BIG_CATEGORY" property="itemBigCategory"/>
-    	<result column="ITEM_MID_CATEGORY" property="itemMidCategory"/>
-    	<result column="ITEM_NAME" property="itemName"/>
-    	<result column="INBOUND_QTY" property="inboundQty"/>
-    	<result column="ITEM_UNIT" property="itemUnit"/>
-    	<result column="ITEM_STATUS" property="itemStatus"/>
-    	<result column="STOCK_QTY" property="stockQty"/>
-    	<result column="CARRIED_OVER_QTY" property="carriedOverQty"/>
-    	<result column="OUTBOUND_QTY" property="outboundQty"/>
-    	<result column="PRODUCTION_INBOUND" property="productionInbound"/>
-    	<result column="OUTSOURCING_INBOUND" property="outsourcingInbound"/>
-    	<result column="PURCHASE_INBOUND" property="purchaseInbound"/>
-    	<result column="IMPORT_INBOUND" property="importInbound"/>
-    	<result column="DELIVERY_SLIP_OUTBOUND" property="deliverySlipOutbound"/>
-    	<result column="OTHER_OUTBOUND" property="otherOutbound"/>
-    	<result column="SALES_CONSIGNMENT_OUTBOUND" property="salesConsignmentOutbound"/>
-    	<result column="WORK_PERFORMANCE_OUTBOUND" property="workPerformanceOutbound"/>
-    	<result column="OUTSOURCING_OUTBOUND" property="outsourcingOutbound"/>
+    	<result column="ITEM_ID" property="itemId"/> <!-- 품번 -->
+    	<result column="ITEM_ASSET_CLASS" property="itemAssetClass"/> <!-- 품목자산분류 -->
+    	<result column="ITEM_BIG_CATEGORY" property="itemBigCategory"/> <!-- 품목대분류 -->
+    	<result column="ITEM_MID_CATEGORY" property="itemMidCategory"/> <!-- 품목중분류 -->
+    	<result column="ITEM_NAME" property="itemName"/> <!-- 품명 -->
+    	<result column="INBOUND_QTY" property="inboundQty"/> <!-- 총입고수량 -->
+    	<result column="ITEM_UNIT" property="itemUnit"/> <!-- 단위 -->
+    	<result column="ITEM_STATUS" property="itemStatus"/> <!-- 품목상태 -->
+    	<result column="STOCK_QTY" property="stockQty"/> <!-- 재고수량 -->
+    	<result column="CARRIED_OVER_QTY" property="carriedOverQty"/> <!-- 이월수량 -->
+    	<result column="OUTBOUND_QTY" property="outboundQty"/> <!-- 총출고수량 -->
+    	<result column="PRODUCTION_INBOUND" property="productionInbound"/> <!-- 입고(생산입고) -->
+    	<result column="OUTSOURCING_INBOUND" property="outsourcingInbound"/> <!-- 입고(외주입고) -->
+    	<result column="PURCHASE_INBOUND" property="purchaseInbound"/> <!-- 입고(구매입고) -->
+    	<result column="IMPORT_INBOUND" property="importInbound"/> <!-- 입고(수입입고) -->
+    	<result column="DELIVERY_SLIP_OUTBOUND" property="deliverySlipOutbound"/> <!-- 출고(거래명세표) -->
+    	<result column="OTHER_OUTBOUND" property="otherOutbound"/> <!-- 출고(기타출고) -->
+    	<result column="SALES_CONSIGNMENT_OUTBOUND" property="salesConsignmentOutbound"/> <!-- 출고(판매보관품출고) -->
+    	<result column="WORK_PERFORMANCE_OUTBOUND" property="workPerformanceOutbound"/> <!-- 출고(작업실적) -->
+    	<result column="OUTSOURCING_OUTBOUND" property="outsourcingOutbound"/> <!-- 출고(외주입고) -->
 	</resultMap>	
 	<!-- resultMap 태그를 사용하여 데이터베이스 컬럼(column)과 DTO의 필드명(property)을 정확히 1:1로 매칭 -->
+	
+	<!--
+	<resultMap> 태그
+		<resultMap id="stockSummaryResultMap" ...>: SQL 쿼리 결과의 데이터베이스 컬럼명과
+		Java DTO(Data Transfer Object)의 필드명을 매핑합니다. 예를 들어, SQL 쿼리의
+		ITEM_ID 컬럼 값을 StockSummaryResultDto의 itemId필드에 자동으로
+		넣어주도록 설정합니다.
+	-->
 
 	<select id="selectStockSummaryList" parameterType="org.logistics.domain.SearchCriteriaDto" resultMap="stockSummaryResultMap">
 	    WITH CarriedOver AS (
@@ -59,6 +65,12 @@
 	        GROUP BY
 	            COALESCE(T1.item_id, T3.item_id)
 	    ),
+	    <!--
+	    WITH CarriedOver AS (...):	
+	    	이월 재고를 계산하는 임시 테이블(CTE: Common Table Expression)입니다.
+	    	이전에 발생한 모든 입고(inbound_detail, inbound_master)와 출고(out_detail, out_master)를
+	    	합산하여 기간 시작 시점의 재고를 구합니다.
+	    -->
 	    PeriodInbound AS (
 	        SELECT
 	            T1.item_id,
@@ -78,6 +90,11 @@
 	        </if>
 	        GROUP BY T1.item_id
 	    ),
+	    <!--
+	    WITH PeriodInbound AS (...):
+	    	조회 기간(searchPeriodStart ~ searchPeriodEnd)동안의 총 입고 수량을 계산하고,
+	    	inbound_type 별로 생산, 외주, 구매, 수입 입고 수량을 각각 집계합니다.
+	    -->
 	    PeriodOutbound AS (
 	        SELECT
 	            T1.item_id,
@@ -98,8 +115,12 @@
 	        </if>
 	        GROUP BY T1.item_id
 	    )
+	    <!--
+	    WITH PeriodOutbound AS (...):
+	    	조회 기간 동안의 총 출고 수량을 계산하고, out_type 별로 거래명세표, 기타출고, 판매보관품출고, 작업실적, 외주입고 수량을 각각 집계합니다.
+	    -->
 	    SELECT
-	        IM.item_id AS ITEM_INTERNAL_CODE,
+	        IM.item_id AS ITEM_ID,
 	        IM.asset_class AS ITEM_ASSET_CLASS,
 	        IM.big_category AS ITEM_BIG_CATEGORY,
 	        IM.mid_category AS ITEM_MID_CATEGORY,
@@ -142,8 +163,8 @@
 	    <if test="itemName != null and itemName != ''">
 	        AND IM.item_name LIKE '%' || #{itemName} || '%'
 	    </if>
-	    <if test="itemInternalCode != null and itemInternalCode != ''">
-	        AND IM.item_id = #{itemInternalCode}
+	    <if test="itemId != null and itemId != ''">
+	        AND IM.item_id = #{itemId}
 	    </if>
 	    <if test="itemStatus != null and itemStatus != ''">
 	        AND IM.item_status = #{itemStatus}
@@ -154,147 +175,151 @@
 	    ORDER BY
 	        IM.item_name
 	</select>
-    
-    <!-- 모달 조회 쿼리 -->
-    <resultMap id="itemCategoryResultMap" type="org.logistics.domain.ItemCategoryDto">
-    	<result column="BIG_CATEGORY" property="bigCategory"/>
-    	<result column="MID_CATEGORY" property="midCategory"/>
-    	<result column="SMALL_CATEGORY" property="smallCategory"/>
-    </resultMap>
-    
-    <!-- 테이블에서 중복되지 않는(distinct) 품목 대분류를 조회하는 쿼리 -->
-    <select id="selectDistinctBigCategories" resultMap="itemCategoryResultMap">
-    	SELECT DISTINCT big_category FROM item_master
-    	<where> <!-- 태그 내부의 <if> 조건이 거짓이면 아무것도 추가되지 않음 -->
-        	<if test="searchTerm != null and searchTerm != ''">
-            	big_category LIKE CONCAT(CONCAT('%', #{searchTerm}), '%')
-        	</if>
-    	</where>
-    	ORDER BY big_category
-	</select>
 	
-	<!-- 테이블에서 중복되지 않는 품목 중분류를 조회하는 쿼리 -->
-	<select id="selectDistinctMidCategories" resultMap="itemCategoryResultMap">
-	    SELECT DISTINCT big_category, mid_category FROM item_master
-	    <where>
-	        <if test="searchTerm != null and searchTerm != ''">
-	            mid_category LIKE CONCAT(CONCAT('%', #{searchTerm}), '%')
-	        </if>
-	    </where>
-	    ORDER BY big_category, mid_category
-	</select>
-	
-	<!-- 테이블에서 중복되지 않는 품목 소분류를 조회하는 쿼리 -->
-	<select id="selectDistinctSmallCategories" resultMap="itemCategoryResultMap">
-	    SELECT DISTINCT big_category, mid_category, small_category FROM item_master
-	    <where>
-	        <if test="searchTerm != null and searchTerm != ''">
-	            small_category LIKE CONCAT(CONCAT('%', #{searchTerm}), '%')
-	        </if>
-	    </where>
-	    ORDER BY big_category, mid_category, small_category
-	</select>
+	<!--
+	<select id="selectStockSummaryList"> (메인 수불집계 조회)
+		이 쿼리는 여러 테이블을 조합하여 특정 기간 동안의 재고 수불집계 데이터를 생성합니다.
+	메인 SELECT 문:
+		FROM item_master IM:
+			item_master 테이블을 기준으로 모든 품목 정보를 가져옵니다.
+		LEFT JOIN ...:
+			CarriedOver, PeriodInbound, PeriodOutbound 세 개의 임시 테이블을
+			item_id 를 기준으로 LEFT JOIN 합니다. 이렇게 하면 기간 내 입고/출고 내역이 없는
+			품목도 결과에 포함될 수 있습니다.
+		COALESCE(...):
+			COALESCE 함수는 인자 중 첫 번째로 null 이 아닌 값을 반환합니다.
+			입고나 출고 내역이 없는 품목의 경우, 해당 수량이 null 이 되므로 0으로 변환하여
+			계산 오류를 방지합니다.
+		stock_qty 계산:
+			(COALESCE(C.carried_over_qty, 0) + COALESCE(PI.inbound_qty, 0)
+			- COALESCE(PO.outbound_qty, 0)) 공식을 사용하여 기말 재고를 계산합니다.
+			이는 (기간 전 이월재고) + (기간 중 입고) - (기간 중 출고) 와 같습니다.
+		<if test="...">:
+			MyBatis의 동적 SQL 기능입니다.
+			SearchCriteriaDto 객체에 특정 값이 존재 할 경우에만 WHERE 절에 해당 조건을 추가합니다.
+			예를 들어, itemName 이 존재하면 IM.item_name LIKE ... 조건이 쿼리에 포함됩니다.
+			||는 문자열을 연결하는 연산자입니다.
+	-->
 	
 	<!-- 사업단위별 재고원장조회 쿼리 -->
 	<resultMap id="stockLedgerResultMap" type="org.logistics.domain.StockLedgerResultDto">
 		<result column="TRANSACTION_DATE" property="transactionDate"/> <!-- 일자 -->
 		<result column="TYPE" property="type"/> <!-- 구분(이월재고 등) -->
-		<result column="INOUT_TYPE" property="inOutboundType"/> <!-- 입출고구분 -->
+		<result column="INOUTBOUND_TYPE" property="inOutboundType"/> <!-- 입출고구분 -->
 		<result column="INOUT_CATEGORY" property="inOutboundCategory"/> <!-- 입출고유형 -->
 		<result column="UNIT" property="unit"/> <!-- 단위 -->
 		<result column="INBOUND_QTY" property="inboundQty"/> <!-- 입고수량 -->
 		<result column="OUTBOUND_QTY" property="outboundQty"/> <!-- 출고수량 -->
 		<result column="STOCK_QTY" property="stockQty"/> <!-- 재고수량 -->
 		<result column="MANAGEMENT_ID" property="managementId"/> <!-- 관리번호 -->
-		<result column="BUSINESS_UNIT" property="businessUnit"/> <!-- 사업단위 -->
+		<result column="BU_NAME" property="buName"/> <!-- 사업단위 -->
 		<result column="INBOUND_WAREHOUSE" property="inboundWarehouse"/> <!-- 입고창고 -->
 		<result column="OUTBOUND_WAREHOUSE" property="outboundWarehouse"/> <!-- 출고창고 -->
-		<result column="CUSTOMER" property="customer"/> <!-- 거래처 -->
-		<result column="PROCESSING_DEPARTMENT" property="processingDepartment"/> <!-- 처리부서 -->
-		<result column="PROCESSOR" property="processor"/> <!-- 처리자 -->
+		<result column="PARTY_NAME" property="partyName"/> <!-- 거래처 -->
+		<result column="DEPARTMENT" property="department"/> <!-- 처리부서 -->
+		<result column="CONTACT_NAME" property="contactName"/> <!-- 처리자 -->
 		<result column="TRANSACTION_TYPE" property="transactionType"/> <!-- 거래 타입 -->
 		<result column="TRANSACTION_ID" property="transactionId"/> <!-- 고유 ID -->
-		
 	</resultMap>
 	
 	<select id="selectStockLedgerList" resultMap="stockLedgerResultMap" parameterType="org.logistics.domain.SearchCriteriaDto">
-	    WITH ALL_TRANSACTIONS AS (
+	    WITH ALL_TRANSACTIONS AS
+	    (
+	        -- 입고 내역
 	        SELECT
-	            T2.inbound_date AS transaction_date,
-	            T2.inbound_id AS management_id,
-	            '입고' AS in_outbound_type,
-	            '기간계' AS type,
-	            T2.inbound_type AS in_outbound_category,
-	            T1.qty AS inbound_qty,
-	            0 AS outbound_qty,
+	            T2.inbound_date AS transaction_date, -- 일자(거래발생일자)
+	            '입고' AS type, -- 구분
+	            T2.inbound_id AS management_id, -- 관리번호
+	            T2.inbound_type AS inoutbound_type, -- 입출고구분
+	            T1.qty AS inbound_qty, -- 입고수량
+	            0 AS outbound_qty, -- 출고수량
 	            T1.bu_id,
 	            T1.item_id,
-	            T1.warehouse_id AS inbound_warehouse_id,
-	            NULL AS outbound_warehouse_id,
-	            T2.partner_id AS customer_party_id
+	            T1.warehouse_id AS inbound_warehouse_id, -- 입고창고
+	            NULL AS outbound_warehouse_id, -- 출고창고
+	            T2.partner_id AS customer_party_id,
+	            T2.contact_id AS processor_contact_id
 	        FROM inbound_detail T1
 	        JOIN inbound_master T2 ON T1.inbound_id = T2.inbound_id
-	        <where>
-	            <if test="searchPeriodStart != null">
-	                AND T2.inbound_date &gt;= #{searchPeriodStart}
-	            </if>
-	            <if test="searchPeriodEnd != null">
-	                AND T2.inbound_date &lt;= #{searchPeriodEnd}
-	            </if>
-	            <if test="businessBuName != null and businessBuName != ''">
-	                AND T1.bu_id = (SELECT bu_id FROM business_unit WHERE bu_name = #{businessBuName})
-	            </if>
-	        </where>
+	        
 	        UNION ALL
+	        
+	        -- 출고 내역
 	        SELECT
-	            T2.out_date AS transaction_date,
-	            T2.out_id AS management_id,
-	            '출고' AS in_outbound_type,
-	            '기간계' AS type,
-	            T2.out_type AS in_outbound_category,
-	            0 AS inbound_qty,
-	            T1.qty AS outbound_qty,
+	            T2.out_date AS transaction_date, -- 일자(거래발생일자)
+	            '출고' AS type, -- 구분
+	            T2.out_id AS management_id, -- 관리번호
+	            T2.out_type AS inoutbound_type, -- 입출고구분
+	            0 AS inbound_qty, -- 입고수량
+	            T1.qty AS outbound_qty, -- 출고수량
 	            T1.bu_id,
 	            T1.item_id,
-	            NULL AS inbound_warehouse_id,
-	            T1.warehouse_id AS outbound_warehouse_id,
-	            T2.party_id AS customer_party_id
+	            NULL AS inbound_warehouse_id, -- 입고창고
+	            T1.warehouse_id AS outbound_warehouse_id, -- 출고창고
+	            T2.party_id AS customer_party_id,
+	            T2.contact_id AS processor_contact_id
 	        FROM out_detail T1
 	        JOIN out_master T2 ON T1.out_id = T2.out_id
-	        <where>
-	            <if test="searchPeriodStart != null">
-	                AND T2.out_date &gt;= #{searchPeriodStart}
-	            </if>
-	            <if test="searchPeriodEnd != null">
-	                AND T2.out_date &lt;= #{searchPeriodEnd}
-	            </if>
-	            <if test="businessBuName != null and businessBuName != ''">
-	                AND T1.bu_id = (SELECT bu_id FROM business_unit WHERE bu_name = #{businessBuName})
-	            </if>
-	        </where>
 	    )
 	    SELECT
-	        T.transaction_date,
-	        T.in_outbound_type,
-	        T.in_outbound_category,
-	        I.item_name,
-	        I.base_unit AS unit,
-	        T.inbound_qty,
-	        T.outbound_qty,
-	        SUM(T.inbound_qty - T.outbound_qty) OVER (ORDER BY T.transaction_date, T.management_id) AS stock_qty,
-	        T.management_id,
-	        BU.bu_name AS business_unit,
-	        WH_IN.warehouse_name AS inbound_warehouse,
-	        WH_OUT.warehouse_name AS outbound_warehouse,
-	        P.party_name AS customer
+	        T.transaction_date, -- 일자
+	        T.type, -- 구분
+	        T.inoutbound_type, -- 입출고구분
+	        I.item_name, -- 품명
+	        I.base_unit AS unit, -- 단위
+	        T.inbound_qty, -- 입고수량
+	        T.outbound_qty, -- 출고수량
+	        SUM(T.inbound_qty - T.outbound_qty) OVER (ORDER BY T.transaction_date, T.management_id) AS stock_qty, -- 재고수량
+	        T.management_id, -- 관리번호
+	        BU.bu_name, -- 사업단위
+	        WH_IN.warehouse_name AS inbound_warehouse, -- 입고창고
+	        WH_OUT.warehouse_name AS outbound_warehouse, -- 출고창고
+	        P.party_name, -- 거래처
+	        C.department, -- 처리부서
+	        C.contact_name -- 처리자
 	    FROM ALL_TRANSACTIONS T
 	    LEFT JOIN item_master I ON T.item_id = I.item_id AND T.bu_id = I.bu_id
 	    LEFT JOIN business_unit BU ON T.bu_id = BU.bu_id
 	    LEFT JOIN warehouse_detail WH_IN ON T.inbound_warehouse_id = WH_IN.warehouse_id AND T.bu_id = WH_IN.bu_id
 	    LEFT JOIN warehouse_detail WH_OUT ON T.outbound_warehouse_id = WH_OUT.warehouse_id AND T.bu_id = WH_OUT.bu_id
-	    LEFT JOIN party P ON T.customer_party_id = P.party_id AND T.bu_id = P.bu_id
+	    LEFT JOIN party P ON T.customer_party_id = P.party_id <!--AND T.bu_id = P.bu_id -->
+	    LEFT JOIN contact C ON T.processor_contact_id = C.contact_id <!-- AND T.bu_id = C.bu_id -->
+	    WHERE 1=1
+	    <if test="searchPeriodStart != null">
+	        AND T.transaction_date &gt;= #{searchPeriodStart, jdbcType=DATE}
+	    </if>
+	    <if test="searchPeriodEnd != null">
+	        AND T.transaction_date &lt;= #{searchPeriodEnd, jdbcType=DATE}
+	    </if>
+	    <if test="businessBuName != null and businessBuName != ''">
+	        AND BU.bu_name = #{businessBuName}
+	    </if>
+	    <if test="itemName != null and itemName != ''">
+	        AND I.item_name LIKE '%' || #{itemName} || '%'
+	    </if>
+	    <if test="itemId != null">
+	        AND T.item_id = #{itemId}
+	    </if>
 	    ORDER BY T.transaction_date, T.management_id
 	</select>
+
+	
+	<!--
+	<select id="selectStockLedgerList"> (재고원장 조회)
+		이 쿼리는 기간 내의 모든 재고 입고 및 출고 거래를 하나의 목록으로 합쳐 재고원장을 생성합니다.
+	WITH ALL_TRANSACTIONS AS (...):
+		inbound_detail 과 out_detail 테이블에서 가져온 입고 및 출고 데이터를 UNION ALL 로 하나로 합칩니다.
+		UNION ALL 은 중복된 행을 제거하지 않고 그대로 합쳐서 빠른 성능을 보장합니다.
+	메인 SELECT 문:
+		FROM ALL_TRANSACTIONS T:
+			위에서 합친 임시 테이블을 기준으로 데이터를 조회합니다.
+		SUM(...) OVER(...) AS stock_qty:
+			윈도우 함수(SUM() OVER()) 를 사용합니다.
+			이 함수는 ORDER BY 절에 따라 행이 순서대로 처리되면서 누적 합계를 계산합니다.
+			ORDER BY T.transaction_date, T.management_id 는 거래 일자와
+			관리번호 순서대로 정렬하여 재고 수량(stock_qty)을 순차적으로 계산해줍니다.
+			즉, 이월재고 + 입고 - 출고를 각 행마다 누적해서 보여주는 방식입니다.
+	-->
     
     <select id="selectCarriedOverStock" resultMap="stockSummaryResultMap" parameterType="org.logistics.domain.SearchCriteriaDto">
 		WITH INBOUND_HISTORY AS (
@@ -305,7 +330,7 @@
 		    FROM inbound_detail T1
 		    JOIN inbound_master T2 ON T1.inbound_id = T2.inbound_id
 		    WHERE T2.inbound_date &lt; #{searchPeriodStart}
-		    <if test="businessBuName != null and businessBuName != ''">
+		    <if test="buName != null and buName != ''">
 		        AND T1.bu_id = (SELECT bu_id FROM business_unit WHERE bu_name = #{businessBuName})
 		    </if>
 		    GROUP BY T1.bu_id, T1.item_id
@@ -318,14 +343,14 @@
 		    FROM out_detail T1
 		    JOIN out_master T2 ON T1.out_id = T2.out_id
 		    WHERE T2.out_date &lt; #{searchPeriodStart}
-		    <if test="businessBuName != null and businessBuName != ''">
+		    <if test="buName != null and buName != ''">
 		        AND T1.bu_id = (SELECT bu_id FROM business_unit WHERE bu_name = #{businessBuName})
 		    </if>
 		    GROUP BY T1.bu_id, T1.item_id
 		)
 		SELECT
 		    COALESCE(A.bu_id, B.bu_id) AS bu_id,
-		    COALESCE(A.item_id, B.item_id) AS item_internal_code,
+		    COALESCE(A.item_id, B.item_id) AS item_Id,
 		    SUM(COALESCE(A.total_inbound_qty, 0) - COALESCE(B.total_outbound_qty, 0)) AS carried_over_qty
 		FROM INBOUND_HISTORY A
 		FULL OUTER JOIN OUTBOUND_HISTORY B
@@ -333,6 +358,20 @@
 		GROUP BY COALESCE(A.bu_id, B.bu_id), COALESCE(A.item_id, B.item_id)
 		HAVING SUM(COALESCE(A.total_inbound_qty, 0) - COALESCE(B.total_outbound_qty, 0)) != 0
 	</select>
+	
+	<!--
+	<select id="selectCarriedOverStock">(이월 재고 조회)
+	이 쿼리는 특정 기간 시작일 이전의 입고 및 출고 거래를 합산하여 이월 재고를 계산합니다.
+		WITH INBOUND_HISTORY AS (...):
+			searchPeriodStart 이전의 모든 입고 수량을 품목(item_id)별로 합산합니다.
+		WITH OUTBOUND_HISTORY AS (...):
+			searchPeriodStart 이전의 모든 출고 수량을 품목(item_id)별로 합산합니다.
+		FULL OUTER JOIN:
+			입고만 있거나 출고만 있는 품목도 모두 포함하기 위해 FULL OUTER JOIN을 사용합니다.
+		GROUP BY 및 HAVING:
+			품목별로 입고 합계에서 출고 합계를 뺀 값을 계산하고, 이 값이 0이 아닌 경우에만 결과를 반환하여
+			실제로 이월 재고가 있는 품목만 보여줍니다.
+	-->
     
     
 </mapper>

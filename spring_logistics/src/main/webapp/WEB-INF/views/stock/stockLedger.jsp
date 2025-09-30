@@ -6,7 +6,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>재고원장 조회</title>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body {
@@ -69,12 +68,11 @@
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 
                 <div>
-                    <label for="businessBuName" class="block text-sm font-medium text-gray-700">사업단위</label>
-                    <select id="businessBuName" name="businessBuName" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                    <label for="buName" class="block text-sm font-medium text-gray-700">사업단위</label>
+                    <select id="buName" name="businessBuName" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
                         <option value="">전체</option>
-                        <option value="사업단위1">사업단위1</option>
-                        <option value="사업단위2">사업단위2</option>
-                        <option value="사업단위3">사업단위3</option>
+                        <option value="본사">본사</option>
+                        <option value="부산지사">부산지사</option>
                     </select>
                 </div>
 
@@ -95,22 +93,22 @@
                         <option value="자산재고">자산재고</option>
                     </select>
                 </div>
-                
+                <!-- 품명 -->
                 <div>
                     <label for="itemName" class="block text-sm font-medium text-gray-700">품명</label>
                     <div class="input-with-button">
                         <input type="text" id="itemName" name="itemName" readonly class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
-                        <button type="button" onclick="openPopup('itemName')" class="mt-1">
+                        <button id="search-item-name-btn" type="button" class="mt-1">
                             ...
                         </button>
                     </div>
                 </div>
-
+				<!-- 품번 -->
                 <div>
-                    <label for="itemInternalCode" class="block text-sm font-medium text-gray-700">품번</label>
+                    <label for="itemId" class="block text-sm font-medium text-gray-700">품번</label>
                     <div class="input-with-button">
-                        <input type="text" id="itemInternalCode" name="itemInternalCode" readonly class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
-                        <button type="button" onclick="openPopup('itemInternalCode')" class="mt-1">
+                        <input type="text" id="itemId" name="itemId" readonly class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                        <button id="search-item-id-btn" type="button" class="mt-1">
                             ...
                         </button>
                     </div>
@@ -127,9 +125,12 @@
                 </div>
                 
             </div>
-            <div class="mt-6 flex justify-center">
+            <div class="mt-6 flex justify-center space-x-4">
                 <button type="submit" class="px-6 py-2 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                    검색
+                    	검색
+                </button>
+                <button type="button" id="resetBtn" class="px-6 py-2 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                    	검색 조건 초기화
                 </button>
             </div>
         </form>
@@ -163,20 +164,107 @@
             </div>
         </div>
     </div>
-
+	
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script>
+    
+	    // ==========================================================
+	    // 1. 팝업 함수 (window.opener를 위해 전역 함수로 정의)
+	    // ==========================================================
+    
+    	// 팝업 종류를 저장할 전역 변수
+    	let currentCategoryType = '';
+    	
+    	// 팝업 함수
+    	function openPopup(url, windowName) {
+    		currentCategoryType = windowName; // 팝업 종류를 전역 변수에 저장
+    		
+    		var popupWidth = 900;
+    		var popupHeight = 600;
+    		
+    		var left = (screen.width - popupWidth) / 2;
+    		var top = (screen.height - popupHeight) / 2;
+    		
+    		window.open
+    		(
+    			url,
+    			windowName,
+    			"width=" + popupWidth +
+    			",height=" + popupHeight +
+    			",left=" + left +
+    			",top=" + top +
+    			",scrollbars=yes,resizable=yes"
+    		);
+    	}
+    	
+    	// 통일된 콜백 함수 (팝업에서 window.opener.item_RowData(data)로 호출)
+        // 품명, 품번 팝업에서 받은 배열 데이터를 처리합니다.
+        function item_RowData(data) {
+        	
+        	let itemId = ''; // 품번
+        	let itemName = ''; // 품명
+
+        	// 팝업 종류(currentCategoryType)에 따라 값의 인덱스와 타겟 필드 ID를 설정
+         	if (data && data.length > 2) {
+    	 		// 품번은 data[0]
+    	 		itemId = data[0];
+    	 		// 품명은 data[2]
+    	 		itemName = data[2];
+            } else {
+            	console.error("팝업에서 유효한 데이터를 받지 못했습니다.");
+            	return;
+            }
+        
+        	// 품명 (itemName) 필드에 값 적용
+        	const itemNameElement = document.getElementById('itemName');
+        	if (itemNameElement) {
+        		itemNameElement.value = itemName;
+        	}
+        
+        	// 품번 (itemId) 필드에 값 적용
+        	const itemIdElement = document.getElementById('itemId');
+        	if (itemIdElement) {
+        		itemIdElement.value = itemId;
+        	}
+        	
+        	console.log(`[콜백] 품명 적용 완료: ${itemName}, 품번 적용 완료: ${itemId}`);
+        	
+        	// 데이터 처리 후 currentCategoryType 초기화
+        	currentCategoryType = '';
+        }
+    	
+     	// ==========================================================
+        // 2. jQuery 로직
+        // ==========================================================
+        // 문서가 로딩되면 실행
         $(document).ready(function() {
             const $searchForm = $('#searchForm');
             const $resultTableBody = $('#resultTableBody');
             const $noDataMessage = $('#noDataMessage');
+            
+            // 초기화 버튼 클릭 이벤트
+            $('#resetBtn').on('click', function() {
+            	$searchForm[0].reset(); // 폼의 모든 필드를 기본값으로 리셋
+            	
+            	// 특정 필드를 수동으로 비워야 하는 경우 (readonly 등)
+            	$('#itemName').val('');
+            	$('#itemId').val('');
+            });
+            
+         	// ==========================================================
+            // 3. 팝업 버튼 이벤트 리스너
+            // ==========================================================
 
-            // 팝업 버튼 클릭 시 호출될 함수 (팝업 로직은 별도 구현 필요)
-            window.openPopup = function(field) {
-                // 이 곳에 팝업창을 띄우는 로직을 구현합니다.
-                // 예: window.open('/your-popup-url?field=' + field, 'popup', 'width=600,height=400');
-                alert(field + ' 팝업창을 여는 로직이 여기에 구현됩니다.');
-            };
-
+            // 품명 버튼 이벤트 리스너
+            $('#search-item-name-btn').on('click', function() {
+                openPopup('/popup/item_name_popup', 'item_name');
+            });
+         	
+            // 품번 버튼 이벤트 리스너
+            $('#search-item-id-btn').on('click', function() {
+                openPopup('/popup/item_popup', 'item');
+            });
+         	
             $searchForm.on('submit', function(event) {
                 event.preventDefault(); // 폼의 기본 제출 동작 방지
 
@@ -207,7 +295,7 @@
                                         <td>${item.outboundQty !== null ? item.outboundQty : ''}</td>
                                         <td>${item.stockQty !== null ? item.stockQty : ''}</td>
                                         <td>${item.managementId || ''}</td>
-                                        <td>${item.businessUnit || ''}</td>
+                                        <td>${item.buName || ''}</td>
                                         <td>${item.inboundWarehouse || ''}</td>
                                         <td>${item.outboundWarehouse || ''}</td>
                                         <td>${item.customer || ''}</td>
@@ -227,6 +315,9 @@
                     }
                 });
             });
+            
+         	// 페이지 로드 시 자동 조회
+            $searchForm.submit();
         });
     </script>
 </body>

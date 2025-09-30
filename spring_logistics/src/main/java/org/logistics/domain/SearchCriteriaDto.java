@@ -21,7 +21,7 @@ public class SearchCriteriaDto {
     private String itemMidCategory; // 품목중분류 - item_master mid_category
     private String itemSmallCategory; // 품목소분류 - item_master small_category
     private String itemName; // 품명 - item_master item_name
-    private String itemInternalCode; // 품번 - item_master item_internal_code
+    private Long itemId; // 품번 - item_master item_id
     private String itemSpec; // 규격 - item_master spec
     private String itemStatus; // 품목상태 - item_master item_status
     private String unitStandard; // 단위조회기준

@@ -2,7 +2,6 @@ package org.logistics.service;
 
 import java.util.List;
 
-import org.logistics.domain.ItemCategoryDto;
 import org.logistics.domain.SearchCriteriaDto;
 import org.logistics.domain.StockLedgerResultDto;
 import org.logistics.domain.StockSummaryResultDto;

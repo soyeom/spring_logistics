@@ -91,8 +91,8 @@
 						<label for="businessBuName" class="block text-sm font-medium text-gray-700">사업단위</label>
 						<select id="businessBuName" name="businessBuName" class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
 	                    	<option value="">전체</option>
-	                    	<option value="서울사업단">서울사업단</option>
-	                    	<option value="부산사업단">부산사업단</option>
+	                    	<option value="본사">본사</option>
+	                    	<option value="부산지사">부산지사</option>
 	                    </select>
 					</div>
 					<!-- 조회기간 -->
@@ -287,188 +287,201 @@
         <!-- end of 결과 영역 -->
     </div>
     <!-- end of container -->
-    
-	<!-- 모달 전체 배경 컨테이너 -->
-	<div id="item-search-modal" class="fixed inset-0 z-50 overflow-y-auto bg-gray-600 bg-opacity-50 hidden">
-		<!-- 모달 내부 창을 화면 중앙에 배치하는 컨테이너 -->
-    	<div class="flex items-center justify-center min-h-screen p-4">
-    		<!-- 모달의 실제 흰색 창 -->
-        	<div class="relative bg-white w-full max-w-2xl mx-auto rounded-lg shadow-lg p-6">
-        		<!-- 모달 헤더 -->
-            	<div class="flex justify-between items-center pb-3 border-b border-gray-200">
-            		<!-- 모달 제목 -->
-                	<h3 class="text-xl font-semibold text-gray-900">품목 조회</h3>
-                	<!-- 모달 닫기 버튼 -->
-                	<button type="button" class="text-gray-400 hover:text-gray-600" onclick="closeModal()">
-                    	<span class="sr-only">Close modal</span>
-                    	<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                	</button>
-            	</div>
-            	<!-- y축 패딩 -->
-            	<div class="py-4">
-            	
-            		<!-- 검색 입력 필드와 버튼을 담는 컨테이너 -->
-                	<div class="flex space-x-2 mb-4">
-                		<!-- 검색 입력 필드 -->
-                    	<input type="text" id="modal-search-input" placeholder="품목 검색..." class="flex-grow rounded-md border-gray-300 shadow-sm">
-                    	<!-- 버튼 -->
-                    	<button id="modal-search-btn" class="px-4 py-2 bg-indigo-600 text-white rounded-md shadow-sm">
-                        	검색
-                    	</button>
-                	</div>
-                	
-                	<!-- 검색 결과 테이블을 담는 컨테이너 -->
-                	<div class="border rounded-md overflow-hidden">
-                    	<table class="w-full">
-                        	<thead>
-                            	<tr class="bg-gray-50 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">
-                                	<th class="px-4 py-2">품번</th>
-                                	<th class="px-4 py-2">품명</th>
-                                	<th class="px-4 py-2">규격</th>
-                                	<th class="px-4 py-2">대분류</th>
-                                	<th class="px-4 py-2">중분류</th>
-                                	<th class="px-4 py-2">소분류</th>
-                            	</tr>
-                        	</thead>
-                        	<tbody id="modal-result-table-body" class="divide-y divide-gray-200">
-                            	</tbody>
-                    	</table>
-                	</div>
-                	<!-- end of 검색 결과 테이블을 담는 컨테이너 -->
-                	
-            	</div>
-            	<!-- end of y축 패딩 -->
-        	</div>
-        	<!-- end of 모달의 실제 흰색 창 -->
-    	</div>
-    	<!-- end of 모달 내부 창을 화면 중앙에 배치하는 컨테이너 -->
-	</div>
-	<!-- end of 모달 전체 배경 컨테이너 -->
 	
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script>
-    // 문서가 로딩되면 실행
-    $(document).ready(function() {
+    // ==========================================================
+    // 1. 팝업 함수 (window.opener를 위해 전역 함수로 정의)
+    // ==========================================================
+    
+    // 팝업 종류를 저장할 전역 변수
+    let currentCategoryType = '';
+    
+ 	// 통일된 팝업 오픈 함수 (화면 중앙 정렬 로직)
+    function openPopup(url, windowName) {
+    	currentCategoryType = windowName; // 팝업 종류를 전역 변수에 저장
+    	
+        var popupWidth = 900;
+        var popupHeight = 600;
+        
+        // 화면 중앙 좌표 계산
+        var left = (screen.width - popupWidth) / 2;
+        var top = (screen.height - popupHeight) / 2;
+        
+        window.open
+        (
+            url,
+            windowName,
+            "width=" + popupWidth +
+            ",height=" + popupHeight +
+            ",left=" + left +
+            ",top=" + top +
+            ",scrollbars=yes,resizable=yes"
+        );
+    }
+    
+    // 통일된 콜백 함수 (팝업에서 window.opener.item_RowData(data)로 호출)
+    // 품목 대/중/소 분류 팝업에서 받은 배열 데이터를 처리합니다.
+    function item_RowData(data) {
+    	
+    	let categoryName = '';
+    	let targetElementId = '';
 
+    	// 팝업 종류(currentCategoryType)에 따라 값의 인덱스와 타겟 필드 ID를 설정
+     	if (currentCategoryType === 'big') {
+	 		categoryName = data[1];
+	 		targetElementId = 'itemBigCategory';
+        } else if (currentCategoryType === 'mid') {
+        	categoryName = data[2];
+        	targetElementId = 'itemMidCategory';
+        } else if (currentCategoryType === 'small') {
+        	categoryName = data[3];
+        	targetElementId = 'itemSmallCategory';
+        } else {
+        	console.error("알 수 없는 팝업 유형입니다:", currentCategoryType);
+        	return;
+        }
+    
+    	// 해당 필드에 값 적용
+    	if (targetElementId && categoryName !== undefined) {
+    		document.getElementById(targetElementId).value = categoryName;
+    	}
+    
+    	// 데이터 처리 후 currentCategoryType 초기화
+    	currentCategoryType = '';
+    	
+    	console.log(`[콜백] ${targetElementId} 필드에 명칭 적용 완료: ${categoryName}`);
+    }
+    
+    // ==========================================================
+    // 2. jQuery 로직
+    // ==========================================================
+    // 문서가 로딩되면 실행
+    $(document).ready(function() {
+        
         // 추가 조회 조건 토글
-        $('#toggle-criteria-btn').on('click', function() {
-            const additionalCriteria = $('#additional-criteria');
-            additionalCriteria.toggleClass('hidden');
-            const btnText = $(this).text();
-            $(this).text(btnText.includes('▼') ? '추가 조회 조건 ▲' : '추가 조회 조건 ▼');
-        });
+        $('#toggle-criteria-btn').on('click', function() {
+            const additionalCriteria = $('#additional-criteria');
+            additionalCriteria.toggleClass('hidden');
+            const btnText = $(this).text();
+            $(this).text(btnText.includes('▼') ? '추가 조회 조건 ▲' : '추가 조회 조건 ▼');
+        });
 
         // 조회 버튼 클릭 이벤트
-        $('#search-btn').on('click', function() {
-        	event.preventDefault(); // 폼의 기본 제출 동작 방지
-            searchStockSummary();
-        });
+        $('#search-btn').on('click', function() {
+            event.preventDefault(); // 폼의 기본 제출 동작 방지
+            searchStockSummary();
+        });
 
-     	// 초기화 버튼 클릭 이벤트
-        $('#reset-btn').on('click', function() {
-            $('#search-form')[0].reset(); // 폼 태그의 reset() 함수 사용
-            
-            // 추가 조회 조건 섹션 숨김 및 버튼 텍스트 변경
-            $('#additional-criteria').addClass('hidden');
-            $('#toggle-criteria-btn').text('추가 조회 조건 ▼');
-            
-            // 초기화된 검색 조건을 반영하기 위해 다시 조회
-            searchStockSummary(); 
-        });
-     	
-     	// 초기 로드 시 조회 함수 호출
-        searchStockSummary();
-     	
-     	// 품목 대분류 팝업창 열기
-        $('#search-big-category-btn').on('click', function() {
-            const popupUrl = '/stock/popup/category?type=big';
-            window.open(popupUrl, 'bigCategoryPopup', 'width=600,height=500');
-        });
+      	// 초기화 버튼 클릭 이벤트
+        $('#reset-btn').on('click', function() {
+            $('#search-form')[0].reset(); // 폼 태그의 reset() 함수 사용
+            
+            // 추가 조회 조건 섹션 숨김 및 버튼 텍스트 변경
+            $('#additional-criteria').addClass('hidden');
+            $('#toggle-criteria-btn').text('추가 조회 조건 ▼');
+            
+            // 초기화된 검색 조건을 반영하기 위해 다시 조회
+            searchStockSummary(); 
+        });
+      	
+      	// 초기 로드 시 조회 함수 호출
+        searchStockSummary();
 
-        // 품목 중분류 팝업창 열기
-        $('#search-mid-category-btn').on('click', function() {
-            const popupUrl = '/stock/popup/category?type=mid';
-            window.open(popupUrl, 'midCategoryPopup', 'width=600,height=500');
-        });
 
-        // 품목 소분류 팝업창 열기
-        $('#search-small-category-btn').on('click', function() {
-            const popupUrl = '/stock/popup/category?type=small';
-            window.open(popupUrl, 'smallCategoryPopup', 'width=600,height=500');
-        });
-     	
-        // 조회 함수 시작
-        function searchStockSummary() {
+        // ==========================================================
+        // 3. 팝업 버튼 이벤트 리스너
+        // ==========================================================
+
+        // 품목대분류 버튼 이벤트 리스너
+        $('#search-big-category-btn').on('click', function() {
+            openPopup('/popup/category_popup_big', 'big');
+        });
+     	
+        // 품목중분류 버튼 이벤트 리스너
+        $('#search-mid-category-btn').on('click', function() {
+            openPopup('/popup/category_popup_mid', 'mid');
+        });
+     	
+        // 품목소분류 버튼 이벤트 리스너
+        $('#search-small-category-btn').on('click', function() {
+            openPopup('/popup/category_popup_small', 'small');
+        });
+
+         
+        // 조회 함수
+        function searchStockSummary() {
             const criteria = {
-                businessBuName: $('#businessBuName').val(), // 사업단위
-                searchPeriodStart: $('#searchPeriodStart').val(), // 조회기간 시작일
-                searchPeriodEnd: $('#searchPeriodEnd').val(), // 조회기간 종료일
-                stockStandard: $('#stockStandard').val(), // 재고기준
-                itemAssetClass: $('#itemAssetClass').val(), // 품목자산분류
-                itemBigCategory: $('#itemBigCategory').val(), // 품목대분류
-                itemMidCategory: $('#itemMidCategory').val(), // 품목중분류
-                itemSmallCategory: $('#itemSmallCategory').val(), // 품목소분류
-                itemName: $('#itemName').val(), // 품명
-                itemInternalCode: $('#itemInternalCode').val(), // 품번
-                itemSpec: $('#itemSpec').val(), // 규격
-                itemStatus: $('#itemStatus').val(), // 품목상태
-                unitStandard: $('#unitStandard').val(), // 단위조회기준
-                includeZeroQty: $('#includeZeroQty').is(':checked') // 0수량 조회여부
-            };
+                businessBuName: $('#businessBuName').val(), // 사업단위
+                searchPeriodStart: $('#searchPeriodStart').val(), // 조회기간 시작일
+                searchPeriodEnd: $('#searchPeriodEnd').val(), // 조회기간 종료일
+                stockStandard: $('#stockStandard').val(), // 재고기준
+                itemAssetClass: $('#itemAssetClass').val(), // 품목자산분류
+                itemBigCategory: $('#itemBigCategory').val(), // 품목대분류
+                itemMidCategory: $('#itemMidCategory').val(), // 품목중분류
+                itemSmallCategory: $('#itemSmallCategory').val(), // 품목소분류
+                itemName: $('#itemName').val(), // 품명
+                itemInternalCode: $('#itemInternalCode').val(), // 품번
+                itemSpec: $('#itemSpec').val(), // 규격
+                itemStatus: $('#itemStatus').val(), // 품목상태
+                unitStandard: $('#unitStandard').val(), // 단위조회기준
+                includeZeroQty: $('#includeZeroQty').is(':checked') // 0수량 조회여부
+            };
 
-            $.ajax({
-                url: '/stock/summary/search',
-                type: 'GET',
-                data: criteria,
-                dataType: 'json',
-                success: function(response) {
-                    console.log('Server response:', response);
-                    const $tbody = $('#stockSummaryTableBody');
-                    const $noDataMessage = $('#noDataMessage');
-                    $tbody.empty();
+            // ... (기존 AJAX 통신 로직) ...
+            $.ajax({
+                url: '/stock/summary/search',
+                type: 'GET',
+                data: criteria,
+                dataType: 'json',
+                success: function(response) {
+                    console.log('Server response:', response);
+                    const $tbody = $('#stockSummaryTableBody');
+                    const $noDataMessage = $('#noDataMessage');
+                    $tbody.empty();
 
-                    if (response && response.length > 0) {
-                        $noDataMessage.addClass('hidden');
-                        $.each(response, function(index, item) {
-                            if (item) {
-                                const row = `
-                                    <tr>
-                                        <td class="sticky-col">${item.itemInternalCode}</td> // 품번
-                                        <td>${item.itemAssetClass}</td> // 품목자산분류
-                                        <td>${item.itemBigCategory}</td> // 품목대분류
-                                        <td>${item.itemMidCategory}</td> // 품목중분류
-                                        <td>${item.itemName}</td> // 품명
-                                        <td>${item.inboundQty}</td> // 입고수량
-                                        <td>${item.itemUnit}</td> // 단위
-                                        <td>${item.itemStatus}</td> // 품목상태
-                                        <td>${item.stockQty}</td> // 재고수량
-                                        <td>${item.carriedOverQty}</td> // 이월수량
-                                        <td>${item.outboundQty}</td> // 출고수량
-                                        <td>${item.productionInbound}</td> // 입고(생산입고)
-                                        <td>${item.outsourcingInbound}</td> // 입고(외주입고)
-                                        <td>${item.purchaseInbound}</td> // 입고(구매입고)
-                                        <td>${item.importInbound}</td> // 입고(수입입고)
-                                        <td>${item.deliverySlipOutbound}</td> // 출고(거래명세표)
-                                        <td>${item.otherOutbound}</td> // 출고(기타출고)
-                                        <td>${item.salesConsignmentOutbound}</td> // 출고(판매보관품출고)
-                                        <td>${item.workPerformanceOutbound}</td> // 출고(작업실적)
-                                        <td>${item.outsourcingOutbound}</td> // 출고(외주입고)
-                                    </tr>
-                                `;
-                                $tbody.append(row);
-                            }
-                        });
-                    } else {
-                        $noDataMessage.removeClass('hidden');
-                    }
-                },
-                error: function(xhr, status, error) {
-                    console.error('An error occurred:', status, error);
-                    $('#noDataMessage').removeClass('hidden').text('데이터를 불러오는 중 오류가 발생했습니다.');
-                }
-            });
-        }
-    });
+                    if (response && response.length > 0) {
+                        $noDataMessage.addClass('hidden');
+                        $.each(response, function(index, item) {
+                            if (item) {
+                                const row = `
+                                    <tr>
+                                        <td class="sticky-col">${item.itemId}</td> // 품번
+                                        <td>${item.itemAssetClass}</td> // 품목자산분류
+                                        <td>${item.itemBigCategory}</td> // 품목대분류
+                                        <td>${item.itemMidCategory}</td> // 품목중분류
+                                        <td>${item.itemName}</td> // 품명
+                                        <td>${item.inboundQty}</td> // 입고수량
+                                        <td>${item.itemUnit}</td> // 단위
+                                        <td>${item.itemStatus}</td> // 품목상태
+                                        <td>${item.stockQty}</td> // 재고수량
+                                        <td>${item.carriedOverQty}</td> // 이월수량
+                                        <td>${item.outboundQty}</td> // 출고수량
+                                        <td>${item.productionInbound}</td> // 입고(생산입고)
+                                        <td>${item.outsourcingInbound}</td> // 입고(외주입고)
+                                        <td>${item.purchaseInbound}</td> // 입고(구매입고)
+                                        <td>${item.importInbound}</td> // 입고(수입입고)
+                                        <td>${item.deliverySlipOutbound}</td> // 출고(거래명세표)
+                                        <td>${item.otherOutbound}</td> // 출고(기타출고)
+                                        <td>${item.salesConsignmentOutbound}</td> // 출고(판매보관품출고)
+                                        <td>${item.workPerformanceOutbound}</td> // 출고(작업실적)
+                                        <td>${item.outsourcingOutbound}</td> // 출고(외주입고)
+                                    </tr>
+                                `;
+                                $tbody.append(row);
+                            }
+                        });
+                    } else {
+                        $noDataMessage.removeClass('hidden');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('An error occurred:', status, error);
+                    $('#noDataMessage').removeClass('hidden').text('데이터를 불러오는 중 오류가 발생했습니다.');
+                }
+            });
+        }
+    });
 </script>
 </body>
 </html>
