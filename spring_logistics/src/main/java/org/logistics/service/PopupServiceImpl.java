@@ -13,12 +13,12 @@ import lombok.Setter;
 @Service
 public class PopupServiceImpl implements PopupService {
 
-	@Setter(onMethod_= @Autowired)
+	@Setter(onMethod_ = @Autowired)
 	private PopupMapper popupMapper;
-	
+
 	@Override
 	public List<PopupVO> item_List(String gubun, String text) {
-		
+
 		return popupMapper.item_List(gubun, text);
 	}
 
@@ -26,5 +26,12 @@ public class PopupServiceImpl implements PopupService {
 	public List<PopupVO> contact_List(String gubun, String text) {
 		// TODO Auto-generated method stub
 		return popupMapper.contact_List(gubun, text);
+	}
+
+	
+	// 수주 진형
+	@Override
+	public List<PopupVO> inboundMaster_List(String gubun, String text) {
+		return popupMapper.inboundMaster_List(gubun, text);
 	}
 }

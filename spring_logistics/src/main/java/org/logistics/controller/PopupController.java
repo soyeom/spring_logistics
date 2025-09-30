@@ -3,8 +3,6 @@ package org.logistics.controller;
 import java.util.List;
 
 import org.logistics.domain.PopupVO;
-import org.logistics.domain.WareHouseContactListVO;
-import org.logistics.service.InvFlowConfigService;
 import org.logistics.service.PopupService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -21,30 +19,49 @@ import lombok.extern.log4j.Log4j;
 @RequestMapping("/popup/*")
 @AllArgsConstructor
 public class PopupController {
-	
+
 	private PopupService popupService;
-	
+
 	// 품번
 	@GetMapping("/item_popup")
-	public void item_Popup(Model model, @RequestParam(required = false) String gubun, @RequestParam(required = false) String text) {
-		model.addAttribute("list", popupService.item_List(gubun, text));	// 마스터 조회
+	public void item_Popup(Model model, @RequestParam(required = false) String gubun,
+			@RequestParam(required = false) String text) {
+		model.addAttribute("list", popupService.item_List(gubun, text)); // 마스터 조회
 	}
-	
+
 	@GetMapping("/item_list")
 	@ResponseBody
-	public List<PopupVO> item_list(@RequestParam(required = false) String gubun, @RequestParam(required = false) String text) {
+	public List<PopupVO> item_list(@RequestParam(required = false) String gubun,
+			@RequestParam(required = false) String text) {
 		return popupService.item_List(gubun, text);
 	}
-	
+
 	// 담당자
 	@GetMapping("/contact_popup")
-	public void contact_Popup(Model model, @RequestParam(required = false) String gubun, @RequestParam(required = false) String text) {
-		model.addAttribute("list", popupService.contact_List(gubun, text));	// 마스터 조회
+	public void contact_Popup(Model model, @RequestParam(required = false) String gubun,
+			@RequestParam(required = false) String text) {
+		model.addAttribute("list", popupService.contact_List(gubun, text)); // 마스터 조회
 	}
-	
+
 	@GetMapping("/contact_list")
 	@ResponseBody
-	public List<PopupVO> contact_list(@RequestParam(required = false) String gubun, @RequestParam(required = false) String text) {
+	public List<PopupVO> contact_list(@RequestParam(required = false) String gubun,
+			@RequestParam(required = false) String text) {
 		return popupService.contact_List(gubun, text);
+	}
+
+	
+	// 수주 진형
+	@GetMapping("/inbound_popup")
+	public void inbound_Popup(Model model, @RequestParam(required = false) String gubun,
+			@RequestParam(required = false) String text) {
+		model.addAttribute("list", popupService.inboundMaster_List(gubun, text));
+	}
+
+	@GetMapping("/inbound_list")
+	@ResponseBody
+	public List<PopupVO> inbound_list(@RequestParam(required = false) String gubun,
+			@RequestParam(required = false) String text) {
+		return popupService.inboundMaster_List(gubun, text);
 	}
 }
