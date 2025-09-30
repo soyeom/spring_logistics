@@ -13,12 +13,12 @@ import lombok.Setter;
 @Service
 public class PopupServiceImpl implements PopupService {
 
-	@Setter(onMethod_= @Autowired)
+	@Setter(onMethod_ = @Autowired)
 	private PopupMapper popupMapper;
-	
+
 	@Override
 	public List<PopupVO> item_List(String gubun, String text) {
-		
+
 		return popupMapper.item_List(gubun, text);
 	}
 
@@ -62,5 +62,23 @@ public class PopupServiceImpl implements PopupService {
 	public List<PopupVO> itemname_List(String gubun, String text) {
 		
 		return popupMapper.itemname_List(gubun, text);
+	}
+	
+	@Override
+	public List<PopupVO> warehousecode_List(String gubun, String text) {
+		
+		return popupMapper.warehousecode_List(gubun, text);
+	}
+	
+	@Override
+	public List<PopupVO> warehousename_List(String gubun, String text) {
+		
+		return popupMapper.warehousename_List(gubun, text);
+	}
+
+	// 수주 진형
+	@Override
+	public List<PopupVO> inboundMaster_List(String gubun, String text) {
+		return popupMapper.inboundMaster_List(gubun, text);
 	}
 }

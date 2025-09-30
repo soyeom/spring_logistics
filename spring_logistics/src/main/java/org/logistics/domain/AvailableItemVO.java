@@ -6,6 +6,9 @@ import lombok.Data;
 public class AvailableItemVO {
 	private String warehouseName;
 	private int warehouseId;
+	
+	private String buId;
+	private String buName;
 	private String assetClass;
 	private String itemName;
 	private String spec;

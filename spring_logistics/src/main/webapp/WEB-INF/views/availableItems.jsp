@@ -135,9 +135,9 @@
 						<div class="filters-text">사업단위</div>
 						<div class="filters-value">
 							<select id="buId" name="buId">
-								<option value=""></option>
-								<c:forEach items="${buList}" var="buItem">
-									<option value="${buItem.BU_ID}">${buItem.BU_NAME}</option>
+								<option value="">-- 선택 --</option>
+								<c:forEach items="${buList}" var="bu">
+									<option value="${bu.buId}">${bu.buName}</option>
 								</c:forEach>
 							</select>
 						</div>
@@ -160,9 +160,9 @@
 						<div class="filters-text">자산분류</div>
 						<div class="filters-value">
 							<select id="assetClass" name="assetClass">
-								<option value=""></option>
-								<c:forEach items="${assetClassList}" var="assetItem">
-									<option value="${assetItem.ASSET_CLASS}">${assetItem.ASSET_CLASS}</option>
+								<option value="">-- 선택 --</option>
+								<c:forEach items="${assetClassList}" var="asset">
+									<option value="${asset.assetClass}">${asset.assetClass}</option>
 								</c:forEach>
 							</select>
 						</div>
@@ -408,56 +408,26 @@
 			});
 		}
 
-		// 창고 검색 팝업 열기
 		function openWarehousePopup() {
-			window.open("/availableItems/warehouseSearch",
-					"warehouseSearchPopup",
+			window.open("/popup/warehousePopup", "warehouseSearchPopup",
 					"width=600,height=500,scrollbars=yes,resizable=yes");
 		}
-
-		// 팝업에서 선택한 값 반영
-		function setWarehouseName(name) {
-			document.getElementById("warehouseName").value = name;
-		}
-
 		function openBigCategoryPopup() {
-			window.open("/availableItems/bigCategorySearch",
-					"bigCategorySearchPopup",
+			window.open("/popup/category_popup_big", "bigCategorySearchPopup",
 					"width=600,height=500,scrollbars=yes,resizable=yes");
 		}
-
-		function setBigCategory(name) {
-			document.getElementById("bigCategory").value = name;
-		}
-
 		function openMidCategoryPopup() {
-			window.open("/availableItems/midCategorySearch",
-					"midCategorySearchPopup",
+			window.open("/popup/category_popup_mid", "midCategorySearchPopup",
 					"width=600,height=500,scrollbars=yes,resizable=yes");
 		}
-
-		function setMidCategory(name) {
-			document.getElementById("midCategory").value = name;
-		}
-
 		function openSmallCategoryPopup() {
-			window.open("/availableItems/smallCategorySearch", // ✅ availableItems 붙여야 함
-			"smallCategorySearchPopup",
+			window.open("/popup/category_popup_small",
+					"smallCategorySearchPopup",
 					"width=600,height=500,scrollbars=yes,resizable=yes");
 		}
-
-		function setSmallCategory(name) {
-			document.getElementById("smallCategory").value = name;
-		}
-
 		function openItemNamePopup() {
-			window.open("/availableItems/itemNameSearch", // ✅ availableItems 붙여야 함
-			"itemNameSearchPopup",
+			window.open("/popup/item_name_popup", "itemNameSearchPopup",
 					"width=600,height=500,scrollbars=yes,resizable=yes");
-		}
-
-		function setItemName(name) {
-			document.getElementById("itemName").value = name;
 		}
 
 		// ✅ 행 더블클릭 시 상세 조회
