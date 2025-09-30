@@ -73,13 +73,6 @@ public class InvFlowConfigServiceImpl implements InvFlowConfigService {
 	}
 
 	// 출고처리
-	// 출고목록 조회
-	@Override
-	public List<OutBoundMasterVO> getOutBoundMaster() {
-		// TODO Auto-generated method stub
-		return invFlowConfigMapper.getOutBoundMaster();
-	}
-
 	// 출고 마스터 조회
 	@Override
 	public List<OutBoundMasterVO> getOutBoundDetail1(String bu_Id, String out_Id) {

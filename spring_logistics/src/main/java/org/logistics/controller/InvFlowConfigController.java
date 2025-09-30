@@ -123,19 +123,14 @@ public class InvFlowConfigController {
 	
 	// 출고 처리하기
 	@GetMapping("/outbound")
-	public void outBound() {
+	public void outBound(Model model) {
+		model.addAttribute("bu_Id", invFlowConfigService.business_UnitList());
 	}	
-	
-	@GetMapping("/outbound_master")
-	@ResponseBody
-	public List<OutBoundMasterVO> outBoundMasterSearch() {
-		return invFlowConfigService.getOutBoundMaster();
-	}
 	
 	@GetMapping("/outbound_detail1")
 	@ResponseBody
 	public List<OutBoundMasterVO> outBoundDetailSearch1(@RequestParam("bu_Id") String bu_Id, @RequestParam("out_Id") String out_Id) {
-
+		
 		return invFlowConfigService.getOutBoundDetail1(bu_Id, out_Id);
 	}
 	

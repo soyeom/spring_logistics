@@ -24,7 +24,6 @@ public interface InvFlowConfigService {
 	public void delete_Detail2(String bu_Id, String wareHouse_Master_Id, String wareHouse_Id);
 	
 	// 출고처리 VO
-	public List<OutBoundMasterVO> getOutBoundMaster();
 	public List<OutBoundMasterVO> getOutBoundDetail1(String bu_Id, String out_Id);
 	public List<OutBoundMasterVO> getOutBoundDetail2(String bu_Id, String out_Id);
 	public void outBoundMasterSave(OutBoundMasterVO obm);

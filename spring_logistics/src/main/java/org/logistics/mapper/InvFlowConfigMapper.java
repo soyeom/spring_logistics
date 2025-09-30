@@ -26,7 +26,6 @@ public interface InvFlowConfigMapper {
 	
 	
 	// 출고처리 
-	public List<OutBoundMasterVO> getOutBoundMaster();
 	public List<OutBoundMasterVO> getOutBoundDetail1(@Param ("bu_Id") String bu_Id, @Param ("out_Id") String out_Id);
 	public List<OutBoundMasterVO> getOutBoundDetail2(@Param ("bu_Id") String bu_Id, @Param ("out_Id") String out_Id);
 	public void outBoundMasterSave(OutBoundMasterVO obm);
