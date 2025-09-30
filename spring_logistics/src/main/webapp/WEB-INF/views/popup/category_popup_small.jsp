@@ -24,8 +24,7 @@
 	     	<div style = "flex: 2;">
      			<select id = "gubun">
 	            	<option value = "0">전체</option>
-	            	<option value = "10">품번</option>
-	            	<option value = "20">소분류</option>
+	            	<option value = "10">소분류</option>
 	        	</select>
 	     	</div>
 	     	<div style = "flex: 7;">
@@ -115,7 +114,7 @@
 	                    '<td class="text-center">' + (board.column1 || '') + '</td>' +
 	                    '<td class="text-center">' + (board.column2 || '') + '</td>' +
 	                    '<td class="text-center">' + (board.column3 || '') + '</td>' +
-	                    '<td class="text-center">' + (board.column4 || '') + '</td>' +
+	                    '<td class="text-center">' + (board.column4 || '') + '</td>';
 	                   
 	                tbody.appendChild(tr);
 	            });
