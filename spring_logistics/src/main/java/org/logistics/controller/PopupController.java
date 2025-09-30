@@ -87,12 +87,12 @@ public class PopupController {
 	// 품명
 	@GetMapping("/item_name_popup")
 	public void item_name_Popup(Model model, @RequestParam(required = false) String gubun, @RequestParam(required = false) String text) {
-		model.addAttribute("list", popupService.item_List(gubun, text));	// 마스터 조회
+		model.addAttribute("list", popupService.itemname_List(gubun, text));	// 마스터 조회
 	}
 	
 	@GetMapping("/item_name_list")
 	@ResponseBody
 	public List<PopupVO> item_name_list(@RequestParam(required = false) String gubun, @RequestParam(required = false) String text) {
-		return popupService.item_List(gubun, text);
+		return popupService.itemname_List(gubun, text);
 	}
 }

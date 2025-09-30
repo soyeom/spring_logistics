@@ -106,6 +106,8 @@
 			text: document.getElementById("text").value
 		}
 		
+		console.log(formData);
+		
 		$.ajax({
 			url: '/popup/item_name_list',
 			data: formData,
