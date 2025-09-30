@@ -127,19 +127,19 @@ public class InvFlowConfigController {
 		model.addAttribute("bu_Id", invFlowConfigService.business_UnitList());
 	}	
 	
-	@GetMapping("/outbound_detail1")
+	@GetMapping("/out_detail_list")
 	@ResponseBody
 	public List<OutBoundMasterVO> outBoundDetailSearch1(@RequestParam("bu_Id") String bu_Id, @RequestParam("out_Id") String out_Id) {
 		
-		return invFlowConfigService.getOutBoundDetail1(bu_Id, out_Id);
-	}
-	
-	@GetMapping("/outbound_detail2")
-	@ResponseBody
-	public List<OutBoundMasterVO> outBoundDetailSearch2(@RequestParam("bu_Id") String bu_Id, @RequestParam("out_Id") String out_Id) {
-
 		return invFlowConfigService.getOutBoundDetail2(bu_Id, out_Id);
 	}
+	
+//	@GetMapping("/outbound_detail2")
+//	@ResponseBody
+//	public List<OutBoundMasterVO> outBoundDetailSearch2(@RequestParam("bu_Id") String bu_Id, @RequestParam("out_Id") String out_Id) {
+//
+//		// return invFlowConfigService.getOutBoundDetail2(bu_Id, out_Id);
+//	}
 	
 	@PostMapping("/outbound_save")
 	@ResponseBody

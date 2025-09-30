@@ -114,7 +114,6 @@
 	            		<div class = "filters-text">창고명</div>
 	            		<div class = "filters-value">
 	            			<input type = "text" id = "wareHouse_Name">
-	            			<img src="https://cdn-icons-png.flaticon.com/512/16799/16799970.png" alt="search" class="search-icon">
 	            		</div>
             		</div>
    			    </div>
@@ -143,7 +142,7 @@
 				    <tbody id = "result-tbody1">
 			    		<c:forEach items = "${list}" var = "board">
 					    	<tr onclick= "row_Click(this)">
-				    			<td class = "text-center"><input type="hidden" value="${board.bu_Id}" /><span><c:out value="${board.bu_Name}" /></span></td>
+				    			<td class = "text-center"><input type="hidden" value="${board.bu_Id}" /><c:out value="${board.bu_Name}" /></td>
 				    			<td class = "text-center"><c:out value = "${board.wareHouse_Master_Id}"/></td>
 				    			<td class = "text-center"><c:out value = "${board.wareHouse_Internal_Code}"/></td>
 				    			<td class = "text-center"><c:out value = "${board.wareHouse_Id}"/></td>

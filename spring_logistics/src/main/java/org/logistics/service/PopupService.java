@@ -14,6 +14,8 @@ public interface PopupService {
 
 	public List<PopupVO> item_List(String gubun, String text);
 	public List<PopupVO> contact_List(String gubun, String text);
+	public List<PopupVO> party_List(String gubun, String text);
+	public List<PopupVO> out_Id_List(String gubun, String text);
 	public List<PopupVO> category_List_Big(String gubun, String text);
 	public List<PopupVO> category_List_Mid(String gubun, String text);
 	public List<PopupVO> category_List_Small(String gubun, String text);

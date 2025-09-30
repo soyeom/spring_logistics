@@ -137,14 +137,26 @@
 	}
 	
 	function button_Click() {
-	    if (!selectedRow) {
+		if (!selectedRow) {
 	        alert("선택된 행이 없습니다!");
 	        return;
 	    }
-	 	// td 안의 텍스트를 배열로 수집
-	    const data = Array.from(selectedRow.querySelectorAll("td")).map(function(td) {
-		    return td.textContent.trim();
-		});
+
+	    const data = [];
+
+	    selectedRow.querySelectorAll("td").forEach(function(td) {
+	        // td 텍스트 (없으면 "")
+	        const text = td.textContent.trim() || "";
+	        data.push(text);
+
+	        // td 안의 hidden input 값들 (없으면 "")
+	        const hiddenInputs = td.querySelectorAll('input[type="hidden"]');
+	        if (hiddenInputs.length > 0) {
+	            hiddenInputs.forEach(function(input) {
+	                data.push(input.value || "");
+	            });
+	        }
+	    });
 	    
 	 	// 부모창 함수 호출 + 데이터 전달
 		window.opener.contact_RowData(data);
