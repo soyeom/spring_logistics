@@ -6,13 +6,17 @@
 	
 	<select id = "item_List" resultType = "org.logistics.domain.PopupVO">
 		
-		select item_Id as column1, spec as column2, item_name as column3
+		select item_Id as column1
+		     , item_name as column2
+		     , spec as column3
 		     , asset_class as column4
 		     , small_category as column5
 		     , base_unit as column6 
 		     , sales_unit as column7 
-		     , english_name as column8 
-		from item_master
+		     , english_name as column8
+		     , safety_stock_qty as column9
+		     , (select warehouse_name from warehouse_detail where bu_id = a.bu_id and warehouse_id = a.storage_location) as column10
+		from item_master a
 		
 		<where>
 	        <if test = "gubun == 10">
@@ -44,6 +48,66 @@
     	</where>
 	
 	</select>
+	
+	<select id = "out_Id_List" resultType = "org.logistics.domain.PopupVO">
+	
+		select out_id as column1
+			 , bu_id as column2
+			 , (select bu_Name from business_unit where bu_id = a.bu_Id) as column15
+			 , to_char(out_date, 'yyyy-MM-dd') as column3
+		     , local_flag as column4
+		     , case when local_flag = '10' then '내수' when local_flag = '20' then 'Local(후LC)' when local_flag = '30' then 'Local(선LC)' end as column5
+		     , party_id as column6
+		     , (select party_name from party where bu_id = a.bu_id and party_id = a.party_id) as column7
+		     , contact_id as column8
+		     , (select contact_name from contact where bu_id = a.bu_Id and contact_id = a.contact_id) as column9
+		     , (select department from contact where bu_id = a.bu_Id and contact_id = a.contact_id) as column10
+		     , out_type as column11
+		     , case when out_type = '10' then '수주' when out_type = '20' then '적송요청' when out_type = '30' then '위탁출고요청' when out_type = '40' then '기타출고요청' end as column12
+		     , consignment_gubun as column13
+		     , case when consignment_gubun = '10' then '일반' when consignment_gubun = '20' then '위탁' when consignment_gubun = '30' then '판매후보관' end as column14
+		     , out_complete, created_at
+		from out_master a
+		<where>
+	        <if test = "gubun == 10">
+	            bu_Id like '%' ||  #{text} || '%'
+	        </if>
+	        <if test = "gubun == 20">
+	        	out_Id like '%' ||  #{text} || '%'
+	        </if>
+    	</where>
+	
+	</select>
+	
+	<select id = "party_List" resultType = "org.logistics.domain.PopupVO">
+	
+		select bu_Id as column1         
+	         , (select bu_Name from business_unit where bu_id = a.bu_Id) as column2
+	     	 , party_Id as column3      
+		     , party_Name as column4    
+		     , party_type as column5    
+		     , case when party_type = '10' then '납품' when party_type = '20' then '영업' when party_type = '30' then '거래처' when party_type = '40' then '공급바' end as column6
+		     , business_registration_no as column7
+		     , trade_name as column8    
+		     , short_name as column9    
+		     , address as column10       
+		     , phone as column11        
+		     , email as column12        
+		from party a
+
+		<where>
+        	<if test = "gubun == 10">
+	            bu_Id like '%' ||  #{text} || '%'
+	        </if>
+	        <if test = "gubun == 20">
+	        	party_name like '%' ||  #{text} || '%'
+	        </if>
+	        <if test = "gubun == 30">
+	        	party_Id like '%' ||  #{text} || '%'
+	        </if>
+    	</where>
+	</select>
+	
 	
 	<select id = "category_List_Big" resultType = "org.logistics.domain.PopupVO">
 	

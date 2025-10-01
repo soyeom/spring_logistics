@@ -9,28 +9,24 @@
 <html>
 <head>
 	<meta charset="UTF-8">
-    <title>담당자</title>
+    <title>거래처</title>
     <link rel="stylesheet" type="text/css" href="/resources/css/popup.css">
     <link rel="stylesheet" href="/resources/css/logistics.css" type="text/css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css" />
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
 </head>
-
-<head>
-<meta charset="UTF-8">
-<title>Insert title here</title>
-</head>
 <body style = "background-color: #fff;">
 	<div class="popup-wrapper">
 		<!-- 헤더 -->
-		<div class = "popup-header">상품 등록</div>	  
+		<div class = "popup-header">거래처</div>	  
 	     <!-- 검색바 -->
 	     <div class = "popup-search-bar">
 	     	<div style = "flex: 2;">
      			<select id = "gubun">
 	            	<option value = "0">전체</option>
-	            	<option value = "10">사원번호</option>
-	            	<option value = "20">사원명</option>
+	            	<option value = "10">사업단위</option>
+	            	<option value = "20">거래처</option>
+	            	<option value = "30">거래처번호</option>
 	        	</select>
 	     	</div>
 	     	<div style = "flex: 7;">
@@ -43,33 +39,40 @@
 	    <!-- 나머지 컨텐츠 -->
 	    <div class="popup-body">
        		<div class = "table-container" style = "height: 400px;">
-				<table class="table-single-select" style = "width: 100%">
-					<thead>
+				<table class="table-single-select">
+					<thead>					 		<!-- 화면에 보여야 하는 테이블 헤더 수정 -->
 						<tr>
-					    	<th>사원번호</th>
-					        <th>사원명</th>
-					        <th>부서</th>
-					        <th>전화번호</th>
-					        <th>연락처</th>
-					        <th>이메일</th>
+					    	<th style = "width: 100px;">사업단위</th>
+					        <th style = "width: 100px;">거래처코드</th>
+					        <th style = "width: 150px;">거래처</th>
+					        <th style = "width: 100px;">유통분류</th>
+					        <th style = "width: 100px;">사업자번호</th>
+					        <th style = "width: 100px;">상호</th>
+					        <th style = "width: 100px;">약어</th>
+					        <th style = "width: 150px;">주소</th>
+					        <th style = "width: 150px;">연락처</th>
+					        <th style = "width: 150px;">이메일</th>
 				        </tr>
 				    </thead>
-				    <tbody id = "result-tbody">
+				    <tbody id = "result-tbody">		<!-- 화면에 보여야 하는 테이블 바디 수정 -->
 			    		<c:forEach items = "${list}" var = "board">
 					    	<tr>
-				    			<td class = "text-center"><c:out value = "${board.column1}" /></td>
-				    			<td class = "text-center"><c:out value = "${board.column2}" /></td>
-				    			<td class = "text-center"><c:out value = "${board.column3}" /></td>
-				    			<td class = "text-center"><c:out value = "${board.column4}" /></td>
-				    			<td class = "text-center"><c:out value = "${board.column5}" /></td>
-				    			<td class = "text-center"><c:out value = "${board.column6}" /></td>
-					    	</tr>
+								<td class = "text-center"><input type = "hidden" value = "${board.column1}"><c:out value = "${board.column2}"/></td>
+								<td class = "text-center"><c:out value = "${board.column3}"/></td>
+								<td class = "text-center"><c:out value = "${board.column4}"/></td>
+								<td class = "text-center"><input type = "hidden" value = "${board.column5}"><c:out value = "${board.column6}"/></td>
+								<td class = "text-center"><c:out value = "${board.column7}"/></td>
+								<td class = "text-center"><c:out value = "${board.column8}"/></td>
+								<td class = "text-center"><c:out value = "${board.column9}"/></td>
+								<td class = "text-center"><c:out value = "${board.column10}"/></td>
+								<td class = "text-center"><c:out value = "${board.column11}"/></td>
+								<td class = "text-center"><c:out value = "${board.column12}"/></td>
+							</tr>
 				    	</c:forEach>
 				    </tbody>
 				</table>
 		    </div>
 	    </div>
-	    
 	    <div class = "btn-primary" style = "width: 100px; text-align: center; padding: 0.5rem 1.2rem; font-size: 18px; margin: auto; margin-top: 10px;" onclick = "button_Click()">적용</div>
 	</div>
 </body>
@@ -82,8 +85,6 @@
 	(function() {
 	    const tbody = document.querySelector('.table-single-select tbody');
 	    if (!tbody) return;
-	
-	    
 	
 	    tbody.addEventListener('click', function(e) {
 	        const tr = e.target.closest('tr');
@@ -110,26 +111,33 @@
 		}
 		
 		$.ajax({
-			url: '/popup/contact_list',
+			url: '/popup/party_list',			// '/popup/Controller에 불러올 getMapping 주소 입력'
 			data: formData,
 			type: 'GET',
 			dataType: 'json',
 			success: function(result) {
+				
+				// 기존 내용 초기화
 				const tbody = document.getElementById("result-tbody");
-	            tbody.innerHTML = ""; // 기존 내용 초기화
+	            tbody.innerHTML = ""; 
 	            
 	         	// result 배열 반복
 	            result.forEach(function(board) {
 	            	const tr = document.createElement("tr");
 	
+	            	// tbody 생성한 만큼 입력
 	                tr.innerHTML = 
-	                    '<td class="text-center">' + (board.column1 || '') + '</td>' +
-	                    '<td class="text-center">' + (board.column2 || '') + '</td>' +
-	                    '<td class="text-center">' + (board.column3 || '') + '</td>' +
-	                    '<td class="text-center">' + (board.column4 || '') + '</td>' +
-	                    '<td class="text-center">' + (board.column5 || '') + '</td>' +
-	                    '<td class="text-center">' + (board.column6 || '') + '</td>';
-	                   
+	                	'<td class="text-center"><input type="hidden" value="' + (board.column1 || '') + '">' + (board.column2 || '') + '</td>' + 
+	                	'<td class="text-center">' + (board.column3 || '') + '</td>' +
+	                	'<td class="text-center">' + (board.column4 || '') + '</td>' +
+	                	'<td class="text-center"><input type="hidden" value="' + (board.column5 || '') + '">' + (board.column6 || '') + '</td>' +
+	                	'<td class="text-center">' + (board.column7 || '') + '</td>' +
+	                	'<td class="text-center">' + (board.column8 || '') + '</td>' +
+	                	'<td class="text-center">' + (board.column9 || '') + '</td>' +
+	                	'<td class="text-center">' + (board.column10 || '') + '</td>' +
+	                	'<td class="text-center">' + (board.column11 || '') + '</td>' +
+	                	'<td class="text-center">' + (board.column12 || '') + '</td>' +
+	                    
 	                tbody.appendChild(tr);
 	            });
 			}			
@@ -157,11 +165,11 @@
 	            });
 	        }
 	    });
-	    
-	 	// 부모창 함수 호출 + 데이터 전달
-		window.opener.contact_RowData(data);
-		// 팝업 닫기
-	  	window.close();
-	}	
+
+	    // 부모창 함수 호출 + 데이터 전달
+	    window.opener.party_RowData(data);
+	    // 팝업 닫기
+	    window.close();
+	}
 	
 </script>

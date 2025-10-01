@@ -50,6 +50,30 @@ public class PopupController {
 		return popupService.contact_List(gubun, text);
 	}
 
+	// 거래처
+	@GetMapping("/party_popup")
+	public void party_Popup(Model model, @RequestParam(required = false) String gubun, @RequestParam(required = false) String text) {
+		model.addAttribute("list", popupService.party_List(gubun, text));	// 마스터 조회
+	}
+	
+	@GetMapping("/party_list")
+	@ResponseBody
+	public List<PopupVO> party_list(@RequestParam(required = false) String gubun, @RequestParam(required = false) String text) {
+		return popupService.party_List(gubun, text);
+	}
+	
+	// 출고 마스터 팝업
+	@GetMapping("/out_id_popup")
+	public void out_Id_Popup(Model model, @RequestParam(required = false) String gubun, @RequestParam(required = false) String text) {
+		model.addAttribute("list", popupService.out_Id_List(gubun, text));	// 마스터 조회
+	}
+	
+	@GetMapping("/out_id_list")
+	@ResponseBody
+	public List<PopupVO> out_Id_list(@RequestParam(required = false) String gubun, @RequestParam(required = false) String text) {
+		return popupService.out_Id_List(gubun, text);
+	}
+
 	// 품목 대
 	@GetMapping("/category_popup_big")
 	public void category_Popup_Big(Model model, @RequestParam(required = false) String gubun,

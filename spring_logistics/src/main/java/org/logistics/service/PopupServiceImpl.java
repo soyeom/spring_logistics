@@ -29,6 +29,18 @@ public class PopupServiceImpl implements PopupService {
 	}
 	
 	@Override
+	public List<PopupVO> party_List(String gubun, String text) {
+		// TODO Auto-generated method stub
+		return popupMapper.party_List(gubun, text);
+	}
+
+	@Override
+	public List<PopupVO> out_Id_List(String gubun, String text) {
+		// TODO Auto-generated method stub
+		return popupMapper.out_Id_List(gubun, text);
+	}
+	
+	@Override
 	public List<PopupVO> category_List_Big(String gubun, String text) {
 		
 		return popupMapper.category_List_Big(gubun, text);

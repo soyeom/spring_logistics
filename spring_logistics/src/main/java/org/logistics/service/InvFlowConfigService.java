@@ -16,8 +16,14 @@ public interface InvFlowConfigService {
 	public List<WareHouseItemListVO> getWareHouseItemList(String bu_Id, String wareHouse_Id);
 	public List<WareHouseContactListVO> getWareHouseContactList(String bu_Id, String wareHouse_Id);
 	
+	public void save(InvFlowConfigVO vo);
+	public void save_Detail1(WareHouseItemListVO vo);
+	public void save_Detail2(WareHouseContactListVO vo);
+	
+	public void delete_Detail1(String bu_Id, String wareHouse_Master_Id, String wareHouse_Id);
+	public void delete_Detail2(String bu_Id, String wareHouse_Master_Id, String wareHouse_Id);
+	
 	// 출고처리 VO
-	public List<OutBoundMasterVO> getOutBoundMaster();
 	public List<OutBoundMasterVO> getOutBoundDetail1(String bu_Id, String out_Id);
 	public List<OutBoundMasterVO> getOutBoundDetail2(String bu_Id, String out_Id);
 	public void outBoundMasterSave(OutBoundMasterVO obm);

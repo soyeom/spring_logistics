@@ -46,15 +46,33 @@ public class InvFlowConfigServiceImpl implements InvFlowConfigService {
 		return invFlowConfigMapper.getWareHouseContactList(bu_Id, wareHouse_Id);
 	}
 	
-	
-	// 출고처리
-	// 출고목록 조회
 	@Override
-	public List<OutBoundMasterVO> getOutBoundMaster() {
-		// TODO Auto-generated method stub
-		return invFlowConfigMapper.getOutBoundMaster();
+	public void save(InvFlowConfigVO vo) {
+		invFlowConfigMapper.save(vo);
+	}
+	
+	@Override
+	public void delete_Detail1(String bu_Id, String wareHouse_Master_Id, String wareHouse_Id) {
+		invFlowConfigMapper.delete_Detail1(bu_Id, wareHouse_Master_Id, wareHouse_Id);
+		
+	}
+	
+	@Override
+	public void save_Detail1(WareHouseItemListVO vo) {
+		invFlowConfigMapper.save_Detail1(vo);
+	}
+	
+	@Override
+	public void delete_Detail2(String bu_Id, String wareHouse_Master_Id, String wareHouse_Id) {
+		invFlowConfigMapper.delete_Detail2(bu_Id, wareHouse_Master_Id, wareHouse_Id);
 	}
 
+	@Override
+	public void save_Detail2(WareHouseContactListVO vo) {
+		invFlowConfigMapper.save_Detail2(vo);
+	}
+
+	// 출고처리
 	// 출고 마스터 조회
 	@Override
 	public List<OutBoundMasterVO> getOutBoundDetail1(String bu_Id, String out_Id) {
@@ -93,10 +111,4 @@ public class InvFlowConfigServiceImpl implements InvFlowConfigService {
 		// TODO Auto-generated method stub
 		return invFlowConfigMapper.popupItemList();
 	}
-
-	
-
-	
-
-	
 }

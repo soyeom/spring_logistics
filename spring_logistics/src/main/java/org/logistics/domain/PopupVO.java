@@ -26,5 +26,5 @@ public class PopupVO {
 	private String column18;
 	private String column19;
 	private String column20;
-
+	
 }
