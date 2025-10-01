@@ -307,6 +307,7 @@
            a.note              as note,            -- 특이사항
            a.warehouse_id      as warehouseId,     -- 창고ID
            
+<!--            (select warehouse_name from warehouse_detail where bu_Id = a.bu_Id and warehouse_Id = a.warehouse_Id) warehouse_name, -->
            b.item_name         as itemName,        -- 품명
            b.spec              as spec,            -- 규격
            b.base_unit         as baseUnit,        -- 판매단위
@@ -316,7 +317,7 @@
            null                as krwVat,          -- 원화부가세
           
            m.inbound_date      as inboundDate,     -- 납기일
-           null                as extraOutType,    -- 기타출고구분
+           null	               as OutType,         -- 출고구분
            null                as inboundComplete  -- 입고완료 여부
     from inbound_detail a
     join item_master b
@@ -327,7 +328,8 @@
      and a.bu_id = m.bu_id
     join party p                   -- ✅ 거래처
       on m.party_id = p.party_id
-  
+<!--   	join out_master o -->
+<!--   	  on a.bu_id = o.bu_id -->
     where a.bu_id = #{buId}
       and a.inbound_id = #{orderId}
 </select>

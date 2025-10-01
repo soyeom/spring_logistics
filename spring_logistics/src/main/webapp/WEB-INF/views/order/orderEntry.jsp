@@ -1,130 +1,137 @@
-<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+    
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 
+<script type="text/javascript" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<!DOCTYPE html>
 <html>
 <head>
-<title>수주입력</title>
-<link rel="stylesheet"
-	href="https://cdn.jsdelivr.net/npm/handsontable/dist/handsontable.full.min.css">
-<script
-	src="https://cdn.jsdelivr.net/npm/handsontable/dist/handsontable.full.min.js"></script>
+	<meta charset="UTF-8">
+    <title>수주입력 - 팜스프링 ERP</title>
+    
+<link rel="stylesheet" href="/resources/css/logistics.css" type="text/css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css" />
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+
+<!-- Handsontable -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/handsontable/dist/handsontable.full.min.css">
+<script src="https://cdn.jsdelivr.net/npm/handsontable/dist/handsontable.full.min.js"></script>
+
+<!-- jQuery -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<style>
 
-/* === 공통 규격 === */
-:root {
-  --label-w: 150px;
-  --input-w: 220px;
-  --row-h: 30px;
-  --gap: 14px;
-}
-
-fieldset {
-	border: 1px solid #ddd;
-	margin-bottom: 12px;
-}
-
-legend {
-	font-weight: 700;
-	padding: 0 6px;
-}
-
-.label-red {
-	color: #c00;
-	font-weight: 700;
-	text-align: right;
-	padding-right: 6px;
-}
-
-/* 4쌍(라벨,입력)*4 = 8칸 그리드 (한 줄에 4필드) */
-.form-grid {
-  display: grid;
-  grid-template-columns: var(--label-w) var(--input-w)
-                         var(--label-w) var(--input-w)
-                         var(--label-w) var(--input-w)
-                         var(--label-w) var(--input-w);
-  column-gap: var(--gap);
-  row-gap: 10px;
-  align-items: center;
-}
-
-.form-grid input[type="text"],
-.form-grid input[type="date"],
-.form-grid input[type="number"],
-.form-grid select {
-  width: var(--input-w);
-  height: var(--row-h);
-  box-sizing: border-box;
-}
-
-.form-grid input[readonly] {
-	background: #f5f6f8;
-}
-
-/* 검색 인풋 + 돋보기 버튼 */
-.search-wrap {
-	display: flex;
-	align-items: center;
-}
-
-.btn-icon {
-	width: 30px;
-	height: var(--row-h);
-	margin-left: 4px;
-	cursor: pointer;
-}
-
-/* 오른쪽 버튼 묶음 */
-.btns-right {
-	display: flex;
-	justify-content: flex-end;
-	gap: 8px;
-}
-
-.btn-blue {
-	background: #3b82f6;
-	color: #fff;
-	border: 0;
-	height: var(--row-h);   /* ✅ 오타 수정 */
-	padding: 0 14px;
-	border-radius: 4px;
-	cursor: pointer;
-}
-
-/* % 같이 붙는 입력 */
-.inline {
-	display: flex;
-	align-items: center;
-	gap: 6px;
-}
-
-/* ✅ col-span-2 정의 추가 */
-.col-span-2 {
-	grid-column: span 2;
-}
-</style>
 </head>
 
 <body>
-
-
-
-
-	
-	<h2>수주입력</h2>
-	<!-- ✅ 버튼 -->
-	<div class="toolbar">
-		<button type="button" onclick="searchOrders()">신규</button>
-		<button type="button" onclick="searchOrders()">저장</button>
-		<button type="button" onclick="searchOrders()">삭제</button>
-
+	<div class = "layout">
+		<!-- 홈 아이콘 세로 바 -->
+	    <div class="home-bar">
+	        <span>
+	            <a href="/"><img src="https://cdn-icons-png.flaticon.com/512/7598/7598650.png" alt="홈화면" class="home-icon"></a>
+	        </span>
+	    </div>
+	    <!-- 사이드바 -->
+	    <aside class="sidebar">
+	        <div class="sidebar-header">
+	            <div class="profile">
+	                <img src="https://cdn-icons-png.flaticon.com/512/7598/7598657.png" alt="프로필">
+	                <p>홍길동님, 안녕하세요 👋</p>
+	                <div class="auth-btns">
+	                    <button class="btn btn-secondary">로그인</button>
+	                    <button class="btn btn-secondary">회원가입</button>
+	                </div>
+	            </div>
+	        </div>
+	        <nav class="menu">
+	            <div class="menu-item">
+	                <div class="title"><a href="#">입고 및 출고</a></div>
+	                <div class="submenu">
+	                    <div><a href="#">입고 내역</a></div>
+	                    <div><a href="#">출고 내역</a></div>
+	                </div>
+	            </div>
+	            <div class="menu-item">
+	                <div class="title"><a href="#">재고 출하통제</a></div>
+	                <div class="submenu">
+	                    <div><a href="#">출하 계획</a></div>
+	                    <div><a href="#">출하 내역</a></div>
+	                </div>
+	            </div>
+	            <div class="menu-item">
+	                <div class="title"><a href="#">재고 관리</a></div>
+	                <div class="submenu">
+	                    <div><a href="#">재고 현황</a></div>
+	                    <div><a href="#">재고 이동</a></div>
+	                    <div><a href="#">재고 조회</a></div>
+	                </div>
+	            </div>
+	            <div class="menu-item">
+	                <div class="title"><a href="#">사업단위별 수불집계</a></div>
+	                <div class="submenu">
+	                    <div><a href="#">사업장별 집계</a></div>
+	                    <div><a href="#">월별 추이</a></div>
+	                </div>
+	            </div>
+	            <div class="menu-item">
+	                <div class="title"><a href="#">재고 변동 추이 분석</a></div>
+	                <div class="submenu">
+	                    <div><a href="#">그래프 보기</a></div>
+	                </div>
+	            </div>
+	        </nav>
+    	</aside>
+		<div class = "main">
+    		<div class="main-header">
+		        <div><span class="btn btn-secondary btn-icon toggle-sidebar">≡</span></div>
+	            <div><h1>수주입력</h1></div>
+	            <div>
+		            <button class="btn btn-secondary search-btn" id = "search" onclick = "search()">조회</button>
+					<button class="btn btn-secondary search-btn" id = "save" onclick = "save_inBound()">저장</button>
+				    <button class="btn btn-secondary search-btn" id = "delete" onclick = "delete_inBound()">저장</button>
+				</div>
+	        </div>
+	        <div class="filters">
+	        	<div class = "filters-main">
+        			<div class = "title">기본정보</div>
+        			<div class = "line"></div>
+	        	</div>
+		        <div class="filters-row">
+	          		<div class = "filters-count">
+		           		<div class = "filters-text">사업단위</div>
+		           		<div class = "filters-value">
+		           			<select id="buId" name="buId">
+								<option value = ""></option>
+							  	<c:forEach var="bu" items="${buList}">
+									<option value="${bu.buId}">${bu.buName}</option>
+								</c:forEach>
+							</select>
+		           		</div>
+	          		</div>
+	          		<div class = "filters-count">
+		           		<div class = "filters-text">수주일</div>
+		           		<div class = "filters-value">
+		           			<input type="date" name="createdAt">
+		           		</div>
+	          		</div>
+	          		<div class = "filters-count">
+		           		<div class = "filters-text">수주번호</div>
+		           		<div class = "filters-value">
+							<input type="text" id="orderId" name="orderId" placeholder="수주번호 선택"readonly />
+							<button type="button" class="btn-icon" onclick="openInboundPopup()">🔍</button>
+		           		</div>
+	          		</div>
+	       		</div>
+       		</div>
+		</div>
 	</div>
-
 	<!-- ✅ 기본정보 -->
 	<fieldset>
 		<legend>기본정보</legend>
 		<div class="form-grid">
 			<div class="label-red">사업단위</div>
+			
 			<select id="buId" name="buId">
 				<option value="">-- 선택 --</option>
 				<!-- ✅ 빈칸 옵션 -->
@@ -239,6 +246,7 @@ legend {
 
 	<!-- ✅ 품목 GRID -->
 	<div id="orderGrid" class="grid"></div>
+<script type="text/javascript" src="/resources/js/logistics.js"></script>
 
 	<script>
 	const container = document.getElementById("orderGrid");
@@ -247,7 +255,7 @@ legend {
 	  colHeaders : [ 
 	    "품명", "품번", "규격", "부가세포함", "판매단가", "수량", "판매단위", 
 	    "판매금액", "부가세", "원화판매금액", "원화부가세", 
-	    "납품거래처", "납기일", "특이사항", "창고", "출고구분", "입고완료"
+	    "납품거래처", "납기일", "특이사항", "창고", "입고완료"
 	  ],
 	  columns : [
 	    { data : "itemName" },              // 품명
@@ -274,7 +282,7 @@ legend {
 	    },
 	    { data : "note" },                          // 특이사항
 	    { data : "warehouseId" },                 // 창고
-	    { data : "extraOutType", type: "dropdown", source: ["불량폐기", "판촉", "연구개발", "실사기타출고", "불량재고정리", "샘플출고"] }, // 기타출고구분
+// 	    { data : "extraOutType", type: "dropdown", source: ["수주", "적송요청", "위탁출고요청", "기타출고요청"] }, // 기타출고구분
 	    {                                          // 입고완료
 	      data : "inboundComplete",
 	      type : "checkbox",
@@ -312,6 +320,19 @@ legend {
 	          hot.setDataAtRowProp(row, 'vat', 0);
 	        }
 	      }
+
+	      // 2️⃣ 입고완료 체크 시 납기일 자동 입력
+	      if (prop === 'inboundComplete') {
+	        if (newValue === 'Y') {
+	          // 오늘 날짜 (YYYY-MM-DD 형식)
+	          const today = new Date().toISOString().split("T")[0];
+	          hot.setDataAtRowProp(row, 'inboundDate', today);
+	        } else if (newValue === 'N') {
+	          // 체크 해제 시 납기일 비우기 (선택사항)
+	          hot.setDataAtRowProp(row, 'inboundDate', null);
+	        }
+	      }
+	      
 	    });
 	  }
 	});
