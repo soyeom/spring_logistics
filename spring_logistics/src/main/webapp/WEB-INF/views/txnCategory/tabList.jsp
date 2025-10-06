@@ -10,7 +10,7 @@
     body { font-family: "맑은 고딕", Arial, sans-serif; margin: 20px; }
     h2 { margin-bottom: 15px; }
 
-    /* ✅ 탭 + 버튼 영역 */
+    /* ✅ 탭 + 버튼 영역 .*/
     .tab-menu { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
     .tab-left button, .tab-right button {
         padding: 8px 15px;
