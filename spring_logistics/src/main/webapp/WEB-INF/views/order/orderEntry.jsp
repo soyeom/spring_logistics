@@ -738,7 +738,7 @@ function openPartyPopup() {
     );
 }
 
-// ✅ 거래처 팝업에서 값 전달받기
+// ✅ 거래처 팝업에서 값 전달받기.
 function party_RowData(data) {
     console.log("거래처 팝업에서 받은 데이터:", data);
 
