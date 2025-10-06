@@ -164,14 +164,16 @@
 						</div>
 					</div>
 					<div class="filters-count">
-						<div class="filters-text">거래처</div>
-						<div class="filters-value">
-							<input type="text" name="partyName" placeholder="거래처 선택">
-							<img
-								src="https://cdn-icons-png.flaticon.com/512/16799/16799970.png"
-								alt="search" class="search-icon" onclick="">
-						</div>
-					</div>
+    <div class="filters-text">거래처</div>
+    <div class="filters-value">
+        <input type="text" name="partyName" placeholder="거래처 선택">
+        <img
+            src="https://cdn-icons-png.flaticon.com/512/16799/16799970.png"
+            alt="search" class="search-icon"
+            onclick="openPartyPopup()">
+    </div>
+</div>
+
 					<div class="filters-count">
 						<div class="filters-text">거래처번호</div>
 						<div class="filters-value">
@@ -726,6 +728,23 @@ function applyUnitPrice() {
     });
 
 //     alert("단가적용이 되었습니다.✅");
+}
+//✅ 거래처 팝업 열기
+function openPartyPopup() {
+    window.open(
+        "/popup/party_popup",       // PopupController의 매핑 주소
+        "partyPopup",               // 팝업 이름 (중복 방지용)
+        "width=1000,height=600,scrollbars=yes,resizable=yes"
+    );
+}
+
+// ✅ 거래처 팝업에서 값 전달받기
+function party_RowData(data) {
+    console.log("거래처 팝업에서 받은 데이터:", data);
+
+    // 👉 전달된 데이터 순서에 맞게 필드 채움
+    $("[name=partyName]").val(data[2]);   // 거래처명
+    $("[name=partyId]").val(data[1]);     // 거래처코드
 }
 
 </script>
