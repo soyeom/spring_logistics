@@ -40,13 +40,13 @@
 		<result property="itemName" column="item_name" />
 		<result property="spec" column="spec" />
 		<result property="unit" column="base_unit" />
-		<result property="warehouseName"
-			column="warehouse_internal_code" />
+<!-- 		<result property="warehouseName" -->
+<!-- 			column="warehouse_internal_code" /> -->
 		<result property="inboundDate" column="inbound_date" />
 		<result property="inboundComplete" column="inbound_complete" />
 		<result property="warehouseName" column="warehouse_name" />
-		<result property="warehouseCode"
-			column="warehouse_internal_code" />
+<!-- 		<result property="warehouseCode" -->
+<!-- 			column="warehouse_internal_code" /> -->
 	</resultMap>
 
 	<!-- ================== 마스터 등록 ================== -->
@@ -147,7 +147,7 @@
 		d.note,
 		d.warehouse_id,
 		wd.warehouse_name AS warehouseName,
-		wm.warehouse_internal_code AS warehouseCode,
+<!-- 		wm.warehouse_internal_code AS warehouseCode, -->
 		TO_CHAR(ib.inbound_date,
 		'YYYY-MM-DD') AS inboundDate,
 		ib.inbound_complete AS inboundComplete,
@@ -217,7 +217,7 @@
 		'N' surtax_yn, '0' unit_price, '0' amount,
 		NULL note, NULL
 		warehouse_id,
-		NULL warehouse_internal_code,
+<!-- 		NULL warehouse_internal_code, -->
 		NULL inbound_date, 'N'
 		inbound_complete
 		FROM item_master i
@@ -296,43 +296,55 @@
 	</select>
 
 	<select id="getOrderList" resultType="org.logistics.model.OrderDetailDTO">
-    select a.inbound_detail_id as inboundDetailId, -- inbound_detail_id
-           a.inbound_id        as inboundId,       -- inbound_id
-           a.bu_id             as buId,            -- 사업단위
-           a.item_id           as itemId,          -- 품목ID
-           a.qty               as qty,             -- 수량
-           a.surtax_yn         as surtaxYn,        -- 부가세포함
-           a.unit_price        as unitPrice,       -- 단가
-           a.amount            as amount,          -- 판매금액
-           a.note              as note,            -- 특이사항
-           a.warehouse_id      as warehouseId,     -- 창고ID
+    SELECT 
+           a.inbound_detail_id AS inboundDetailId, -- inbound_detail_id
+           a.inbound_id        AS inboundId,       -- inbound_id
+           a.bu_id             AS buId,            -- 사업단위
+           a.item_id           AS itemId,          -- 품목ID
+           a.qty               AS qty,             -- 수량
+           a.surtax_yn         AS surtaxYn,        -- 부가세포함
+           a.unit_price        AS unitPrice,       -- 단가
+           a.amount            AS amount,          -- 판매금액
+           a.note              AS note,            -- 특이사항
+           a.warehouse_id      AS warehouseId,     -- 창고ID
+
+           wd.warehouse_name   AS warehouseName,   -- ✅ 창고이름 추가
            
-<!--            (select warehouse_name from warehouse_detail where bu_Id = a.bu_Id and warehouse_Id = a.warehouse_Id) warehouse_name, -->
-           b.item_name         as itemName,        -- 품명
-           b.spec              as spec,            -- 규격
-           b.base_unit         as baseUnit,        -- 판매단위
-           p.party_name        as partyName,       -- 납품거래처명
-           null                as vat,             -- 부가세 (추후 계산/조인)
-           null                as krwAmount,       -- 원화판매금액
-           null                as krwVat,          -- 원화부가세
+           b.item_name         AS itemName,        -- 품명
+           b.spec              AS spec,            -- 규격
+           b.base_unit         AS baseUnit,        -- 판매단위
+           p.party_name        AS partyName,       -- 납품거래처명
+
+           NULL                AS vat,             -- 부가세 (추후 계산)
+           NULL                AS krwAmount,       -- 원화판매금액
+           NULL                AS krwVat,          -- 원화부가세
           
-           m.inbound_date      as inboundDate,     -- 납기일
-           null	               as OutType,         -- 출고구분
-           null                as inboundComplete  -- 입고완료 여부
-    from inbound_detail a
-    join item_master b
-      on a.bu_id = b.bu_id
-     and a.item_id = b.item_id
-    join inbound_master m          -- ✅ 수주 마스터
-      on a.inbound_id = m.inbound_id
-     and a.bu_id = m.bu_id
-    join party p                   -- ✅ 거래처
-      on m.party_id = p.party_id
-<!--   	join out_master o -->
-<!--   	  on a.bu_id = o.bu_id -->
-    where a.bu_id = #{buId}
-      and a.inbound_id = #{orderId}
+           m.inbound_date      AS inboundDate,     -- 납기일
+           NULL	               AS OutType,         -- 출고구분
+           m.inbound_complete  AS inboundComplete  -- 입고완료 여부
+           
+    FROM inbound_detail a
+    JOIN item_master b
+      ON a.bu_id = b.bu_id
+     AND a.item_id = b.item_id
+
+    -- ✅ 창고이름 조인 (NUMBER형 맞추기)
+    JOIN warehouse_detail wd
+      ON a.bu_id = wd.bu_id
+     AND TO_NUMBER(a.warehouse_id) = wd.warehouse_id
+
+
+    JOIN inbound_master m
+      ON a.inbound_id = m.inbound_id
+     AND a.bu_id = m.bu_id
+
+    JOIN party p
+      ON m.party_id = p.party_id
+
+    WHERE a.bu_id = #{buId}
+      AND a.inbound_id = #{orderId}
 </select>
+
 
 
 

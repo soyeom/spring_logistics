@@ -24,6 +24,7 @@ public class OrderDTO {
 
     // 환율
     private String currencyCode;     // currency_rate.currency_code
+    private String exchangeRate;     // 환율 (1 USD = 1300.0)
 
     private List<OrderDetailDTO> details; // 디테일
 }

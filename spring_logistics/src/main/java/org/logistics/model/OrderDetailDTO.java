@@ -21,7 +21,6 @@ public class OrderDetailDTO {
     private String spec;              // 규격
     private String baseUnit;          // 판매단위
     private String warehouseName;     // 창고명
-    private String warehouseCode;
 
     // ✅ Handsontable 전용 필드 추가
     private String vat;               // 부가세

@@ -78,12 +78,11 @@
 		        <div><span class="btn btn-secondary btn-icon toggle-sidebar">≡</span></div>
 	            <div><h1>수주입력</h1></div>
 	            <div>
-					<button class="btn btn-secondary search-btn" id="search"
-						onclick="search()">조회</button>
-					<button class="btn btn-secondary search-btn" id="save"
-						onclick="save_inBound()">저장</button>
-					<button class="btn btn-secondary search-btn" id="delete"
-						onclick="delete_inBound()">저장</button>
+					<button class="btn btn-secondary search-btn" id="search" onclick="searchOrders()">조회</button>
+					<button class="btn btn-secondary search-btn" id="save" onclick="save_inBound()">저장</button>
+					<button class="btn btn-secondary search-btn" id="delete" onclick="delete_inBound()">삭제</button>
+					<button class="btn btn-secondary search-btn" id="applyPrice" onclick="applyUnitPrice()">단가적용</button>
+					
 				</div>
 			</div>
 			<div class="filters">
@@ -194,10 +193,12 @@
 					<div class="filters-count">
 						<div class="filters-text">통화</div>
 						<div class="filters-value">
-							<input type="text" id="currencyCode" name="currencyCode"
-								placeholder="통화 선택"> <img
-								src="https://cdn-icons-png.flaticon.com/512/16799/16799970.png"
-								alt="search" class="search-icon" onclick="">
+							<select id="currencyCode" name="currencyCode" onchange="loadExchangeRate()">
+							    <option value=""></option>
+							    <c:forEach items="${currencyList}" var="cItem">
+							        <option value="${cItem}">${cItem}</option>
+							    </c:forEach>
+							</select>
 						</div>
 					</div>
 					<div class="filters-count">
@@ -231,6 +232,7 @@
 							<span>%</span>
 						</div>
 					</div>
+					
 				</div>
 
 			</div>
@@ -257,10 +259,49 @@
 							<th style="width: 90px">입고완료</th>
 						</tr>
 					</thead>
+					
+					
 					<tbody id="result-tbody">
-						<!-- ✅ JS에서 동적으로 추가 -->
+					  <c:forEach items="${orderList}" var="order">
+					    <tr onclick="row_Click(this)">
+					      <td class="text-center"><c:out value="${order.itemName}" /></td>
+					      <td class="text-center"><c:out value="${order.itemId}" /></td>
+					      <td class="text-center"><c:out value="${order.spec}" /></td>
+					
+				
+					
+					      <td class="text-right"><fmt:formatNumber value="${order.unitPrice}" type="number" /></td>
+					      <td class="text-right"><fmt:formatNumber value="${order.qty}" type="number" /></td>
+					      <td><c:out value="${order.baseUnit}" /></td>
+					      <td class="text-right"><fmt:formatNumber value="${order.amount}" type="number" /></td>
+					      <td class="text-right"><fmt:formatNumber value="${order.vat}" type="number" /></td>
+					      <td class="text-right"><fmt:formatNumber value="${order.krwAmount}" type="number" /></td>
+					      <td class="text-right"><fmt:formatNumber value="${order.krwVat}" type="number" /></td>
+					      <td><c:out value="${order.partyName}" /></td>
+					      <td><fmt:formatDate value="${order.inboundDate}" pattern="yyyy-MM-dd" /></td>
+					      <td><c:out value="${order.note}" /></td>
+					      <td><c:out value="${order.warehouseName}" /></td>
+					
+					      <!-- ✅ 입고완료 체크박스 -->
+					      <tr>
+    ...
+    <!-- 부가세포함 체크박스 -->
+    <td class="text-center">
+        <input type="checkbox" name="surtaxYn" <c:if test="${order.surtaxYn == 'Y'}">checked</c:if> />
+    </td>
+    ...
+    <!-- 입고완료 체크박스 -->
+    <td class="text-center">
+        <input type="checkbox" name="inboundComplete" <c:if test="${order.inboundComplete == 'Y'}">checked</c:if> />
+    </td>
+
+
+					    </tr>
+					  </c:forEach>
 					</tbody>
 				</table>
+				
+				
 			</div>
 		</div>
 	</div>
@@ -268,7 +309,31 @@
 </html>
 <script type="text/javascript" src="../resources/js/logistics.js"></script>
 
-	<script type="text/javascript">
+	<script>
+	(function() {
+	    const tbody = document.querySelector('.table-single-select tbody');
+	    if (!tbody) return;
+	
+	    let selectedRow = null;
+	
+	    tbody.addEventListener('click', function(e) {
+	        const tr = e.target.closest('tr');
+	        if (!tr) return;
+	
+// 	        if (selectedRow === tr) {
+// 	            tr.classList.remove('tr-selected');
+// 	            selectedRow = null;
+// 	            return;
+// 	        }
+	
+	        if (selectedRow) selectedRow.classList.remove('tr-selected');
+	
+	        tr.classList.add('tr-selected');
+	        selectedRow = tr;
+	    });
+	})();
+	
+	
 		// ✅ 검색 조회
 		function searchOrders() {
 			var formData = {
@@ -304,7 +369,7 @@
 									partyName : order.partyName || '',
 									inboundDate : d.inboundDate || '',
 									note : d.note || '',
-									warehouseId : d.warehouseId || '',
+									warehouseName : d.warehouseName || '',
 									inboundComplete : d.inboundComplete || 'N'
 								});
 							});
@@ -344,46 +409,46 @@
 												+ "</td>");
 								tr.append("<td>" + (row.spec || '') + "</td>");
 
-								// ✅ 부가세포함 체크박스
-								var surtaxYn = row.surtaxYn === 'Y' ? "checked"
-										: "";
-								tr
-										.append('<td class="text-center"><input type="checkbox" ' + surtaxYn + ' disabled></td>');
+// 								// ✅ 부가세포함 체크박스
+// 								var surtaxYn = row.surtaxYn === 'Y' ? "checked"
+// 										: "";
+// 								tr
+// 										.append('<td class="text-center"><input type="checkbox" ' + surtaxYn + ' disabled></td>');
 
-								tr.append("<td class='text-right'>"
-										+ (row.unitPrice || 0) + "</td>");
-								tr.append("<td class='text-right'>"
-										+ (row.qty || 0) + "</td>");
-								tr.append("<td>" + (row.baseUnit || '')
-										+ "</td>");
-								tr.append("<td class='text-right'>"
-										+ (row.amount || 0) + "</td>");
-								tr.append("<td class='text-right'>"
-										+ (row.vat || 0) + "</td>");
-								tr.append("<td class='text-right'>"
-										+ (row.krwAmount || 0) + "</td>");
-								tr.append("<td class='text-right'>"
-										+ (row.krwVat || 0) + "</td>");
-								tr.append("<td>" + (row.partyName || '')
-										+ "</td>");
-								tr.append("<td>" + (row.inboundDate || '')
-										+ "</td>");
-								tr.append("<td>" + (row.note || '') + "</td>");
-								tr.append("<td>" + (row.warehouseId || '')
-										+ "</td>");
+// 								tr.append("<td class='text-right'>"
+// 										+ (row.unitPrice || 0) + "</td>");
+// 								tr.append("<td class='text-right'>"
+// 										+ (row.qty || 0) + "</td>");
+// 								tr.append("<td>" + (row.baseUnit || '')
+// 										+ "</td>");
+// 								tr.append("<td class='text-right'>"
+// 										+ (row.amount || 0) + "</td>");
+// 								tr.append("<td class='text-right'>"
+// 										+ (row.vat || 0) + "</td>");
+// 								tr.append("<td class='text-right'>"
+// 										+ (row.krwAmount || 0) + "</td>");
+// 								tr.append("<td class='text-right'>"
+// 										+ (row.krwVat || 0) + "</td>");
+// 								tr.append("<td>" + (row.partyName || '')
+// 										+ "</td>");
+// 								tr.append("<td>" + (row.inboundDate || '')
+// 										+ "</td>");
+// 								tr.append("<td>" + (row.note || '') + "</td>");
+// 								tr.append("<td>" + (row.warehouseId || '')
+// 										+ "</td>");
 
-								// ✅ 입고완료 체크박스
-								var inboundChk = row.inboundComplete === 'Y' ? "checked"
-										: "";
-								tr
-										.append('<td class="text-center"><input type="checkbox" ' + inboundChk + ' disabled></td>');
+// 								// ✅ 입고완료 체크박스
+// 								var inboundChk = row.inboundComplete === 'Y' ? "checked"
+// 										: "";
+// 								tr
+// 										.append('<td class="text-center"><input type="checkbox" ' + inboundChk + ' disabled></td>');
 
-								tbody.append(tr);
+// 								tbody.append(tr);
 							});
 		}
 	</script>
 
-<script type="text/javascript">
+<script>
 // ✅ 팝업 열기
 function openInboundPopup() {
     window.open(
@@ -446,7 +511,7 @@ function renderTable(dataList) {
         tr.append("<td>"+(row.itemName||'')+"</td>");
         tr.append("<td>"+(row.itemId||'')+"</td>");
         tr.append("<td>"+(row.spec||'')+"</td>");
-        tr.append('<td class="text-center"><input type="checkbox" '+(row.surtaxYn==="Y"?"checked":"")+' disabled></td>');
+        tr.append('<td class="text-center"><input type="checkbox" '+(row.surtaxYn==="Y"?"checked":"")+' onchange="calcVat(this)"></td>');
         tr.append("<td class='text-right'>"+(row.unitPrice||0)+"</td>");
         tr.append("<td class='text-right'>"+(row.qty||0)+"</td>");
         tr.append("<td>"+(row.baseUnit||'')+"</td>");
@@ -457,13 +522,17 @@ function renderTable(dataList) {
         tr.append("<td>"+(row.partyName||'')+"</td>");
         tr.append("<td>"+(row.inboundDate||'')+"</td>");
         tr.append("<td>"+(row.note||'')+"</td>");
-        tr.append("<td>"+(row.warehouseId||'')+"</td>");
-        tr.append('<td class="text-center"><input type="checkbox" '+(row.inboundComplete==="Y"?"checked":"")+' disabled></td>');
+        tr.append("<td>"+(row.warehouseName || row.warehouseId || '')+"</td>");
+        tr.append('<td class="text-center">'
+        	    + '<input type="checkbox" '
+        	    + (row.inboundComplete === "Y" ? "checked" : "")
+        	    + ' onchange="handleInboundComplete(this)">'
+        	    + '</td>');
         tbody.append(tr);
     });
 }
 
-// ✅ 전체 검색 (조회 버튼)
+//✅ 전체 검색 (조회 버튼)
 function searchOrders() {
     $.ajax({
         url: '/order/search',
@@ -493,5 +562,170 @@ function searchOrders() {
             alert("조회 실패: " + err.statusText);
         }
     });
+}   // ✅ 여기까지가 searchOrders 끝
+
+// ✅ 부가세 자동 계산 함수 (searchOrders 바깥에 있어야 함!)
+function calcVat(checkbox) {
+    // 클릭한 체크박스가 속한 행(tr) 찾기
+    var tr = $(checkbox).closest("tr");
+
+    // 판매금액(td 8번째 칸) 가져오기
+    var amountText = tr.find("td:eq(7)").text().replace(/,/g, "");
+    var amount = parseFloat(amountText) || 0;
+
+    // 체크 여부 확인
+    var isChecked = $(checkbox).is(":checked");
+
+    // 부가세 계산 (10%)
+    var vat = isChecked ? Math.round(amount * 0.1) : 0;
+
+    // 부가세 칸(td 9번째 칸) 업데이트
+    tr.find("td:eq(8)").text(vat.toLocaleString());
+
+    // 총합 다시 계산
+    updateTotals();
 }
+
+// // ✅ 부가세 총합 업데이트 함수
+// function updateTotals() {
+//     var totalVat = 0;
+//     $("#result-tbody tr").each(function() {
+//         var vatText = $(this).find("td:eq(8)").text().replace(/,/g, "");
+//         var vat = parseFloat(vatText) || 0;
+//         totalVat += vat;
+//     });
+//     $("[name=vatTotal]").val(totalVat.toLocaleString());
+// }
+
+//✅ 판매금액, 부가세, 총액 자동 계산
+// function updateSummary() {
+//     let totalAmount = 0;
+//     let totalVat = 0;
+
+//     $("#result-tbody tr").each(function () {
+//         const tr = $(this);
+//         const amountText = tr.find("td:eq(7)").text().replace(/,/g, "");
+//         const vatText = tr.find("td:eq(8)").text().replace(/,/g, "");
+
+//         const amount = parseFloat(amountText) || 0;
+//         const vat = parseFloat(vatText) || 0;
+
+//         totalAmount += amount;
+//         totalVat += vat;
+//     });
+
+//     // 계산된 값 화면 반영
+//     $("[name=salesTotal]").val(totalAmount.toLocaleString());
+//     $("[name=vatTotal]").val(totalVat.toLocaleString());
+//     $("[name=grandTotal]").val((totalAmount + totalVat).toLocaleString());
+// }
+
+//✅ 입고완료 체크박스 클릭 시 오늘 날짜 자동 입력
+function handleInboundComplete(checkbox) {
+    var tr = $(checkbox).closest("tr");
+    var today = new Date();
+    var formatted = today.toISOString().split('T')[0]; // yyyy-MM-dd 형식
+
+    if ($(checkbox).is(":checked")) {
+        // 체크되면 납기일 셀에 오늘 날짜 입력
+        tr.find("td:eq(12)").text(formatted);
+    } else {
+        // 체크 해제 시 납기일 비움
+        tr.find("td:eq(12)").text("");
+    }
+}
+//✅ Ctrl 키 다중 선택 + 자동 합계 계산
+(function() {
+    const tbody = document.querySelector("#result-tbody");
+    if (!tbody) return;
+
+    let selectedRows = new Set();
+
+    tbody.addEventListener("click", function(e) {
+        const tr = e.target.closest("tr");
+        if (!tr) return;
+
+        // Ctrl 키 누르면 다중 선택
+        if (e.ctrlKey) {
+            if (selectedRows.has(tr)) {
+                tr.classList.remove("tr-selected");
+                selectedRows.delete(tr);
+            } else {
+                tr.classList.add("tr-selected");
+                selectedRows.add(tr);
+            }
+        } else {
+            // Ctrl 안 누르면 단일 선택
+            selectedRows.forEach(r => r.classList.remove("tr-selected"));
+            selectedRows.clear();
+            tr.classList.add("tr-selected");
+            selectedRows.add(tr);
+        }
+
+        updateTotals(); // 선택 시마다 합계 갱신
+    });
+
+    // ✅ 합계 계산 함수 (수정 버전)
+    function updateTotals() {
+        let totalAmountUSD = 0;
+        let totalVatUSD = 0;
+        let exchangeRate = parseFloat($("[name=exchangeRate]").val()) || 1;
+        let discountRate = parseFloat($("[name=discountRate]").val()) || 0;
+
+        selectedRows.forEach(tr => {
+            const $tr = $(tr);
+            const amount = parseFloat($tr.find("td:eq(7)").text().replace(/,/g, "")) || 0;
+            const vat = parseFloat($tr.find("td:eq(8)").text().replace(/,/g, "")) || 0;
+            totalAmountUSD += amount;
+            totalVatUSD += vat;
+        });
+
+        // 💵 할인 적용 (USD 기준)
+        totalAmountUSD = totalAmountUSD * (1 - discountRate / 100);
+        totalVatUSD = totalVatUSD * (1 - discountRate / 100);
+
+        // 💰 원화 환산
+        const totalAmountKRW = Math.round(totalAmountUSD * exchangeRate);
+        const totalVatKRW = Math.round(totalVatUSD * exchangeRate);
+        const totalGrandKRW = totalAmountKRW + totalVatKRW;
+
+        // ✅ 상단 표시: 전부 원화 기준으로 들어가게
+        $("[name=salesTotal]").val(totalAmountKRW.toLocaleString());
+        $("[name=vatTotal]").val(totalVatKRW.toLocaleString());
+        $("[name=grandTotal]").val(totalGrandKRW.toLocaleString());
+    }
+ 
+
+    // ✅ 통화/환율/할인율 변경 시 자동 계산
+    $("[name=exchangeRate], #currencyCode, [name=discountRate]").on("input change", function() {
+        updateTotals();
+    });
+})();
+function applyUnitPrice() {
+    // 선택된 행(tr-selected 클래스)
+    const selected = $(".tr-selected");
+    if (selected.length === 0) {
+        alert("단가적용할 항목을 선택해주세요.");
+        return;
+    }
+
+    selected.each(function() {
+        const tr = $(this);
+
+        // 판매가계액(=USD 기준 금액)
+        const salesTotalText = $("[name=salesTotal]").val().replace(/,/g, "");
+        const salesTotal = parseFloat(salesTotalText) || 0;
+
+        // 부가세(USD)
+        const vatTotalText = $("[name=vatTotal]").val().replace(/,/g, "");
+        const vatTotal = parseFloat(vatTotalText) || 0;
+
+        // ✅ 판매가계액 그대로 원화판매금액으로 반영
+        tr.find("td:eq(9)").text(salesTotal.toLocaleString());
+        tr.find("td:eq(10)").text(vatTotal.toLocaleString());
+    });
+
+//     alert("단가적용이 되었습니다.✅");
+}
+
 </script>
