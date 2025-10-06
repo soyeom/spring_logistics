@@ -17,7 +17,7 @@
 </head>
 <body>
 	<div class = "layout">
-		<!-- 홈 아이콘 세로 바. -->
+		<!-- 홈 아이콘 세로 바 -->
 	    <div class="home-bar">
 	        <span>
 	            <a href="/"><img src="https://cdn-icons-png.flaticon.com/512/7598/7598650.png" alt="홈화면" class="home-icon"></a>
