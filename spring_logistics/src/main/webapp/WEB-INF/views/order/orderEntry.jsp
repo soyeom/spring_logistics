@@ -146,14 +146,16 @@
 						</div>
 					</div>
 					<div class="filters-count">
-						<div class="filters-text">담당자</div>
-						<div class="filters-value">
-							<input type="text" name="contactName" placeholder="담당자 선택">
-							<img
-								src="https://cdn-icons-png.flaticon.com/512/16799/16799970.png"
-								alt="search" class="search-icon" onclick="">
-						</div>
-					</div>
+  <div class="filters-text">담당자</div>
+  <div class="filters-value">
+    <input type="text" name="contactName" placeholder="담당자 선택">
+    <img
+      src="https://cdn-icons-png.flaticon.com/512/16799/16799970.png"
+      alt="search" class="search-icon"
+      onclick="openContactPopup()">
+  </div>
+</div>
+
 					<div class="filters-count">
 						<div class="filters-text">부서</div>
 						<div class="filters-value">
@@ -745,6 +747,24 @@ function party_RowData(data) {
     // 👉 전달된 데이터 순서에 맞게 필드 채움
     $("[name=partyName]").val(data[2]);   // 거래처명
     $("[name=partyId]").val(data[1]);     // 거래처코드
+}
+//✅ 담당자 팝업 열기
+function openContactPopup() {
+    window.open(
+        "/popup/contact_popup",     // Controller 매핑 주소
+        "contactPopup",             // 팝업 이름 (창 중복 방지)
+        "width=1000,height=600,scrollbars=yes,resizable=yes"
+    );
+}
+
+// ✅ 담당자 팝업에서 데이터 전달받기
+function contact_RowData(data) {
+    console.log("담당자 팝업에서 받은 데이터:", data);
+
+    // 👉 전달 순서에 맞게 값 채워넣기
+    // column1: 사원번호, column2: 사원명, column3: 부서
+    $("[name=contactName]").val(data[1]);   // 사원명
+    $("[name=department]").val(data[2]);    // 부서명
 }
 
 </script>
