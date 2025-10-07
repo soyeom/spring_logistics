@@ -51,16 +51,36 @@ public class OtherTxnCategoryController {
         }
     }
  // ✅ 실제 삭제
+//    @ResponseBody
+//    @DeleteMapping("/api/delete/{txnCode}/{buId}")
+//    public ResponseEntity<?> deleteCategory(
+//            @PathVariable("txnCode") String txnCode,
+//            @PathVariable("buId") int buId) {
+//        try {
+//            service.delete(txnCode, buId);
+//            Map<String, Object> result = new HashMap<>();
+//            result.put("result", "success");
+//            return ResponseEntity.ok(result);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            Map<String, Object> error = new HashMap<>();
+//            error.put("result", "error");
+//            error.put("message", e.getMessage());
+//            return ResponseEntity.status(500).body(error);
+//        }
+//    }
     @ResponseBody
-    @DeleteMapping("/api/delete/{txnCode}/{buId}")
-    public ResponseEntity<?> deleteCategory(
-            @PathVariable("txnCode") String txnCode,
-            @PathVariable("buId") int buId) {
+    @PostMapping("/api/delete")
+    public ResponseEntity<?> deleteCategory(@RequestBody Map<String, Object> data) {
         try {
+            String txnCode = (String) data.get("txnCode");
+            int buId = Integer.parseInt(data.get("buId").toString());
             service.delete(txnCode, buId);
+
             Map<String, Object> result = new HashMap<>();
             result.put("result", "success");
             return ResponseEntity.ok(result);
+
         } catch (Exception e) {
             e.printStackTrace();
             Map<String, Object> error = new HashMap<>();

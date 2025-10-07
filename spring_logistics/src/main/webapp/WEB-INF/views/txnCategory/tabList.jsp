@@ -1,316 +1,615 @@
-<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+    
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+
+<script type="text/javascript" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<!DOCTYPE html>
 <html>
 <head>
-    <title>입출고구분설정</title>
-    <!-- Handsontable -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/handsontable/dist/handsontable.full.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/handsontable/dist/handsontable.full.min.js"></script>
-
-  <style>
-    body { font-family: "맑은 고딕", Arial, sans-serif; margin: 20px; }
-    h2 { margin-bottom: 15px; }
-
-    /* ✅ 탭 + 버튼 영역 .*/
-    .tab-menu { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-    .tab-left button, .tab-right button {
-        padding: 8px 15px;
-        margin-right: 5px;
-        cursor: pointer;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-        background: #f5f5f5;
-    }
-    .tab-left button.active { background: #e0e0e0; font-weight: bold; }
-    .tab-right button.remove { color: black; }
-
-    .tab-content { display: none; }
-    .tab-content.active { display: block; }
-    .grid { width: 100%; height: 400px; }
-
-    /* ✅ 셀 공통 높이 */
-    .handsontable td {
-        vertical-align: middle !important;
-        line-height: normal !important;
-        height: 34px !important;
-        padding: 2px !important;
-    }
-  </style>
+	<meta charset="UTF-8">
+	<title>입출고구분설정</title>
+	<link rel="stylesheet" href="/resources/css/logistics.css" type="text/css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css" />
+	<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<meta charset="UTF-8">
 </head>
 <body>
-    <h2>입출고구분설정</h2>
+	<div class = "layout">
+		<!-- 홈 아이콘 세로 바 -->
+	    <div class="home-bar">
+	        <span>
+	            <a href="/"><img src="https://cdn-icons-png.flaticon.com/512/7598/7598650.png" alt="홈화면" class="home-icon"></a>
+	        </span>
+	    </div>
+	     <!-- 사이드바 -->
+	    <aside class="sidebar">
+	        <div class="sidebar-header">
+	            <div class="profile">
+	                <img src="https://cdn-icons-png.flaticon.com/512/7598/7598657.png" alt="프로필">
+	                <p>홍길동님, 안녕하세요 👋</p>
+	                <div class="auth-btns">
+	                    <button class="btn btn-secondary">로그인</button>
+	                    <button class="btn btn-secondary">회원가입</button>
+	                </div>
+	            </div>
+	        </div>
+	        <nav class="menu">
+	            <div class="menu-item">
+	                <div class="title"><a href="#">입고 및 출고</a></div>
+	                <div class="submenu">
+	                    <div><a href="#">입고 내역</a></div>
+	                    <div><a href="#">출고 내역</a></div>
+	                </div>
+	            </div>
+	            <div class="menu-item">
+	                <div class="title"><a href="#">재고 출하통제</a></div>
+	                <div class="submenu">
+	                    <div><a href="#">출하 계획</a></div>
+	                    <div><a href="#">출하 내역</a></div>
+	                </div>
+	            </div>
+	            <div class="menu-item">
+	                <div class="title"><a href="#">재고 관리</a></div>
+	                <div class="submenu">
+	                    <div><a href="#">재고 현황</a></div>
+	                    <div><a href="#">재고 이동</a></div>
+	                    <div><a href="#">재고 조회</a></div>
+	                </div>
+	            </div>
+	            <div class="menu-item">
+	                <div class="title"><a href="#">사업단위별 수불집계</a></div>
+	                <div class="submenu">
+	                    <div><a href="#">사업장별 집계</a></div>
+	                    <div><a href="#">월별 추이</a></div>
+	                </div>
+	            </div>
+	            <div class="menu-item">
+	                <div class="title"><a href="#">재고 변동 추이 분석</a></div>
+	                <div class="submenu">
+	                    <div><a href="#">그래프 보기</a></div>
+	                </div>
+	            </div>
+	        </nav>
+    	</aside>
+	<div class="main">
+		<div class="main-header">
+			<div><span class="btn btn-secondary btn-icon toggle-sidebar">≡</span></div>
+			<div><h1>입출고구분설정</h1></div>
+			<div>
+				<button class="btn btn-secondary search-btn" onclick="loadData()">조회</button>
+				<button class="btn btn-secondary search-btn" onclick="saveAll()">저장</button>
+				<button class="btn btn-secondary search-btn" onclick="deleteSelected()">삭제</button>
+			</div>
+		</div>
 
-    <!-- ✅ 탭 + 버튼 -->
-    <div class="tab-menu">
-        <div class="tab-left">
-            <button type="button" class="active" onclick="showTab('outTab', this)">출고</button>
-            <button type="button" onclick="showTab('inTab', this)">입고</button>
-            <button type="button" onclick="showTab('moveTab', this)">이동</button>
-        </div>
-        <div class="tab-right">
-            <button onclick="loadData()">조회</button>
-            <button onclick="saveAll()">저장</button>
-            <button class="remove" onclick="deleteSelected()">삭제</button>
-        </div>
-    </div>
+		<!-- ✅ 탭 버튼 -->
+		<div class="filters">
+			<div class="filters-main">
+				<div class="title">탭 선택</div>
+				<div class="line"></div>
+			</div>
+			<div class="filters-row">
+				<div class="filters-value">
+					<button class="btn btn-secondary tab-btn active" onclick="showTab('outTab', this)">출고</button>
+					<button class="btn btn-secondary tab-btn" onclick="showTab('inTab', this)">입고</button>
+					<button class="btn btn-secondary tab-btn" onclick="showTab('moveTab', this)">이동</button>
+				</div>
+			</div>
+		</div>
 
-    <!-- 📌 출고 -->
-    <div id="outTab" class="tab-content active"><div id="gridOut" class="grid"></div></div>
-    <!-- 📌 입고 -->
-    <div id="inTab" class="tab-content"><div id="gridIn" class="grid"></div></div>
-    <!-- 📌 이동 -->
-    <div id="moveTab" class="tab-content"><div id="gridMove" class="grid"></div></div>
+		<!-- 📦 출고 탭 -->
+		<div id="outTab" class="tab-content active">
+			<div class="table-container" style="height: 400px;">
+				<table class="table-single-select">
+					<thead>
+						<tr>
+							<th style="width:50px;">번호</th>
+		                    <th style="width:140px;">출고구분</th>
+		                    <th style="width:80px;">정렬순서</th>
+		                    <th style="width:80px;">사용여부</th>
+		                    <th style="width:120px;">계정과목</th>
+		                    <th style="width:100px;">비용구분</th>
+		                    <th style="width:90px;">제상품</th>
+		                    <th style="width:90px;">자재</th>
+		                    <th style="width:90px;">영업사용</th>
+		                    <th style="width:110px;">재고사실조정(출고)</th>
+		                    <th style="width:110px;">재고사실조정(입고)</th>
+		                    <th style="width:100px;">부가세대상여부</th>
+		                    <th style="width:110px;">부가세처리구분</th>
+		                    <th style="width:80px;">AS</th>
+		                    <th style="width:130px;">품목별전표처리여부</th>
+		                    <th style="width:90px;">항목선택</th>
+						</tr>
+					</thead>
+					<tbody id="tbody-out"></tbody>
+				</table>
+			</div>
+		</div>
+
+		<!-- 📦 입고 탭 -->
+		<div id="inTab" class="tab-content" style="display:none;">
+			<div class="table-container" style="height: 400px;">
+				<table class="table-single-select">
+					<thead>
+						<tr>
+							<th style="width:50px;">번호</th>
+		                    <th style="width:140px;">입고구분</th>
+		                    <th style="width:80px;">정렬순서</th>
+		                    <th style="width:80px;">사용여부</th>
+		                    <th style="width:120px;">계정과목</th>
+		                    <th style="width:100px;">비용구분</th>
+		                    <th style="width:90px;">제상품</th>
+		                    <th style="width:90px;">자재</th>
+		                    <th style="width:110px;">부상품입고</th>
+		                    <th style="width:150px;">품목별반입처리여부</th>
+		                    <th style="width:90px;">항목선택</th>
+						</tr>
+					</thead>
+					<tbody id="tbody-in"></tbody>
+				</table>
+			</div>
+		</div>
+
+		<!-- 📦 이동 탭 -->
+		<div id="moveTab" class="tab-content" style="display:none;">
+			<div class="table-container" style="height: 400px;">
+				<table class="table-single-select">
+					<thead>
+						<tr>
+							<th style="width:50px;">번호</th>
+		                    <th style="width:140px;">이동구분</th>
+		                    <th style="width:80px;">정렬순서</th>
+		                    <th style="width:80px;">사용여부</th>
+		                    <th style="width:90px;">이동</th>
+		                    <th style="width:90px;">적송</th>
+		                    <th style="width:90px;">AS출고</th>
+		                    <th style="width:90px;">AS반납</th>
+		                    <th style="width:100px;">무상사급</th>
+		                    <th style="width:100px;">배차대상</th>
+		                    <th style="width:90px;">항목선택</th>
+						</tr>
+					</thead>
+					<tbody id="tbody-move"></tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+</div>
+</body>
+</html>
+
+<script type="text/javascript" src="../resources/js/logistics.js"></script>
 
 <script>
 /* ✅ 탭 전환 */
-function showTab(tabId, btn) {
-    document.querySelectorAll(".tab-content").forEach(c => c.classList.remove("active"));
-    document.querySelectorAll(".tab-menu button").forEach(b => b.classList.remove("active"));
-    document.getElementById(tabId).classList.add("active");
-    btn.classList.add("active");
+function showTab(id, btn){
+	$(".tab-content").hide();
+	$("#"+id).show();
+	$(".tab-btn").removeClass("active");
+	$(btn).addClass("active");
 }
 
-/* ✅ 공통 옵션 */
-const commonOpts = {
-    stretchH: "all",
-    rowHeaders: false,
-    filters: true,
-    dropdownMenu: true,
-    licenseKey: "non-commercial-and-evaluation",
-    minSpareRows: 3,
-    rowHeights: 32
-};
-
-/* ✅ 번호 자동 증가 */
-function numbering(instance, td, row, col, prop, value, cellProperties) {
-    if (col === 0) {
-        const category = instance.getDataAtCell(row, 1);
-        td.textContent = (category && category.trim() !== "") ? (row + 1) : "";
-        td.style.textAlign = "center";
-        return td;
-    }
+/* ✅ Ajax 조회 */
+function loadData(){
+	loadTabData("OUT", "#tbody-out");
+	loadTabData("IN", "#tbody-in");
+	loadTabData("MOVE", "#tbody-move");
 }
 
-/* ✅ Excel 스타일 체크박스 Renderer */
-function excelCheckboxRenderer(instance, td, row, col, prop, value, cellProperties) {
-    td.style.textAlign = "center";
-    td.style.verticalAlign = "middle";
-    td.innerHTML = "";
+/* ✅ 탭별 데이터 로드 */
+function loadTabData(type, tbodySelector){
+	$.ajax({
+		url: '/txnCategory/api/list/' + type,
+		type: 'GET',
+		dataType: 'json',
+		success: function(result){
+			const tbody = $(tbodySelector);
+			tbody.empty();
 
-    const checkbox = document.createElement("div");
-    checkbox.style.width = "18px";
-    checkbox.style.height = "18px";
-    checkbox.style.border = "2px solid #666";
-    checkbox.style.borderRadius = "3px";
-    checkbox.style.margin = "0 auto";
-    checkbox.style.cursor = "pointer";
-    checkbox.style.backgroundColor = "#fff";
-    checkbox.style.position = "relative";
+			result.forEach((r, i) => {
+			    let html = `
+			        <tr data-txncode="\${r.txnCode}">
+			            <td class="text-center">\${i + 1}</td>
+			    `;
 
-    if (value === true) {
-        const checkMark = document.createElement("div");
-        checkMark.innerHTML = "✔";
-        checkMark.style.position = "absolute";
-        checkMark.style.top = "-3px";
-        checkMark.style.left = "2px";
-        checkMark.style.fontSize = "14px";
-        checkMark.style.color = "#000";
-        checkbox.appendChild(checkMark);
-    }
+				/* ✅ 출고 탭 */
+				if (type === "OUT") {
+					html += `
+						<td>
+							<select class="form-select">
+								<option value="">선택</option>
+								<option value="판촉" \${r.categoryName === "판촉" ? "selected" : ""}>판촉</option>
+								<option value="폐기" \${r.categoryName === "폐기" ? "selected" : ""}>폐기</option>
+								<option value="반품" \${r.categoryName === "반품" ? "selected" : ""}>반품</option>
+							</select>
+						</td>
 
-    checkbox.addEventListener("click", () => {
-        const newValue = !value;
-        instance.setDataAtCell(row, col, newValue);
-    });
+						<td contenteditable="true">\${r.sortOrder || ''}</td>
+						<td class="text-center"><input type="checkbox" \${r.useYn && r.useYn.toUpperCase() === 'Y' ? "checked" : ""}></td>
 
-    td.appendChild(checkbox);
+						<!-- ✅ 계정과목 -->
+						<td>
+							<select class="form-select">
+								<option value="">선택</option>
+								<option value="외화현금" \${r.accountSubject === "외화현금" ? "selected" : ""}>외화현금</option>
+								<option value="보통예금" \${r.accountSubject === "보통예금" ? "selected" : ""}>보통예금</option>
+								<option value="외화보통예금" \${r.accountSubject === "외화보통예금" ? "selected" : ""}>외화보통예금</option>
+								<option value="당좌예금" \${r.accountSubject === "당좌예금" ? "selected" : ""}>당좌예금</option>
+							</select>
+						</td>
+
+						<!-- ✅ 비용구분 -->
+						<td>
+							<select class="form-select">
+								<option value="">선택</option>
+								<option value="제조" \${r.costType === "제조" ? "selected" : ""}>제조</option>
+								<option value="판관" \${r.costType === "판관" ? "selected" : ""}>판관</option>
+							</select>
+						</td>
+
+						<td class="text-center"><input type="checkbox" \${r.isFinishedProduct && r.isFinishedProduct.toUpperCase() === 'Y' ? "checked" : ""}></td>
+						<td class="text-center"><input type="checkbox" \${r.isMaterial && r.isMaterial.toUpperCase() === 'Y' ? "checked" : ""}></td>
+						<td class="text-center"><input type="checkbox" \${r.isSalesUse && r.isSalesUse.toUpperCase() === 'Y' ? "checked" : ""}></td>
+						<td class="text-center"><input type="checkbox" \${r.adjustOut && r.adjustOut.toUpperCase() === 'Y' ? "checked" : ""}></td>
+						<td class="text-center"><input type="checkbox" \${r.adjustIn && r.adjustIn.toUpperCase() === 'Y' ? "checked" : ""}></td>
+						<td class="text-center"><input type="checkbox" \${r.isVatTarget && r.isVatTarget.toUpperCase() === 'Y' ? "checked" : ""}></td>
+
+						<!-- ✅ 부가세처리구분 -->
+						<td>
+							<select class="form-select">
+								<option value="">선택</option>
+								<option value="판매기준단가+수량(차액처리포함)" \${r.vatProcessType === "판매기준단가+수량(차액처리포함)" ? "selected" : ""}>판매기준단가+수량(차액처리포함)</option>
+								<option value="판매기준단가+수량(차액처리안함)" \${r.vatProcessType === "판매기준단가+수량(차액처리안함)" ? "selected" : ""}>판매기준단가+수량(차액처리안함)</option>
+							</select>
+						</td>
+
+						<td class="text-center"><input type="checkbox" \${r.isAs && r.isAs.toUpperCase() === 'Y' ? "checked" : ""}></td>
+						<td class="text-center"><input type="checkbox" \${r.isItemJournal && r.isItemJournal.toUpperCase() === 'Y' ? "checked" : ""}></td>
+						<td class="text-center"><input type="checkbox" class="chk-delete"></td>
+					`;
+				}
+
+				/* ✅ 입고 탭 */
+				else if (type === "IN") {
+					html += `
+						<td>
+							<select class="form-select">
+								<option value="">선택</option>
+								<option value="샘플입고" \${r.categoryName === "샘플입고" ? "selected" : ""}>샘플입고</option>
+								<option value="불량입고" \${r.categoryName === "불량입고" ? "selected" : ""}>불량입고</option>
+								<option value="정상입고" \${r.categoryName === "정상입고" ? "selected" : ""}>정상입고</option>
+							</select>
+						</td>
+
+						<td contenteditable="true">\${r.sortOrder || ''}</td>
+						<td class="text-center"><input type="checkbox" \${r.useYn && r.useYn.toUpperCase() === 'Y' ? "checked" : ""}></td>
+
+						<!-- ✅ 계정과목 -->
+						<td>
+							<select class="form-select">
+								<option value="">선택</option>
+								<option value="외화현금" \${r.accountSubject === "외화현금" ? "selected" : ""}>외화현금</option>
+								<option value="보통예금" \${r.accountSubject === "보통예금" ? "selected" : ""}>보통예금</option>
+								<option value="외화보통예금" \${r.accountSubject === "외화보통예금" ? "selected" : ""}>외화보통예금</option>
+								<option value="당좌예금" \${r.accountSubject === "당좌예금" ? "selected" : ""}>당좌예금</option>
+							</select>
+						</td>
+
+						<!-- ✅ 비용구분 -->
+						<td>
+							<select class="form-select">
+								<option value="">선택</option>
+								<option value="제조" \${r.costType === "제조" ? "selected" : ""}>제조</option>
+								<option value="판관" \${r.costType === "판관" ? "selected" : ""}>판관</option>
+							</select>
+						</td>
+
+						<td class="text-center"><input type="checkbox" \${r.isFinishedProduct && r.isFinishedProduct.toUpperCase() === 'Y' ? "checked" : ""}></td>
+						<td class="text-center"><input type="checkbox" \${r.isMaterial && r.isMaterial.toUpperCase() === 'Y' ? "checked" : ""}></td>
+						<td class="text-center"><input type="checkbox" \${r.isByproductIn && r.isByproductIn.toUpperCase() === 'Y' ? "checked" : ""}></td>
+						<td class="text-center"><input type="checkbox" \${r.isReturnIn && r.isReturnIn.toUpperCase() === 'Y' ? "checked" : ""}></td>
+						<td class="text-center"><input type="checkbox" class="chk-delete"></td>
+					`;
+				}
+
+				/* ✅ 이동 탭 (기존 JSP 안전 버전 그대로 유지) */
+				else if (type === "MOVE") {
+					html += `
+						<td>
+							<select class="form-select">
+								<option value="">선택</option>
+								<option value="위탁처리" \${r.categoryName === "위탁처리" ? "selected" : ""}>위탁처리</option>
+								<option value="이동처리" \${r.categoryName === "이동처리" ? "selected" : ""}>이동처리</option>
+								<option value="자재불출" \${r.categoryName === "자재불출" ? "selected" : ""}>자재불출</option>
+								<option value="외주불출" \${r.categoryName === "외주불출" ? "selected" : ""}>외주불출</option>
+								<option value="불량처리" \${r.categoryName === "불량처리" ? "selected" : ""}>불량처리</option>
+								<option value="양품처리" \${r.categoryName === "양품처리" ? "selected" : ""}>양품처리</option>
+							</select>
+						</td>
+						<td contenteditable="true">\${r.sortOrder || ''}</td>
+						<td class="text-center"><input type="checkbox" \${r.useYn && r.useYn.toUpperCase() === 'Y' ? "checked" : ""}></td>
+						<td class="text-center"><input type="checkbox" \${r.isMove && r.isMove.toUpperCase() === 'Y' ? "checked" : ""}></td>
+						<td class="text-center"><input type="checkbox" \${r.isTransfer && r.isTransfer.toUpperCase() === 'Y' ? "checked" : ""}></td>
+						<td class="text-center"><input type="checkbox" \${r.isAsOut && r.isAsOut.toUpperCase() === 'Y' ? "checked" : ""}></td>
+						<td class="text-center"><input type="checkbox" \${r.isAsReturn && r.isAsReturn.toUpperCase() === 'Y' ? "checked" : ""}></td>
+						<td class="text-center"><input type="checkbox" \${r.isFreeSupply && r.isFreeSupply.toUpperCase() === 'Y' ? "checked" : ""}></td>
+						<td class="text-center"><input type="checkbox" \${r.isDispatchTarget && r.isDispatchTarget.toUpperCase() === 'Y' ? "checked" : ""}></td>
+						<td class="text-center"><input type="checkbox" class="chk-delete"></td>
+					`;
+				}
+
+				html += `</tr>`;
+				tbody.append(html);
+			});
+			/* ✅ 신규 입력용 빈 행 추가 */
+			let emptyRow = `<tr data-txncode="">
+			  <td class="text-center">\${result.length + 1}</td>`;
+
+			// ✅ 출고 탭 신규행
+			if (type === "OUT") {
+			  emptyRow += `
+			    <td>
+			      <select class="form-select">
+			        <option value="">선택</option>
+			        <option value="판촉">판촉</option>
+			        <option value="폐기">폐기</option>
+			        <option value="반품">반품</option>
+			      </select>
+			    </td>
+			    <td contenteditable="true"></td>
+			    <td class="text-center"><input type="checkbox"></td>
+			    <td>
+			      <select class="form-select">
+			        <option value="">선택</option>
+			        <option value="외화현금">외화현금</option>
+			        <option value="보통예금">보통예금</option>
+			        <option value="외화보통예금">외화보통예금</option>
+			        <option value="당좌예금">당좌예금</option>
+			      </select>
+			    </td>
+			    <td>
+			      <select class="form-select">
+			        <option value="">선택</option>
+			        <option value="제조">제조</option>
+			        <option value="판관">판관</option>
+			      </select>
+			    </td>
+			    <td class="text-center"><input type="checkbox"></td>
+			    <td class="text-center"><input type="checkbox"></td>
+			    <td class="text-center"><input type="checkbox"></td>
+			    <td class="text-center"><input type="checkbox"></td>
+			    <td class="text-center"><input type="checkbox"></td>
+			    <td class="text-center"><input type="checkbox"></td>
+			    <td>
+			      <select class="form-select">
+			        <option value="">선택</option>
+			        <option value="판매기준단가+수량(차액처리포함)">판매기준단가+수량(차액처리포함)</option>
+			        <option value="판매기준단가+수량(차액처리안함)">판매기준단가+수량(차액처리안함)</option>
+			      </select>
+			    </td>
+			    <td class="text-center"><input type="checkbox"></td>
+			    <td class="text-center"><input type="checkbox"></td>
+			    <td class="text-center"><input type="checkbox" class="chk-delete"></td>`;
+			}
+
+			// ✅ 입고 탭 신규행
+			else if (type === "IN") {
+			  emptyRow += `
+			    <td>
+			      <select class="form-select">
+			        <option value="">선택</option>
+			        <option value="샘플입고">샘플입고</option>
+			        <option value="불량입고">불량입고</option>
+			        <option value="정상입고">정상입고</option>
+			      </select>
+			    </td>
+			    <td contenteditable="true"></td>
+			    <td class="text-center"><input type="checkbox"></td>
+			    <td>
+			      <select class="form-select">
+			        <option value="">선택</option>
+			        <option value="외화현금">외화현금</option>
+			        <option value="보통예금">보통예금</option>
+			        <option value="외화보통예금">외화보통예금</option>
+			        <option value="당좌예금">당좌예금</option>
+			      </select>
+			    </td>
+			    <td>
+			      <select class="form-select">
+			        <option value="">선택</option>
+			        <option value="제조">제조</option>
+			        <option value="판관">판관</option>
+			      </select>
+			    </td>
+			    <td class="text-center"><input type="checkbox"></td>
+			    <td class="text-center"><input type="checkbox"></td>
+			    <td class="text-center"><input type="checkbox"></td>
+			    <td class="text-center"><input type="checkbox"></td>
+			    <td class="text-center"><input type="checkbox" class="chk-delete"></td>`;
+			}
+
+			// ✅ 이동 탭 신규행
+			else if (type === "MOVE") {
+			  emptyRow += `
+			    <td>
+			      <select class="form-select">
+			        <option value="">선택</option>
+			        <option value="위탁처리">위탁처리</option>
+			        <option value="이동처리">이동처리</option>
+			        <option value="자재불출">자재불출</option>
+			        <option value="외주불출">외주불출</option>
+			        <option value="불량처리">불량처리</option>
+			        <option value="양품처리">양품처리</option>
+			      </select>
+			    </td>
+			    <td contenteditable="true"></td>
+			    <td class="text-center"><input type="checkbox"></td>
+			    <td class="text-center"><input type="checkbox"></td>
+			    <td class="text-center"><input type="checkbox"></td>
+			    <td class="text-center"><input type="checkbox"></td>
+			    <td class="text-center"><input type="checkbox"></td>
+			    <td class="text-center"><input type="checkbox"></td>
+			    <td class="text-center"><input type="checkbox" class="chk-delete"></td>`;
+			}
+
+			emptyRow += `</tr>`;
+			tbody.append(emptyRow);
+
+		}
+	});
 }
 
-/* ✅ Boolean 컬럼 목록 */
-const booleanCols = [
-  "useYn","isFinishedProduct","isMaterial","isSalesUse","adjustOut",
-  "adjustIn","isVatTarget","isAs","isItemJournal","isByproductIn",
-  "isReturnIn","isMove","isTransfer","isAsOut","isAsReturn",
-  "isFreeSupply","isDispatchTarget","_remove"
-];
-
-/* ✅ 데이터 정규화 */
-function normalizeData(data) {
-    return data.map(row => {
-        booleanCols.forEach(col => {
-            if (row[col] === "Y") row[col] = true;
-            else if (row[col] === "N" || row[col] === null) row[col] = false;
-        });
-        row._remove = false;
-        if (row.txnCode === undefined) row.txnCode = null;
-        if (row.buId === undefined) row.buId = 1;
-        return row;
-    });
-}
-
-/* ✅ 저장용 데이터 변환 */
-function denormalizeData(rowData, txnType) {
-  const payload = { ...rowData, txnType, buId: 1 };
-  booleanCols.forEach(col => {
-    if (typeof payload[col] === "boolean") payload[col] = payload[col] ? "Y" : "N";
-  });
-  if (!payload.txnCode || payload.txnCode.trim() === "") payload.txnCode = null;
-  return payload;
-}
-
-/* ✅ 저장 (단일 행) */
-function saveChange(txnType, rowData) {
-  const payload = denormalizeData(rowData, txnType);
-  fetch("/txnCategory/api/save", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload)
-  }).catch(err => console.error("저장 실패:", err));
-}
-
-/* ✅ 전체 저장 */
+/* ✅ 저장 */
 function saveAll() {
-  const activeTab = document.querySelector(".tab-content.active .grid");
-  let hot, txnType;
-  if (activeTab.id === "gridOut") { hot = hotOut; txnType = "OUT"; }
-  else if (activeTab.id === "gridIn") { hot = hotIn; txnType = "IN"; }
-  else if (activeTab.id === "gridMove") { hot = hotMove; txnType = "MOVE"; }
+  const active = $(".tab-btn.active").text();
+  let type = active === "출고" ? "OUT" : (active === "입고" ? "IN" : "MOVE");
+  let tbody = type === "OUT" ? "#tbody-out" : type === "IN" ? "#tbody-in" : "#tbody-move";
+  let data = [];
 
-  const allData = hot.getSourceData();
-  allData.forEach(row => { if (row.categoryName) saveChange(txnType, row); });
-  alert("저장 완료");
+  $(tbody + " tr").each(function () {
+    const tr = $(this);
+    const txnCode = tr.data("txncode"); // 기존 데이터 식별용 코드
+    const tds = tr.find("td");
+
+    let obj = {
+      txnCode: txnCode || null, // 신규는 null
+      categoryName: type === "MOVE" ? $(tds[1]).find("select").val() : $(tds[1]).find("select").val() || $(tds[1]).text().trim(),
+      sortOrder: $(tds[2]).text().trim(),
+      useYn: $(tds[3]).find("input").prop("checked") ? "Y" : "N",
+      txnType: type,
+      buId: 1
+    };
+
+    /* ✅ 출고 */
+    if (type === "OUT") {
+      obj.accountSubject = $(tds[4]).find("select").val();
+      obj.costType = $(tds[5]).find("select").val();
+      obj.isFinishedProduct = $(tds[6]).find("input").prop("checked") ? "Y" : "N";
+      obj.isMaterial = $(tds[7]).find("input").prop("checked") ? "Y" : "N";
+      obj.isSalesUse = $(tds[8]).find("input").prop("checked") ? "Y" : "N";
+      obj.adjustOut = $(tds[9]).find("input").prop("checked") ? "Y" : "N";
+      obj.adjustIn = $(tds[10]).find("input").prop("checked") ? "Y" : "N";
+      obj.isVatTarget = $(tds[11]).find("input").prop("checked") ? "Y" : "N";
+      obj.vatProcessType = $(tds[12]).find("select").val();
+      obj.isAs = $(tds[13]).find("input").prop("checked") ? "Y" : "N";
+      obj.isItemJournal = $(tds[14]).find("input").prop("checked") ? "Y" : "N";
+    }
+
+    /* ✅ 입고 */
+    if (type === "IN") {
+      obj.accountSubject = $(tds[4]).find("select").val();
+      obj.costType = $(tds[5]).find("select").val();
+      obj.isFinishedProduct = $(tds[6]).find("input").prop("checked") ? "Y" : "N";
+      obj.isMaterial = $(tds[7]).find("input").prop("checked") ? "Y" : "N";
+      obj.isByproductIn = $(tds[8]).find("input").prop("checked") ? "Y" : "N";
+      obj.isReturnIn = $(tds[9]).find("input").prop("checked") ? "Y" : "N";
+    }
+
+    /* ✅ 이동 */
+    if (type === "MOVE") {
+      obj.isMove = $(tds[4]).find("input").prop("checked") ? "Y" : "N";
+      obj.isTransfer = $(tds[5]).find("input").prop("checked") ? "Y" : "N";
+      obj.isAsOut = $(tds[6]).find("input").prop("checked") ? "Y" : "N";
+      obj.isAsReturn = $(tds[7]).find("input").prop("checked") ? "Y" : "N";
+      obj.isFreeSupply = $(tds[8]).find("input").prop("checked") ? "Y" : "N";
+      obj.isDispatchTarget = $(tds[9]).find("input").prop("checked") ? "Y" : "N";
+    }
+
+    // ✅ 신규행 또는 수정된 행만 추가
+    if (obj.categoryName && obj.categoryName !== "선택") {
+      if (!txnCode || tr.hasClass("modified")) {
+        data.push(obj);
+      }
+    }
+  });
+
+  if (data.length === 0) {
+    alert("저장할 항목이 없습니다.");
+    return;
+  }
+
+  let successCount = 0;
+  data.forEach((row, idx) => {
+    $.ajax({
+      url: '/txnCategory/api/save',
+      type: 'POST',
+      contentType: 'application/json',
+      data: JSON.stringify(row),
+      success: () => {
+        successCount++;
+        if (successCount === data.length) {
+          alert("저장 완료");
+          loadData(); // ✅ 저장 후 자동 새로고침
+        }
+      },
+      error: (err) => console.error("저장 실패:", err)
+    });
+  });
 }
 
-/* ✅ 삭제 */
+
+
 function deleteSelected() {
-  const activeTab = document.querySelector(".tab-content.active .grid");
-  let hot;
-  if (activeTab.id === "gridOut") hot = hotOut;
-  else if (activeTab.id === "gridIn") hot = hotIn;
-  else if (activeTab.id === "gridMove") hot = hotMove;
+	  const active = $(".tab-btn.active").text();
+	  let tbody = active === "출고" ? "#tbody-out" : active === "입고" ? "#tbody-in" : "#tbody-move";
+	  let checked = $(tbody + " .chk-delete:checked");
 
-  const rowsToRemove = hot.getSourceData().filter(r => r._remove === true);
-  if (rowsToRemove.length === 0) { alert("삭제할 항목을 선택하세요."); return; }
+	  if (checked.length === 0) {
+	    alert("삭제할 항목을 선택하세요.");
+	    return;
+	  }
 
-  Promise.all(rowsToRemove.map(row => {
-    if (!row.txnCode || !row.buId) return Promise.resolve();
-    const url = "/txnCategory/api/delete/" + encodeURIComponent(row.txnCode) + "/" + encodeURIComponent(row.buId);
-    return fetch(url, { method: "DELETE" });
-  }))
-  .then(() => { alert("선택 항목 삭제 완료"); location.reload(); })
-  .catch(err => console.error("삭제 실패:", err));
-}
+	  if (!confirm("선택한 항목을 삭제하시겠습니까? (DB에서도 삭제됩니다)")) return;
 
-/* ✅ 조회 (DB에서 다시 불러오기) */
-function loadData() {
-  fetch("/txnCategory/api/list/OUT")
-    .then(res => res.json()).then(data => hotOut.loadData(normalizeData(data)));
-  fetch("/txnCategory/api/list/IN")
-    .then(res => res.json()).then(data => hotIn.loadData(normalizeData(data)));
-  fetch("/txnCategory/api/list/MOVE")
-    .then(res => res.json()).then(data => hotMove.loadData(normalizeData(data)));
-}
+	  const buId = 1;
+	  let successCount = 0;
+	  const total = checked.length;
 
-/* ✅ 출고 Grid */
-/* ✅ 출고 Grid */
-const hotOut = new Handsontable(document.getElementById("gridOut"), {
-    data: [],
-    colHeaders: ["번호","출고구분","정렬순서","사용여부","계정과목","비용구분",
-                 "제상품","자재","영업사용","재고실사조정(출고)","재고실사조정(입고)",
-                 "부가세대상여부","부가세처리구분","AS","품목별전표처리여부","항목선택"],
-    columns: [
-        { readOnly: true, renderer: numbering },
-        { 
-            data:"categoryName", 
-            type:"dropdown", 
-            source: ["불량폐기","판촉","연구개발","실사기타출고","불량재고정리","샘플출고","사업상증여"]
-        },
-        { data:"sortOrder", type:"numeric" },
-        { data:"useYn", type:"checkbox", renderer: excelCheckboxRenderer },
-        { 
-            data:"accountSubject", 
-            type:"dropdown", 
-            source: ["현금","외화현금","당좌예금","외화당좌예금","보통예금","외화보통예금",
-                     "정기예금","외화정기예금","정기적금","외화정기적금",
-                     "단기금융상품","단기매매증권","단기매매증권평가충당금",
-                     "매도가능증권(유동)","매도가능증권(유동)평가충당금",
-                     "만기보유증권(유동)","만기보유증권(유동)평가충당금",
-                     "유가증권","유가증권평가충당금",
-                     "외상매출금","외상매출금대손충당금",
-                     "외화외상매출금","외화외상매출금대손충당금",
-                     "받을어음","받을어음대손충당금"]
-        },
-        { data:"costType", type:"dropdown", source:["제조","판관"] },
-        { data:"isFinishedProduct", type:"checkbox", renderer: excelCheckboxRenderer },
-        { data:"isMaterial", type:"checkbox", renderer: excelCheckboxRenderer },
-        { data:"isSalesUse", type:"checkbox", renderer: excelCheckboxRenderer },
-        { data:"adjustOut", type:"checkbox", renderer: excelCheckboxRenderer },
-        { data:"adjustIn", type:"checkbox", renderer: excelCheckboxRenderer },
-        { data:"isVatTarget", type:"checkbox", renderer: excelCheckboxRenderer },
-        { data:"vatProcessType", type:"dropdown", source:["기타출고금액","판매기준단가*수량(차액처리안함)","판매기준단가*수량(차액처리포함)"] },
-        { data:"isAs", type:"checkbox", renderer: excelCheckboxRenderer },
-        { data:"isItemJournal", type:"checkbox", renderer: excelCheckboxRenderer },
-        { data:"_remove", type:"checkbox", renderer: excelCheckboxRenderer }
-    ],
-    ...commonOpts
-});
+	  checked.each(function () {
+	    const tr = $(this).closest("tr");
+	    const txnCode = tr.data("txncode");
 
-/* ✅ 입고 Grid */
-const hotIn = new Handsontable(document.getElementById("gridIn"), {
-    data: [],
-    colHeaders: ["번호","입고구분","정렬순서","사용여부","계정과목","비용구분",
-                 "제상품","자재","부상품입고","품목별반입처리여부","항목선택"],
-    columns: [
-        { readOnly: true, renderer: numbering },
-        { data:"categoryName", type:"dropdown", source:["샘플입고","불량입고","자체상품"] },
-        { data:"sortOrder", type:"numeric" },
-        { data:"useYn", type:"checkbox", renderer: excelCheckboxRenderer },
-        { 
-            data:"accountSubject", 
-            type:"dropdown", 
-            source:["현금","외화현금","당좌예금","외화당좌예금","보통예금","외화보통예금",
-                    "정기예금","외화정기예금","정기적금","외화정기적금",
-                    "단기금융상품","단기매매증권","단기매매증권평가충당금",
-                    "매도가능증권(유동)","매도가능증권(유동)평가충당금",
-                    "만기보유증권(유동)","만기보유증권(유동)평가충당금",
-                    "유가증권","유가증권평가충당금",
-                    "외상매출금","외상매출금대손충당금",
-                    "외화외상매출금","외화외상매출금대손충당금",
-                    "받을어음","받을어음대손충당금"]
-        },
-        { data:"costType", type:"dropdown", source:["제조","판관"] },
-        { data:"isFinishedProduct", type:"checkbox", renderer: excelCheckboxRenderer },
-        { data:"isMaterial", type:"checkbox", renderer: excelCheckboxRenderer },
-        { data:"isByproductIn", type:"checkbox", renderer: excelCheckboxRenderer },
-        { data:"isReturnIn", type:"checkbox", renderer: excelCheckboxRenderer },
-        { data:"_remove", type:"checkbox", renderer: excelCheckboxRenderer }
-    ],
-    ...commonOpts
-});
+	    if (txnCode) {
+	      $.ajax({
+	        url: "/txnCategory/api/delete",
+	        type: "POST",
+	        contentType: "application/json",
+	        data: JSON.stringify({ txnCode: txnCode, buId: buId }),
+	        success: function (res) {
+	          tr.remove();
+	          successCount++;
+	          if (successCount === total) {
+	            reorderRowNumbers(tbody); // ✅ 삭제 후 번호 자동 정렬
+	            alert("삭제 완료!");
+	          }
+	        },
+	        error: function (xhr) {
+	          console.error("삭제 실패:", xhr);
+	          alert("삭제 중 오류가 발생했습니다.");
+	        }
+	      });
+	    } else {
+	      tr.remove();
+	    }
+	  });
 
-/* ✅ 이동 Grid */
-const hotMove = new Handsontable(document.getElementById("gridMove"), {
-    data: [],
-    colHeaders: ["번호","이동구분","정렬순서","사용여부","이동","적송",
-                 "AS출고","AS반납","무상사급","배차대상","항목선택"],
-    columns: [
-        { readOnly: true, renderer: numbering },
-        { data:"categoryName", type:"dropdown", source:["위탁처리","이동처리","자재불출","외주불출","불량처리","양품처리"] },
-        { data:"sortOrder", type:"numeric" },
-        { data:"useYn", type:"checkbox", renderer: excelCheckboxRenderer },
-        { data:"isMove", type:"checkbox", renderer: excelCheckboxRenderer },
-        { data:"isTransfer", type:"checkbox", renderer: excelCheckboxRenderer },
-        { data:"isAsOut", type:"checkbox", renderer: excelCheckboxRenderer },
-        { data:"isAsReturn", type:"checkbox", renderer: excelCheckboxRenderer },
-        { data:"isFreeSupply", type:"checkbox", renderer: excelCheckboxRenderer },
-        { data:"isDispatchTarget", type:"checkbox", renderer: excelCheckboxRenderer },
-        { data:"_remove", type:"checkbox", renderer: excelCheckboxRenderer }
-    ],
-    ...commonOpts
-});
+	  // ✅ 삭제 후 번호 재정렬
+	  reorderRowNumbers(tbody);
+	}
+
+	/* ✅ 번호 재정렬 함수 */
+	function reorderRowNumbers(tbodySelector) {
+	  $(tbodySelector + " tr").each(function (index) {
+	    $(this).find("td:first").text(index + 1);
+	  });
+	}
 
 
-/* ✅ 페이지 로드시 데이터 조회 */
-loadData();
+
+
+
+/* ✅ 페이지 로드시 자동 조회 */
+$(document).ready(loadData);
 </script>
-</body>
-</html>
