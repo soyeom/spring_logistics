@@ -1,9 +1,6 @@
 package org.logistics.controller;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
 import org.logistics.domain.InvFlowConfigVO;
 import org.logistics.domain.OutBoundMasterVO;
 import org.logistics.domain.PopupItemVO;
