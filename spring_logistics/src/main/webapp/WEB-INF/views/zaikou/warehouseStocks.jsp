@@ -10,7 +10,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>창고별 재고조회</title>
+<title>倉庫別在庫照会</title>
 <link rel="stylesheet" href="/resources/css/logistics.css"
 	type="text/css">
 <link rel="stylesheet"
@@ -117,71 +117,70 @@
 					<span class="btn btn-secondary btn-icon toggle-sidebar">≡</span>
 				</div>
 				<div>
-					<h1>창고별 재고 조회하기</h1>
+					<h1>倉庫別在庫照会</h1>
 				</div>
 				<div>
-					<button class="btn btn-secondary" onclick="doSearch()">조회</button>
+					<button class="btn btn-secondary" onclick="doSearch()">照会</button>
 				</div>
 			</div>
 
 			<!-- ✅ 조회 조건 -->
 			<div class="filters">
 				<div class="filters-main">
-					<div class="title">조회 조건</div>
+					<div class="title">検索条件</div>
 					<div class="line"></div>
 				</div>
 				<div class="filters-row">
-					<!-- 사업단위 -->
-					<div class="filters-count">
-						<div class="filters-text">사업단위</div>
+					<!-- 事業単位 -->
+						<div class="filters-count">
+						<div class="filters-text">事業単位</div>
 						<div class="filters-value">
 							<select id="buId" name="buId">
-								<option value=""></option>
-								<c:forEach items="${buList}" var="buItem">
-									<option value="${buItem.BU_ID}">${buItem.BU_NAME}</option>
+							<option value=""></option>
+								<c:forEach items="${buList}" var="bu">
+									<option value="${bu.buId}">${bu.buName}</option>
 								</c:forEach>
 							</select>
 						</div>
 					</div>
 					<div class="filters-count">
-						<div class="filters-text">재고기준</div>
+						<div class="filters-text">在庫基準</div>
 						<div class="filters-value">
 							<select id="criteria" name="criteria">
-								<option value="actual" ${criteria eq 'actual' ? 'selected' : ''}>실재고</option>
+								<option value="actual" ${criteria eq 'actual' ? 'selected' : ''}>実在庫</option>
 								<option value="available"
-									${criteria eq 'available' ? 'selected' : ''}>가용재고</option>
-								<option value="asset" ${criteria eq 'asset' ? 'selected' : ''}>자산재고</option>
+									${criteria eq 'available' ? 'selected' : ''}>利用可能在庫</option>
+								<option value="asset" ${criteria eq 'asset' ? 'selected' : ''}>資産在庫</option>
 							</select>
 						</div>
 					</div>
 
-					<!-- 창고명 -->
+					<!-- 倉庫名 -->
 					<div class="filters-count">
-						<div class="filters-text">창고</div>
+						<div class="filters-text">倉庫名</div>
 						<div class="filters-value d-flex align-items-center">
-							<!-- 🔑 직접 입력 가능 -->
-							<input type="text" id="warehouseName" name="warehouseName"
-								placeholder="창고명을 입력하세요">
-							<!-- 🔍 팝업 버튼 -->
+							<!-- 直接入力可能 -->
+							<input type="text" id="warehouseName" name="warehouseName">
+							<!-- 参照ボタン -->
 							<img
 								src="https://cdn-icons-png.flaticon.com/512/16799/16799970.png"
 								alt="search" class="search-icon" onclick="openWarehousePopup()">
 						</div>
 					</div>
-					<!-- 자산구분 -->
+						<!-- 資産区分 -->
 					<div class="filters-count">
-						<div class="filters-text">자산분류</div>
+						<div class="filters-text">資産区分</div>
 						<div class="filters-value">
 							<select id="assetClass" name="assetClass">
 								<option value=""></option>
-								<c:forEach items="${assetClassList}" var="assetItem">
-									<option value="${assetItem.ASSET_CLASS}">${assetItem.ASSET_CLASS}</option>
+								<c:forEach items="${assetClassList}" var="asset">
+									<option value="${asset.assetClass}">${asset.assetClass}</option>
 								</c:forEach>
 							</select>
 						</div>
 					</div>
 					<div class="filters-count">
-						<div class="filters-text">규격</div>
+						<div class="filters-text">規格</div>
 						<div class="filters-value">
 							<select id="spec" name="spec">
 								<option value=""></option>
@@ -192,90 +191,87 @@
 						</div>
 					</div>
 					<div class="filters-count">
-						<div class="filters-text">중요도</div>
+						<div class="filters-text">重要度</div>
 						<div class="filters-value">
 							<select id="importanceLevel" name="importanceLevel">
 								<option value=""></option>
 								<c:forEach items="${importanceLevelList}" var="importanceLevel">
-									<option value="${importanceLevel.IMPORTANCE_LEVEL}">${importanceLevel.IMPORTANCE_LEVEL}</option>
+									<option value="${importanceLevel.importanceLevel}">${importanceLevel.importanceLevel}</option>
 								</c:forEach>
 							</select>
 						</div>
 					</div>
-					<!-- 대분류 -->
+					<!-- 品目大分類 -->
 					<div class="filters-count">
-						<div class="filters-text">품목대분류</div>
+						<div class="filters-text">品目大分類</div>
 						<div class="filters-value d-flex align-items-center">
-							<!-- 🔑 직접 입력 가능 -->
-							<input type="text" id="bigCategory" name="bigCategory"
-								placeholder="대분류 유형을 입력하세요"> <img
+							<!-- 直接入力可能 -->
+							<input type="text" id="bigCategory" name="bigCategory"> <img
 								src="https://cdn-icons-png.flaticon.com/512/16799/16799970.png"
 								alt="search" class="search-icon"
 								onclick="openBigCategoryPopup()">
 						</div>
 					</div>
-					<!-- 중분류 -->
+					<!-- 品目中分類 -->
 					<div class="filters-count">
-						<div class="filters-text">품목중분류</div>
+						<div class="filters-text">品目中分類</div>
 						<div class="filters-value d-flex align-items-center">
-							<!-- 🔑 직접 입력 가능 -->
-							<input type="text" id="midCategory" name="midCategory"
-								placeholder="중분류 유형을 입력하세요"> <img
+							<!-- 直接入力可能 -->
+							<input type="text" id="midCategory" name="midCategory"> <img
 								src="https://cdn-icons-png.flaticon.com/512/16799/16799970.png"
 								alt="search" class="search-icon"
 								onclick="openMidCategoryPopup()">
-							<!-- 🔍 팝업 버튼 -->
+
 						</div>
 					</div>
-					<!-- 소분류 -->
+					<!-- 品目小分類 -->
 					<div class="filters-count">
-						<div class="filters-text">품목소분류</div>
+						<div class="filters-text">品目小分類</div>
 						<div class="filters-value d-flex align-items-center">
-							<!-- 🔑 직접 입력 가능 -->
-							<input type="text" id="smallCategory" name="smallCategory"
-								placeholder="소분류 유형을 입력하세요"> <img
+							<!-- 直接入力可能 -->
+							<input type="text" id="smallCategory" name="smallCategory">
+							<img
 								src="https://cdn-icons-png.flaticon.com/512/16799/16799970.png"
 								alt="search" class="search-icon"
 								onclick="openSmallCategoryPopup()">
 						</div>
 					</div>
-					<!-- 품명 -->
+					<!-- 品名 -->
 					<div class="filters-count">
-						<div class="filters-text">품명</div>
+						<div class="filters-text">品名</div>
 						<div class="filters-value d-flex align-items-center">
-							<!-- 🔑 직접 입력 가능 -->
-							<input type="text" id="itemName" name="itemName"
-								placeholder="품명을 입력하세요"> <img
+							<!-- 直接入力可能 -->
+							<input type="text" id="itemName" name="itemName" placeholder="">
+							<img
 								src="https://cdn-icons-png.flaticon.com/512/16799/16799970.png"
 								alt="search" class="search-icon" onclick="openItemNamePopup()">
 						</div>
 					</div>
-					<!-- 품번 (직접 입력) -->
+					<!-- 品番 (直接入力) -->
 					<div class="filters-count">
-						<div class="filters-text">품번</div>
+						<div class="filters-text">品番</div>
 						<div class="filters-value">
-							<input type="text" id="itemId" name="itemId"
-								placeholder="품번을 입력하세요">
+							<input type="text" id="itemId" name="itemId">
 						</div>
 					</div>
 				</div>
 			</div>
-			<!-- ✅ 결과 테이블 -->
-			<div class="table-container" style="height: 300px;">
+			
+			<div class="table-container">
 				<table class="table-single-select">
 					<thead>
 						<tr>
-							<th style="width: 120px;">품목자산분류</th>
-							<th style="width: 200px;">품명</th>
-							<th style="width: 120px;">규격</th>
-							<th style="width: 120px;">품번</th>
-							<th style="width: 80px;">단위</th>
-							<th style="width: 150px;">품목대분류</th>
-							<th style="width: 150px;">품목중분류</th>
-							<th style="width: 150px;">품목소분류</th>
-							<th style="width: 100px;">중요도</th>
-							<th style="width: 180px;">창고명</th>
-							<th style="width: 120px;">재고수량</th>
+							<th style="width: 120px;">品目資産分類</th>
+							<th style="width: 200px;">品名</th>
+							<th style="width: 120px;">規格</th>
+							<th style="width: 120px;">品番</th>
+							<th style="width: 80px;">単位</th>
+							<th style="width: 150px;">品目大分類</th>
+							<th style="width: 150px;">品目中分類</th>
+							<th style="width: 150px;">品目小分類</th>
+							<th style="width: 100px;">重要度</th>
+							<th style="width: 180px;">倉庫名</th>
+							<th style="width: 120px;">在庫数量</th>
 						</tr>
 					</thead>
 
@@ -311,13 +307,12 @@
 			    };
 
 			    $.ajax({
-			        url : '/warehouseStocks/list',
+			        url : '/warehouse/stockList',
 			        data : formData,
 			        type : 'GET',
 			        dataType : 'json',
 			        cache : false,
 			        success : function(result) {
-			            console.log(result); // JSON 확인용
 
 			            const tbody = $("#result-tbody");
 			            tbody.empty();
@@ -344,63 +339,32 @@
 			}
 
 
+			function openPopup(url) {
+				var popupWidth = 900, popupHeight = 600;
+				var left = (screen.width - popupWidth) / 2;
+				var top = (screen.height - popupHeight) / 2;
 
-				// 창고 검색 팝업 열기
-				function openWarehousePopup() {
-					window
-							.open("/warehouseStocks/warehouseSearch",
-									"warehouseSearchPopup",
-									"width=600,height=500,scrollbars=yes,resizable=yes");
-				}
+				window.open(url, "popupWindow", "width=" + popupWidth + ",height="
+						+ popupHeight + ",left=" + left + ",top=" + top
+						+ ",scrollbars=yes,resizable=yes");
+			}
 
-				// 팝업에서 선택한 값 반영
-				function setWarehouseName(name) {
-					document.getElementById("warehouseName").value = name;
-				}
+			function openWarehousePopup() {
+				openPopup("/popup/warehousePopup");
+			}
+			function openBigCategoryPopup() {
+				openPopup("/popup/category_popup_big");
+			}
+			function openMidCategoryPopup() {
+				openPopup("/popup/category_popup_mid");
+			}
+			function openSmallCategoryPopup() {
+				openPopup("/popup/category_popup_small");
+			}
+			function openItemNamePopup() {
+				openPopup("/popup/item_name_popup");
+			}
 
-				function openBigCategoryPopup() {
-					window
-							.open("/warehouseStocks/bigCategorySearch",
-									"bigCategorySearchPopup",
-									"width=600,height=500,scrollbars=yes,resizable=yes");
-				}
-
-				function setBigCategory(name) {
-					document.getElementById("bigCategory").value = name;
-				}
-
-				function openMidCategoryPopup() {
-					window
-							.open("/warehouseStocks/midCategorySearch",
-									"midCategorySearchPopup",
-									"width=600,height=500,scrollbars=yes,resizable=yes");
-				}
-
-				function setMidCategory(name) {
-					document.getElementById("midCategory").value = name;
-				}
-
-				function openSmallCategoryPopup() {
-					window
-							.open("/warehouseStocks/smallCategorySearch",
-									"smallCategorySearchPopup",
-									"width=600,height=500,scrollbars=yes,resizable=yes");
-				}
-
-				function setSmallCategory(name) {
-					document.getElementById("smallCategory").value = name;
-				}
-
-				function openItemNamePopup() {
-					window
-							.open("/warehouseStocks/itemNameSearch",
-									"itemNameSearchPopup",
-									"width=600,height=500,scrollbars=yes,resizable=yes");
-				}
-
-				function setItemName(name) {
-					document.getElementById("itemName").value = name;
-				}
 			</script>
 </body>
 </html>
