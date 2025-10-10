@@ -5,10 +5,12 @@ import lombok.Data;
 @Data
 public class WareHouseVO {
 	
-	private Long warehouseId;				//창고코드
-	private String warehouseName;			//창고명
-	private String buName;					//사업단위명
-	private String warehouseInternalCode;	//창고구분
-	private Long buId;						//사업단위코드
-	private Long warehouseMasterId;			//창고구분코드
+	private Long warehouseId;				//倉庫コード
+	private String warehouseName;			//倉庫名
+	private String buName;					//事業単位名
+	private String warehouseInternalCode;	//倉庫区分
+	private Long buId;						//事業単位コード
+	private Long warehouseMasterId;			//倉庫区分コード
+	private String gubun;                   // 検索区分 (20, 10)
+    private String text;                    // 検索のキーワード
 }

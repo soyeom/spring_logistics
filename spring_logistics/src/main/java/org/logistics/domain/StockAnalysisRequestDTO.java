@@ -4,18 +4,18 @@ import lombok.Data;
 
 @Data
 public class StockAnalysisRequestDTO {
-    private Long buId;
-    private Long warehouseId;
-    private String importanceLevel;
-    private String itemAssetClass;
-    private String itemSmallCategory;
-    private String itemName;
-    private String spec;
-    private String baseUnit;
-    private String stockStandard;
-    private String itemId;
-    private String currentMonth;   // 예: "2025-09"
-    private String prevYearMonth; // 계산용, service에서 자동 채움
+    private Long buId;					//ビジネスid
+    private Long warehouseId;			//倉庫名
+    private String importanceLevel;		//重要度
+    private String itemAssetClass;		//品目等級
+    private String itemSmallCategory;	//品目小分類
+    private String itemName;			//品目名
+    private String spec;				//スペック
+    private String baseUnit;			//ベースユニット
+    private String stockStandard;		//在庫基準
+    private String itemId;				//品目id
+    private String currentMonth;   		//現在の日付
+    private String prevYearMonth; // 日付計算用
     private String analysisItem; // "averageStock", "turnoverRate", "totalIn", "totalOut"
 
 }

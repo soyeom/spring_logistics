@@ -26,7 +26,10 @@ public class PopupServiceImpl implements PopupService {
 	}
 	@Override
 	public List<PopupVO> warehouse_List(String gubun, String text) {
-		// TODO Auto-generated method stub
 		return popupMapper.warehouse_List(gubun, text);
+	}
+	@Override
+	public List<PopupVO> itemSmallcategory_List(String gubun, String text) {
+		return popupMapper.itemSmallcategory_List(gubun, text);
 	}
 }

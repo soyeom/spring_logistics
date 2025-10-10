@@ -1,579 +1,546 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <!DOCTYPE html>
 <html>
 <head>
+<meta charset="UTF-8">
+<title>在庫変動推移分析</title>
+<!-- 在庫変動推移分析 -->
+
 <link rel="stylesheet"
 	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<meta charset="UTF-8">
-<title>재고변동추이분석</title>
+<link
+	href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap"
+	rel="stylesheet">
+<link rel="stylesheet" type="text/css" href="/resources/css/main.css">
+<link rel="stylesheet" type="text/css"
+	href="/resources/css/logistics.css">
+<link rel="stylesheet" type="text/css"
+	href="https://cdn.datatables.net/1.13.5/css/jquery.dataTables.css">
+
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script
+	src="https://cdn.datatables.net/1.13.5/js/jquery.dataTables.min.js"></script>
+<script
+	src="https://cdn.datatables.net/select/1.7.0/js/dataTables.select.min.js"></script>
+
 <style>
-/* ===== 상단 헤더 ===== */
-.page-header {
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-	background: #4b5563;
-	color: #fff;
-	padding: 10px 16px;
-	margin: 12px;
-	border-radius: 4px;
-	box-sizing: border-box;
-}
-
-.page-header h2 {
-	margin: 0;
-	font-size: 21px;
-	font-weight: 600;
-	line-height: 1;
-}
-
-.page-header .btn-search {
-	background: transparent;
-	color: #fff;
-	border: none;
-	font-size: 18px;
-	padding: 4px 10px;
-	height: 26px;
-	line-height: 26px;
-	cursor: pointer;
-}
-
-/* ===== 조회조건 (grid) ===== */
-.search-container {
-	background: #fff;
-	border: 1px solid #ddd;
-	border-radius: 4px;
-	margin: 8px 12px;
-	padding: 10px 12px;
-	box-sizing: border-box;
-	display: grid;
-	/* label열 + control열 묶음을 4세트 => 총 8컬럼 */
-	grid-template-columns: repeat(4, minmax(90px, 130px) 1fr);
-	column-gap: 12px;
-	row-gap: 8px;
-	align-items: center;
-}
-
-/* search header spans full width only in search-container */
-.search-container .search-header {
-	grid-column: 1/-1;
-	font-weight: 600;
-	font-size: 15px;
-	color: #222;
-	margin-bottom: 8px;
-	padding: 0 0 8px 0;
-	border-bottom: 1px solid #eee;
-}
-
-/* flatten search fields (keeps label/control pairs in grid cells) */
-.search-container>.field {
-	display: contents;
-}
-
-/* labels inside search-container (right aligned) */
-.search-container label {
-	justify-self: end;
-	text-align: right;
-	font-size: 13px;
-	color: #333;
-	padding-right: 6px;
-	align-self: center;
-}
-
-/* search inputs/selects/buttons: full width in their grid cell */
-.search-container select, .search-container input, .search-container button
-	{
-	width: 100%;
-	height: 26px;
-	padding: 2px 8px;
-	font-size: 13px;
-	border: 1px solid #ccc;
-	border-radius: 3px;
-	background: #fff;
-	box-sizing: border-box;
-}
-
-/* ===== 비교대상 기간설정 (flex 한줄) ===== */
-.compare-container {
-	background-color: #f9f9ff;
-	border: 1px solid #ddd;
-	border-radius: 4px;
-	margin: 8px 12px;
-	padding: 10px 12px;
-	box-sizing: border-box;
-}
-
-/* header for compare-container - not grid-based */
-.compare-container .search-header {
-	display: block;
-	font-weight: 600;
-	font-size: 15px;
-	color: #222;
-	margin-bottom: 8px;
-	padding: 0 0 8px 0;
-	border-bottom: 1px solid #eee;
-}
-
-/* 실제 항목을 한 줄로 놓을 wrapper */
-.compare-row {
-	display: flex;
-	align-items: center;
-	gap: 16px;
-	flex-wrap: nowrap; /* 데스크탑에서는 한 줄 */
-}
-
-/* 라벨은 inline 형태 (오른쪽 정렬이 아닌 일반 텍스트로) */
-.compare-row label {
-	margin: 0;
-	font-size: 13px;
-	color: #333;
-	min-width: 70px; /* 라벨 너비 고정하면 컬럼 정렬감이 생김 */
-}
-
-/* compare inputs/selects: 자동 너비 (컨테이너에 따라 늘어나지 않도록) */
-.compare-row input, .compare-row select {
-	width: auto;
-	min-width: 60px;
-	height: 26px;
-	padding: 2px 8px;
-	font-size: 13px;
-	border: 1px solid #ccc;
-	border-radius: 3px;
-	box-sizing: border-box;
-}
-
-/* input + 단위 조합 */
-.field-inline {
-	display: inline-flex;
-	align-items: center;
-	gap: 6px;
-}
-
-.field-inline input {
-	width: 60px;
-	text-align: right;
-	box-sizing: border-box;
-}
-
-.field-inline span {
-	font-size: 13px;
-	color: #333;
-	line-height: 26px;
-}
-
-/* 컨트롤 공통 버튼 (search 컨테이너에서 사용) */
-.search-container button {
-	line-height: 20px;
-	cursor: pointer;
-	background: #f9f9f9;
-}
-
-.search-container button:hover {
-	background: #f0f0f0;
-}
-
-/* ===== 결과 컨테이너 ===== */
-.result-container {
-	margin: 8px 12px;
-	padding: 10px 12px;
-	box-sizing: border-box;
-	background: #fff;
-	border-radius: 4px;
-	border: 1px solid #ddd;
-}
-
-/* 결과 테이블 */
-.result-container table {
-	width: 100%;
-	border-collapse: collapse;
-	font-size: 13px;
-	background: #fff;
-}
-
-.result-container th, .result-container td {
-	border: 1px solid #ddd;
-	padding: 6px 8px;
-	text-align: center;
-	vertical-align: middle;
-}
-
-.result-container th {
-	background: #f0f2f5;
-	font-weight: 600;
-	color: #333;
-}
-
-/* 라벨 강조용 */
-.label {
-	color: red;
-	margin-left: 10px;
-	margin-right: 5px;
-}
-
-/* ===== 검색 그룹 (input + button) ===== */
+/* --------------------------------------
+    ポップアップボタンを含む入力グループ
+-------------------------------------- */
 .input-group {
 	display: flex;
 	align-items: center;
 	width: 100%;
-	max-width: 220px;
-	border: 1px solid #ccc;
-	border-radius: 4px;
-	overflow: hidden;
-	background: #fff;
-	height: 26px;
 }
 
-.input-group input {
-	flex: 1;
-	border: none;
-	padding: 0 8px;
-	font-size: 13px;
-	outline: none;
-	height: 100%;
-	background: transparent;
+.input-group input[type="text"], .input-group input[type="number"],
+	.input-group select {
+	flex-grow: 1;
+	margin-right: 5px;
 }
 
-.input-group button {
-	width: 34px;
-	height: 100%;
-	border: none;
-	background: #f5f6f7;
-	cursor: pointer;
+.input-group .btn-primary {
+	flex-shrink: 0;
+	height: 30px;
+	width: 30px;
+	padding: 0;
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	color: #666;
-	font-size: 14px;
-	border-left: 1px solid #ccc;
 }
 
-.input-group button:hover {
-	background: #e3e5e7;
+/* --------------------------------------
+    期間間隔および比較回数入力グループ
+-------------------------------------- */
+.input-with-text {
+	display: flex;
+	align-items: center;
+	gap: 5px;
 }
 
-/* ===== 반응형 ===== */
-@media ( max-width : 900px) {
-	.search-container {
-		grid-template-columns: repeat(2, minmax(80px, 120px) 1fr);
-	}
-	.compare-row {
-		flex-wrap: wrap; /* 좁아지면 줄바꿈 */
-		gap: 10px;
-	}
+.input-with-text input {
+	width: 60px;
+	text-align: center;
 }
 
-@media ( max-width : 520px) {
-	.search-container {
-		grid-template-columns: minmax(80px, 120px) 1fr;
-		row-gap: 8px;
-	}
-	.search-container label {
-		font-size: 12px;
-	}
-	.page-header h2 {
-		font-size: 14px;
-	}
-	.compare-row {
-		gap: 8px;
-	}
-	.compare-row label {
-		min-width: 60px;
-	}
+.input-with-text span {
+	flex-shrink: 0;
 }
 </style>
 </head>
 <body>
-	<!-- 페이지 상단 -->
-	<div class="page-header">
-		<h2>재고변동추이분석</h2>
-		<button class="btn-search" id="btnSearch">조회</button>
-	</div>
-
-	<!-- 1) 조회조건 컨테이너 -->
-	<div class="search-container">
-		<div class="field">
-			<div class="search-header">조회조건</div>
+	<div class="layout">
+		<div class="home-bar">
+			<span> <a href="/"><img
+					src="https://cdn-icons-png.flaticon.com/512/7598/7598650.png"
+					alt="ホーム画面" class="home-icon"></a>
+			</span>
 		</div>
-
-		<!-- hidden fields for popups -->
-		<input type="hidden" id="warehouseId" /> <input type="hidden"
-			id="itemSmallCategory" />
-
-		<div class="field">
-			<label>사업단위</label> <select id="buId">
-				<option value="">-- 선택 --</option>
-				<option value="1">본사</option>
-			</select>
-		</div>
-
-		<div class="field">
-			<label>창고</label>
-			<div class="input-group">
-				<input type="text" id="warehouseName" placeholder="창고 선택" readonly />
-				<input type="hidden" id="warehouseId" />			
-				<button type="button" id="btnWarehouse">
-					<i class="fa fa-search"></i>
-				</button>
-			</div>
-		</div>
-
-		<div class="field">
-			<label>재고기준</label> <select id="stockStandard">
-				<option value="REAL">실재고</option>
-				<option value="ASSET">자산재고</option>
-			</select>
-		</div>
-
-		<div class="field">
-			<label>중요도</label> <select id="importanceLevel">
-				<option value="">-- 선택 --</option>
-				<option value="A">A등급</option>
-				<option value="B">B등급</option>
-				<option value="C">C등급</option>
-			</select>
-		</div>
-
-		<div class="field">
-			<label>품목자산분류</label> <select id="itemAssetClass">
-				<option value="">-- 선택 --</option>
-				<option value="제품">제품</option>
-				<option value="반제품">반제품</option>
-				<option value="상품">상품</option>
-				<option value="원자재">원자재</option>
-				<option value="부자재">부자재</option>
-				<option value="재공품">재공품</option>
-				<option value="저장품">저장품</option>
-			</select>
-		</div>
-
-		<div class="field">
-			<label>품목소분류</label>
-			<div class="input-group">
-				<input type="text" id="itemSmallCategoryName" placeholder="소분류 선택"
-					readonly />
-				<input type="hidden" id="itemSmallCategory"/>
-				<button type="button" id="btnItemSmallCategory">
-					<i class="fa fa-search"></i>
-				</button>
-			</div>
-		</div>
-
-		<div class="field">
-			<label>품명</label> <input type="text" id="itemName" />
-		</div>
-
-		<div class="field">
-			<label>품번</label> <input type="number" id="itemId" />
-		</div>
-
-		<div class="field">
-			<label>규격</label> <input type="text" id="spec" />
-		</div>
-	</div>
-
-	<!-- 2) 비교대상 기간설정 컨테이너 (한 줄 레이아웃) -->
-	<div class="compare-container">
-		<div class="search-header">비교대상 기간설정</div>
-
-		<div class="compare-row">
-			<label>현재월</label>
-<input type="month" id="currentMonth"
-       value="<%= new java.text.SimpleDateFormat("yyyy-MM").format(new java.util.Date()) %>"
-       readonly>
-
-
-			<label>기간간격</label>
-			<div class="field-inline">
-				<input type="number" id="periodMonths" value="3" readonly> <span>개월</span>
+			<!-- サイドバー -->
+		<aside class="sidebar">
+			<div class="sidebar-header">
+				<div class="profile">
+					<img src="https://cdn-icons-png.flaticon.com/512/7598/7598657.png"
+						alt="プロフィール">
+					<p>〇〇様、こんにちは 👋</p>
+					<div class="auth-btns">
+						<button class="btn btn-secondary">ログイン</button>
+						<button class="btn btn-secondary">会員登録</button>
+					</div>
+				</div>
 			</div>
 
-			<div class="field-inline">
-				<input type="number" id="periodCount" value="4" min="1"> <span>회
-					비교</span>
+			<nav class="menu">
+				<div class="menu-item">
+					<div class="title">
+						<a href="#">入庫および出庫</a>
+					</div>
+					<div class="submenu">
+						<div>
+							<a href="#">入庫履歴</a>
+						</div>
+						<div>
+							<a href="#">出庫履歴</a>
+						</div>
+					</div>
+				</div>
+				<div class="menu-item">
+					<div class="title">
+						<a href="#">在庫出荷統制</a>
+					</div>
+					<div class="submenu">
+						<div>
+							<a href="#">出荷計画</a>
+						</div>
+						<div>
+							<a href="#">出荷履歴</a>
+						</div>
+					</div>
+				</div>
+				<div class="menu-item">
+					<div class="title">
+						<a href="#">在庫管理</a>
+					</div>
+					<div class="submenu">
+						<div>
+							<a href="#">在庫現況</a>
+						</div>
+						<div>
+							<a href="#">在庫移動</a>
+						</div>
+						<div>
+							<a href="#">在庫照会</a>
+						</div>
+					</div>
+				</div>
+				<div class="menu-item">
+					<div class="title">
+						<a href="#">事業部門別受払集計</a>
+					</div>
+					<div class="submenu">
+						<div>
+							<a href="#">事業所別集計</a>
+						</div>
+						<div>
+							<a href="#">月別推移</a>
+						</div>
+					</div>
+				</div>
+				<div class="menu-item">
+					<div class="title">
+						<a href="#">在庫変動推移分析</a>
+					</div>
+					<div class="submenu">
+						<div>
+							<a href="#">グラフ表示</a>
+						</div>
+					</div>
+				</div>
+			</nav>
+		</aside>
+
+		<div class="main">
+			<div class="main-header">
+				<div>
+					
+					<span class="btn btn-secondary btn-icon toggle-sidebar">≡</span>
+				</div>
+				<div>
+					<h1>在庫変動推移分析</h1>
+				</div>
+				<div>
+					<button class="btn btn-primary btn-search" id="btnSearch">検索</button>
+					<button class="btn btn-reset" onclick="resetSearch()">初期化</button>
+				</div>
 			</div>
 
-			<label>분석항목</label> <select id="analysisItem">
-				<option>평균재고량</option>
-				<option>재고회전율(%)</option>
-				<option>총입고량</option>
-				<option>총출고량</option>
-			</select>
+			<!-- 検索条件 -->
+			<div class="filters search-filters">
+				<div class="filters-main">
+					<div class="title">検索条件</div>
+					<div class="line"></div>
+				</div>
+
+				<div class="filters-row">
+					<div class="filters-count">
+						<div class="filters-text">事業部門</div>
+						<div class="filters-value">
+							<select id="buId" name="bu_id">
+								<!-- オプションはJavaScriptによって動的に追加されます -->
+							</select>
+						</div>
+					</div>
+
+					<div class="filters-count">
+						<div class="filters-text">倉庫</div>
+						<div class="filters-value">
+							<div class="input-group">
+								<input type="text" id="warehouseName" placeholder="倉庫を選択"
+									readonly> <input type="hidden" id="warehouseId">
+								<button type="button" class="btn-primary" id="btnWarehouse">
+									<i class="fa fa-search"></i>
+								</button>
+							</div>
+						</div>
+					</div>
+
+					<div class="filters-count">
+						<div class="filters-text">在庫基準</div>
+						<div class="filters-value">
+							<select id="stockStandard">
+								<option value="REAL">実在庫</option>
+								<option value="ASSET">資産在庫</option>
+							</select>
+						</div>
+					</div>
+
+					<div class="filters-count">
+						<div class="filters-text">重要度</div>
+						<div class="filters-value">
+							<select id="importanceLevel">
+								<option value="">-- 選択 --</option>
+								<option value="A">A等級</option>
+								<option value="B">B等級</option>
+								<option value="C">C等級</option>
+							</select>
+						</div>
+					</div>
+				</div>
+
+				<div class="filters-row">
+					<div class="filters-count">
+						<div class="filters-text">品目資産分類</div>
+						<div class="filters-value">
+							<select id="itemAssetClass">
+								<option value="">全体</option>
+								<option value="製品">製品</option>
+								<option value="半製品">半製品</option>
+								<option value="商品">商品</option>
+								<option value="原材料">原材料</option>
+								<option value="副資材">副資材</option>
+								<option value="仕掛品">仕掛品</option>
+								<option value="ストック">ストック</option>
+							</select>
+						</div>
+					</div>
+
+					<div class="filters-count">
+						<div class="filters-text">品目小分類</div>
+						<div class="filters-value">
+							<div class="input-group">
+								<input type="text" id="itemSmallCategoryName"
+									placeholder="小分類を選択" readonly> <input type="hidden"
+									id="itemSmallCategory">
+								<button type="button" class="btn-primary"
+									id="btnItemSmallCategory">
+									<i class="fa fa-search"></i>
+								</button>
+							</div>
+						</div>
+					</div>
+
+					<div class="filters-count">
+						<div class="filters-text">品名</div>
+						<div class="filters-value">
+							<input type="text" id="itemName">
+						</div>
+					</div>
+
+					<div class="filters-count">
+						<div class="filters-text">品番</div>
+						<div class="filters-value">
+							<input type="number" id="itemId">
+						</div>
+					</div>
+				</div>
+
+				<div class="filters-row">
+					<div class="filters-count">
+						<div class="filters-text">規格</div>
+						<div class="filters-value">
+							<input type="text" id="spec">
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- 比較設定 -->
+			<div class="filters compare-filters">
+				<div class="filters-main">
+					<div class="title">比較設定</div>
+					<div class="line"></div>
+				</div>
+
+				<div class="filters-row">
+					<div class="filters-count">
+						<div class="filters-text">現在月</div>
+						<div class="filters-value">
+							<input type="month" id="currentMonth"
+								value="<%=new java.text.SimpleDateFormat("yyyy-MM").format(new java.util.Date())%>"
+								readonly>
+						</div>
+					</div>
+
+					<div class="filters-count">
+						<div class="filters-text">期間間隔</div>
+						<div class="filters-value">
+							<div class="input-with-text">
+								<input type="number" id="periodMonths" value="3" readonly><span>ヶ月</span>
+							</div>
+						</div>
+					</div>
+
+					<div class="filters-count">
+						<div class="filters-text">比較回数</div>
+						<div class="filters-value">
+							<div class="input-with-text">
+								<input type="number" id="periodCount" value="4" min="1" readonly><span>回比較</span>
+							</div>
+						</div>
+					</div>
+
+					<div class="filters-count">
+						<div class="filters-text">分析項目</div>
+						<div class="filters-value">
+							<select id="analysisItem">
+								<option>平均在庫量</option>
+								<option>在庫回転率(%)</option>
+								<option>総入庫量</option>
+								<option>総出庫量</option>
+							</select>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- 結果テーブル -->
+			<div class="result-container table-container">
+				<table>
+					<thead>
+						<tr id="resultHeadRow">
+							<th>品目資産分類</th>
+							<th>品目大分類</th>
+							<th>品目小分類</th>
+							<th>品番</th>
+							<th>品名</th>
+							<th>規格</th>
+							<th>品目中分類</th>
+							<th>単位</th>
+							<!-- 動的な期間列がここに挿入される -->
+						</tr>
+					</thead>
+					<tbody id="resultBody"></tbody>
+				</table>
+			</div>
 		</div>
 	</div>
 
-	<!-- 3) 결과 컨테이너 -->
-	<div class="result-container">
-		<table>
-			<thead>
-				<tr id="resultHeadRow">
-					<th>품목자산분류</th>
-					<th>품목대분류</th>
-					<th>품목소분류</th>
-					<th>품번</th>
-					<th>품명</th>
-					<th>규격</th>
-					<th>품목중분류</th>
-					<th>단위</th>
-					<!--  yyyy-MM(1회) yyyy-MM(2회) yyyy-MM(3회) yyyy-MM(4회)의 값을 빈 공간에 집어넣을것 -->
-				</tr>
-			</thead>
-			<tbody id="resultBody">
-				<!-- Ajax로 데이터 채움 -->
-			</tbody>
-		</table>
-	</div>
-
-<script>
-/* contextPath 안전하게 가져오기 */
+	<script>
 var ctx = '${pageContext.request.contextPath}';
+const POPUP_WIDTH = 900, POPUP_HEIGHT = 600;
 
-$(document).ready(function () {
-  const analysisMap = {
-    '평균재고량': 'averageStock',
-    '재고회전율(%)': 'turnoverRate',
-    '총입고량': 'totalIn',
-    '총출고량': 'totalOut'
-  };
+// ======================== 事業部門(BU)リストをロード ========================
+function loadBusinessUnits() {
+    $.ajax({
+        url: ctx + '/common/bus',
+        type: "GET",
+        dataType: "json",
+        success: function(data) {
+            const buSelect = $("#buId");
+            buSelect.empty();
+            buSelect.append('<option value="">全体</option>');
+            $.each(data, function(index, bu) {
+                buSelect.append('<option value="' + bu.id + '">' + bu.name + '</option>');
+            });
+            console.log("사업부문 데이터가 로드되었습니다:", data);
+        },
+        error: function(xhr, status, error) {
+            console.error("事業部門のロード中にエラーが発生しました:", error);
+            const buSelect = $("#buId");
+            if (buSelect.children().length === 0) {
+                buSelect.append('<option value="">全体</option>');
+                buSelect.append('<option value="1">本社</option>');
+            }
+        }
+    });
+}
 
-  // ==============================
-  // 조회 버튼 클릭 시 AJAX
-  // ==============================
-  $("#btnSearch").click(function () {
-    let sel = $("#analysisItem").val();
-    let analysisItem = analysisMap[sel] || sel;
+// ======================== ポップアップを開く (倉庫) ========================
+function open_Warehouse() {
+    var left = (screen.width - POPUP_WIDTH) / 2;
+    var top = (screen.height - POPUP_HEIGHT) / 2;
+    window.open(ctx + '/popup/warehouse_popup', "warehouse_popup",
+        "width=" + POPUP_WIDTH + ",height=" + POPUP_HEIGHT + ",left=" + left + ",top=" + top + ",scrollbars=yes,resizable=yes");
+}
 
-    let requestData = {
-      buId: $("#buId").val(),
-      itemName: $("#itemName").val(),
-      spec: $("#spec").val(),
-      itemAssetClass: $("#itemAssetClass").val(),
-      importanceLevel: $("#importanceLevel").val(),
-      stockStandard: $("#stockStandard").val(),
-      itemId: $("#itemId").val(),
-      currentMonth: $("#currentMonth").val(),
-      analysisItem: analysisItem,
-      warehouseId: $("#warehouseId").val()  
-      itemSmallCategory: $("itemSmallCategory").val()
+// ポップアップから選択された倉庫データを受け取る
+window.setWarehouseData = function(data) {
+    $("#warehouseName").val(data[0]);
+    $("#warehouseId").val(data[1]);
+    console.log("倉庫選択:", data);
+};
+
+// 品目小分類ポップアップを開く
+function open_Isc() {
+    var left = (screen.width - POPUP_WIDTH) / 2;
+    var top = (screen.height - POPUP_HEIGHT) / 2;
+    window.open(ctx + '/popup/itemSmallcategory_popup',
+        "itemSmallcategory_popup", "width=" + POPUP_WIDTH + ",height=" + POPUP_HEIGHT + ",left=" + left + ",top=" + top + ",scrollbars=yes,resizable=yes");
+}
+
+// ポップアップから選択された小分類データを受け取る
+window.setItemSmallCategoryData = function(data) {
+    $("#itemSmallCategory").val(data[0]);
+    $("#itemSmallCategoryName").val(data[1]);
+    console.log("小分類選択:", data);
+};
+
+// ======================== ページロード後に実行 ========================
+$(document).ready(function() {
+    // 💡 [사이드바 토글 기능]
+    // .toggle-sidebar 버튼 클릭 시, 최상위 .layout 요소에 'sidebar-collapsed' 클래스를 토글합니다.
+    $('.toggle-sidebar').on('click', function() {
+        $('.layout').toggleClass('sidebar-collapsed');
+    });
+    
+    loadBusinessUnits();
+    
+    const analysisMap = {
+        '平均在庫量' : 'averageStock',
+        '在庫回転率(%)' : 'turnoverRatio',
+        '総入庫量' : 'totalInbound',
+        '総出庫量' : 'totalOutbound'
     };
 
-    $.ajax({
-      url: ctx + '/stock-analysis/analysis',
-      type: "POST",
-      contentType: "application/json",
-      data: JSON.stringify(requestData),
-      success: function (data) {
-        let tbody = $("#resultBody");
-        tbody.empty();
+    // 初期化関数
+    window.resetSearch = function() {
+        $("#buId").val($("#buId option:first").val());
+        $("#stockStandard").val('REAL');
+        $("#importanceLevel").val($("#importanceLevel option:first").val());
+        $("#itemAssetClass").val($("#itemAssetClass option:first").val());
+        $("#analysisItem").val($("#analysisItem option:first").val());
+        $("#itemName, #itemId, #spec, #warehouseName, #warehouseId, #itemSmallCategoryName, #itemSmallCategory").val('');
+        $("#resultBody").empty();
+        $("#resultHeadRow").find("th.dynamic").remove();
+    };
 
-        // data는 List<Map<String,Object>>
-        let periods = [];
-        if (data.length > 0) {
-          let sample = data[0];
-          $.each(sample, function (key, value) {
-            if (/^\d{4}-\d{2}$/.test(key)) periods.push(key);
-          });
-          periods.sort(); // 오름차순
-        }
+    // 検索ボタンクリックイベント
+    $("#btnSearch").click(function() {
+        let sel = $("#analysisItem").val();
+        let analysisItem = analysisMap[sel] || sel;
 
-        // 헤더 갱신
-        let theadRow = $("#resultHeadRow");
-        theadRow.find("th.dynamic").remove();
-        $.each(periods, function (i, p) {
-          theadRow.append("<th class='dynamic'>" + p + "</th>");
+        let requestData = {
+            buId : $("#buId").val(),
+            itemName : $("#itemName").val(),
+            spec : $("#spec").val(),
+            itemAssetClass : $("#itemAssetClass").val(),
+            importanceLevel : $("#importanceLevel").val(),
+            stockStandard : $("#stockStandard").val(),
+            itemId : $("#itemId").val() ? $("#itemId").val().toString() : null,
+            currentMonth : $("#currentMonth").val(),
+            analysisItem : analysisItem,
+            warehouseId : $("#warehouseId").val(),
+            itemSmallCategory : $("#itemSmallCategory").val()
+        };
+
+        $.ajax({
+            url : ctx + '/stock-analysis/analysis',
+            type : "POST",
+            contentType : "application/json",
+            data : JSON.stringify(requestData),
+            success : function(data) {
+                let tbody = $("#resultBody").empty();
+                let periods = [];
+
+                // 1. 動的期間キー (YYYY-MM) 抽出
+                if (data.length > 0) {
+                    $.each(data[0], function(key) {
+                        if (/^\d{4}-\d{2}$/.test(key)) periods.push(key);
+                    });
+                    periods.sort().reverse();
+                }
+
+                // 2. 動的期間ヘッダー再生性
+                let theadRow = $("#resultHeadRow").find("th.dynamic").remove().end();
+                $.each(periods, function(i, p) {
+                    theadRow.append("<th class='dynamic'>" + p + "</th>");
+                });
+
+                // 3. データがない場合
+                if (!data || data.length === 0) {
+                    let totalCols = 8 + periods.length;
+                    tbody.append("<tr><td colspan='" + totalCols + "'>検索結果がありません。</td></tr>");
+                    return;
+                }
+
+                // 4. 結果データテーブルに描画
+                $.each(data, function(idx, item) {
+                    let row = "<tr>"
+                        + "<td>" + (item.itemAssetClass || "") + "</td>"
+                        + "<td>" + (item.itemBigCategory || "") + "</td>"
+                        + "<td>" + (item.itemSmallCategory || "") + "</td>"
+                        + "<td>" + (item.itemId || "") + "</td>"
+                        + "<td>" + (item.itemName || "") + "</td>"
+                        + "<td>" + (item.spec || "") + "</td>"
+                        + "<td>" + (item.itemMidCategory || "") + "</td>"
+                        + "<td>" + (item.baseUnit || "") + "</td>";
+
+                    $.each(periods, function(i, p) {
+                        let value = item[p];
+                        row += "<td>" + (value != null ? value : '') + "</td>";
+                    });
+
+                    row += "</tr>";
+                    tbody.append(row);
+                });
+            },
+            error : function() {
+                alert("データ検索中にエラーが発生しました。必須値（事業部門など）を確認してください。");
+            }
         });
-
-        if (!data || data.length === 0) {
-          tbody.append("<tr><td colspan='" + (8 + periods.length) + "'>조회 결과가 없습니다.</td></tr>");
-          return;
-        }
-
-        // 로우 구성
-        $.each(data, function (idx, item) {
-          let row = "<tr>"
-            + "<td>" + (item.itemAssetClass || "") + "</td>"
-            + "<td>" + (item.itemBigCategory || "") + "</td>"
-            + "<td>" + (item.itemSmallCategory || "") + "</td>"
-            + "<td>" + (item.itemId || "") + "</td>"
-            + "<td>" + (item.itemName || "") + "</td>"
-            + "<td>" + (item.spec || "") + "</td>"
-            + "<td>" + (item.itemMidCategory || "") + "</td>"
-            + "<td>" + (item.baseUnit || "") + "</td>";
-
-          $.each(periods, function (i, p) {
-            let cell = item[p];
-            if (cell === null || typeof cell === 'undefined') cell = '';
-            row += "<td>" + cell + "</td>";
-          });
-
-          row += "</tr>";
-          tbody.append(row);
-        });
-      },
-      error: function (xhr, status, error) {
-        console.error("AJAX ERROR:", status, error);
-        console.error("Response Text:", xhr.responseText);
-        alert("데이터 조회 중 오류가 발생했습니다. 필수값(사업단위)을 입력하세요.");
-      }
     });
-  });
 
-  // ==============================
-  // 창고 선택 팝업 열기
-  // ==============================
-  $("#btnWarehouse").click(function () {
-    window.open(
-      ctx + '/popup/warehouse_popup',
-      "warehouse_popup",
-      "width=600,height=400,scrollbars=yes,resizable=no"
-    );
-  });
+    // ボタンイベント接続
+    $("#btnWarehouse").click(open_Warehouse);
+    $("#btnItemSmallCategory").click(open_Isc);
 
-  // ==============================
-  // 팝업에서 선택된 창고 데이터 받기
-  // ==============================
-  window.setWarehouseData = function (data) {
-    // data = [창고ID, 창고명, 사업단위, 창고구분, 사업단위코드, 창고구분코드]
-    console.log("팝업에서 받은 값:", data);
-    // 화면 표시
-    $("#warehouseName").val(data[1]);
-    // hidden 값 (검색용)
-    $("#warehouseId").val(data[0]);
-  };
-
-  // ==============================
-  // 소분류 선택 팝업 열기
-  // ==============================
-  $("#btnItemSmallCategory").click(function () {
-    window.open(
-      ctx + '/popup/item_popup',
-      "contact_popup",
-      "width=700,height=500,scrollbars=yes,resizable=no"
-    );
-  });
-  
- window.setItemSmallCategoryData = function (data) {
-	 console.log("소분류 팝업에서 받은 값: ", data);
-	 $("itemsmallcategoryName").val(data[1]);
-	 @("#itemsmallcategory").val(data[0]);
- };
-  
-
-  // ==============================
-  // 엔터 키 → 조회 실행
-  // ==============================
-  $(document).on("keydown", function (e) {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      $("#btnSearch").trigger("click");
-    }
-  });
+    // Enter キーで検索
+    $(document).on("keydown", function(e) {
+        if (e.key === "Enter") {
+            e.preventDefault();
+            $("#btnSearch").trigger("click");
+        }
+    });
 });
 
-
+	const toggleButton = document.querySelector('.toggle-sidebar');
+	const sidebar = document.querySelector('.sidebar');
+	
+	toggleButton.addEventListener('click', function(){
+		sidebar.classList.toggle('hidden');
+	})
 </script>
-
-
-
+</body>
 </html>

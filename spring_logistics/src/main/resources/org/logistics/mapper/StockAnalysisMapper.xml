@@ -1,13 +1,13 @@
-<?xml version="1.0" encoding="UTF-8" ?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="org.logistics.mapper.StockAnalysisMapper">
 
-  <!-- 기본 아이템 리스트
-       - warehouseId가 있을 때는 warehouse_item과 JOIN 하여 해당 창고의 품목만 조회
-       - itemSmallCategory(품목소분류)로도 필터링 가능 -->
+  <!-- ==============================
+    アイテムリスト照会
+  ============================== -->
   <select id="getBaseItemList"
           parameterType="org.logistics.domain.StockAnalysisRequestDTO"
           resultType="org.logistics.domain.StockAnalysisResponseDTO">
@@ -22,42 +22,40 @@
       im.base_unit        AS baseUnit,
       im.importance_level AS importanceLevel
     FROM item_master im
-    <!-- 창고 필터가 있을 경우 warehouse_item과 조인 -->
-    <if test="warehouseId != null">
+    <if test="dto.warehouseId != null">
       INNER JOIN warehouse_item wi
         ON im.item_id = wi.item_id
        AND im.bu_id = wi.bu_id
-       AND wi.warehouse_id = #{warehouseId}
+       AND wi.warehouse_id = #{dto.warehouseId}
     </if>
-
     WHERE 1=1
-      <if test="buId != null">
-        AND im.bu_id = #{buId}
+      <if test="dto.buId != null">
+        AND im.bu_id = #{dto.buId}
       </if>
-      <if test="itemAssetClass != null and itemAssetClass != ''">
-        AND im.asset_class = #{itemAssetClass}
+      <if test="dto.itemAssetClass != null and dto.itemAssetClass != ''">
+        AND im.asset_class = #{dto.itemAssetClass}
       </if>
-      <if test="importanceLevel != null and importanceLevel != ''">
-        AND im.importance_level = #{importanceLevel}
+      <if test="dto.importanceLevel != null and dto.importanceLevel != ''">
+        AND im.importance_level = #{dto.importanceLevel}
       </if>
-      <if test="itemId != null and itemId != ''">
-        AND im.item_id LIKE '%' || #{itemId} || '%'
+      <if test="dto.itemId != null and dto.itemId != ''">
+        AND im.item_id LIKE '%' || #{dto.itemId} || '%'
       </if>
-      <if test="itemName != null and itemName != ''">
-        AND im.item_name LIKE '%' || #{itemName} || '%'
+      <if test="dto.itemName != null and dto.itemName != ''">
+        AND im.item_name LIKE '%' || #{dto.itemName} || '%'
       </if>
-      <if test="spec != null and spec != ''">
-        AND im.spec LIKE '%' || #{spec} || '%'
+      <if test="dto.spec != null and dto.spec != ''">
+        AND im.spec LIKE '%' || #{dto.spec} || '%'
       </if>
-      <!-- 품목소분류 필터 (추가) -->
-      <if test="itemSmallCategory != null and itemSmallCategory != ''">
-        AND im.small_category = #{itemSmallCategory}
+      <if test="dto.itemSmallCategory != null and dto.itemSmallCategory != ''">
+        AND im.small_category = #{dto.itemSmallCategory}
       </if>
     ORDER BY im.item_name
   </select>
 
-  <!-- 기간별 값 조회 (startMonth, endMonth : "YYYYMM") 
-       - inbound_detail / out_detail에 warehouseId가 있으면 해당 창고로 한정 -->
+  <!-- ==============================
+       기간별 값 조회
+  ============================== -->
   <select id="getPeriodValue"
           parameterType="org.logistics.domain.StockAnalysisRequestDTO"
           resultType="double">
@@ -70,12 +68,12 @@
           NVL(SUM(od.qty), 0)
         </when>
         <when test="analysisItem == 'averageStock'">
-          ( NVL(SUM(ibd.qty),0) - NVL(SUM(od.qty),0) ) / 2
+          (NVL(SUM(ibd.qty),0) - NVL(SUM(od.qty),0)) / 2
         </when>
         <when test="analysisItem == 'turnoverRate'">
           CASE
-            WHEN ( (NVL(SUM(ibd.qty),0) - NVL(SUM(od.qty),0)) / 2 ) = 0 THEN 0
-            ELSE ( NVL(SUM(od.qty),0) / ( (NVL(SUM(ibd.qty),0) - NVL(SUM(od.qty),0)) / 2 ) ) * 100
+            WHEN ((NVL(SUM(ibd.qty),0) - NVL(SUM(od.qty),0)) / 2) = 0 THEN 0
+            ELSE (NVL(SUM(od.qty),0) / ((NVL(SUM(ibd.qty),0) - NVL(SUM(od.qty),0)) / 2)) * 100
           END
         </when>
         <otherwise>
@@ -86,9 +84,8 @@
     LEFT JOIN inbound_detail ibd
       ON im.item_id = ibd.item_id
      AND im.bu_id = ibd.bu_id
-     <!-- inbound_detail 창고필터 (동적) -->
-     <if test="warehouseId != null">
-       AND ibd.warehouse_id = #{warehouseId}
+     <if test="dto.warehouseId != null">
+       AND ibd.warehouse_id = #{dto.warehouseId}
      </if>
     LEFT JOIN inbound_master ibm
       ON ibd.inbound_id = ibm.inbound_id
@@ -96,16 +93,18 @@
     LEFT JOIN out_detail od
       ON im.item_id = od.item_id
      AND im.bu_id = od.bu_id
-     <!-- out_detail 창고필터 (동적) -->
-     <if test="warehouseId != null">
-       AND od.warehouse_id = #{warehouseId}
+     <if test="dto.warehouseId != null">
+       AND od.warehouse_id = #{dto.warehouseId}
      </if>
     LEFT JOIN out_master om
       ON od.out_id = om.out_id
      AND TO_CHAR(om.out_date, 'YYYYMM') BETWEEN #{startMonth} AND #{endMonth}
-    WHERE im.item_id = #{itemId}
-      <if test="buId != null">
-        AND im.bu_id = #{buId}
+    WHERE im.item_id = #{dto.itemId}
+      <if test="dto.buId != null">
+        AND im.bu_id = #{dto.buId}
+      </if>
+      <if test="dto.itemSmallCategory != null and dto.itemSmallCategory != ''">
+        AND im.small_category = #{dto.itemSmallCategory}
       </if>
   </select>
 

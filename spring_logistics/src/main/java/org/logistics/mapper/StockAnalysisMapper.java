@@ -8,17 +8,20 @@ import org.logistics.domain.StockAnalysisResponseDTO;
 
 @Mapper
 public interface StockAnalysisMapper {
-    List<StockAnalysisResponseDTO> getBaseItemList(StockAnalysisRequestDTO requestDTO);
 
-    /**
-     * 기간별 값 조회
-     * 파라미터 이름을 @Param으로 명시하여 XML에서 #{itemId} 등으로 바인딩 가능하게 합니다.
-     */
+    
+      //📌 基準アイテムリスト検索
+      //- DTO内部のフィールドをXMLから#{dto.フィールド名}の形で参照
+     
+    List<StockAnalysisResponseDTO> getBaseItemList(@Param("dto") StockAnalysisRequestDTO requestDTO);
+
+     //📌 기간별 값 조회
     Double getPeriodValue(
-        @Param("itemId") Long itemId,
-        @Param("buId") Long buId,
-        @Param("startMonth") String startMonth, // "YYYYMM"
-        @Param("endMonth") String endMonth,     // "YYYYMM"
+        @Param("dto") StockAnalysisRequestDTO requestDTO,
+      //下の三つはメソッドパラメーターの値をそのまま伝達
+        //warehouseIdなどのDTOフィールドはXMLから＃｛dto.フィールド名｝の形で接近
+        @Param("startMonth") String startMonth,				
+        @Param("endMonth") String endMonth,
         @Param("analysisItem") String analysisItem
     );
 }

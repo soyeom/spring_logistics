@@ -25,48 +25,36 @@ public class StockAnalysisController {
         this.stockAnalysisService = stockAnalysisService;
     }
 
-    /**
-     * 📌 Ajax에서 호출하는 API
-     * - DB에서 계산된 결과를 Map 구조로 내려줌
-     * - 각 row는 {itemId, itemName, ..., "202509": 123, "202506": 90, ...} 형식
-     */
+  
     @PostMapping(value="/analysis", consumes = "application/json", produces = "application/json")
     @ResponseBody
     public List<Map<String, Object>> getStockAnalysisAjax(@RequestBody StockAnalysisRequestDTO requestDTO) {
         return stockAnalysisService.getStockAnalysisData(requestDTO);
     }
 
-    /**
-     * 📌 JSP 화면 렌더링 방식 (form 호출 시)
-     */
+  
     @GetMapping("/form")
     public String viewFormPage() {
-        return "StockAnalysis-form"; // StockAnalysis-form.jsp 로 이동
+        return "StockAnalysis-form"; // StockAnalysis-form.jspに遷移
     }
 
-    /**
-     * 📌 JSP에서 바로 DB 조회 후 테이블로 뿌리는 방식
-     */
+    
     @GetMapping("/table")
     public String getStockAnalysisTable(StockAnalysisRequestDTO requestDTO, Model model) {
         List<Map<String, Object>> analysisData = stockAnalysisService.getStockAnalysisData(requestDTO);
         model.addAttribute("analysisData", analysisData);
-        return "stock/analysis"; // stock/analysis.jsp 로 이동
+        return "stock/analysis"; // stock/analysis.jspに遷移
     }
 
-    /**
-     * 📌 창고 선택 팝업 페이지 이동
-     */
+    
     @GetMapping("/warehouse-popup")
     public String warehousePopup() {
-        return "warehouse-popup"; // warehouse-popup.jsp 로 이동
+        return "warehouse-popup"; // warehouse-popup.jspに遷移
     }
 
-    /**
-     * 📌 소분류 선택 팝업 페이지 이동
-     */
-    @GetMapping("/item-small-category-popup")
+    
+    @GetMapping("/itemSmallcategory-popup")
     public String itemSmallCategoryPopup() {
-        return "item-small-category-popup"; // item-small-category-popup.jsp 로 이동
+        return "itemSmallcategory-popup"; // item-small-category-popup.jspに遷移
     }
 }

@@ -10,4 +10,5 @@ public interface PopupMapper {
 	public List<PopupVO> item_List(@Param ("gubun") String gubun, @Param ("text") String text);
 	public List<PopupVO> contact_List(@Param ("gubun") String gubun, @Param ("text") String text);
 	public List<PopupVO> warehouse_List(@Param ("gubun") String gubun, @Param ("text") String text);
+	public List<PopupVO> itemSmallcategory_List(@Param ("gubun") String gubun, @Param ("text") String text);
 }
