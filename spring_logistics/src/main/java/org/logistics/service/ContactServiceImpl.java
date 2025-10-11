@@ -15,7 +15,18 @@ public class ContactServiceImpl implements ContactService {
 	
 	@Override
 	public ContactVO login_Check(String bu_Id, String contact_Id, String password) {
-		
 		return contactMapper.login_Check(bu_Id, contact_Id, password);
 	}
+
+	@Override
+	public int idCheck(ContactVO vo) {
+		return contactMapper.idCheck(vo);
+	}
+	
+	@Override
+	public void save(ContactVO vo) {
+		contactMapper.save(vo);
+	}
+
+	
 }

@@ -25,7 +25,7 @@
 		            <p>안녕하세요 👋</p>
 		            <div class="auth-btns">
 		                <a href="/Contact/login" class="btn btn-secondary">로그인</a>
-		                <a href="/Contact/join" class="btn btn-secondary">회원가입</a>
+		                <a href="/Contact/signin" class="btn btn-secondary">회원가입</a>
 		            </div>
 		        </c:otherwise>
 		    </c:choose>

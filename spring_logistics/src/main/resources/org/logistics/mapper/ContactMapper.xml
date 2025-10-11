@@ -11,5 +11,22 @@
 		and contact_Id = #{contact_Id}
 		and password = #{password}
 	</select>
+	
+	<select id = "idCheck" resultType = "int">
+		select count(*) as cnt from contact where bu_id = #{bu_Id} and contact_Id = #{contact_Id}
+	</select>
+	
+	<insert id = "save" parameterType="org.logistics.domain.ContactVO">
+        INSERT INTO contact values (
+        	#{contact_Id}
+          , #{bu_Id}
+          , #{contact_Name}
+          , #{department}
+          , #{phone}
+          , #{mobile}
+          , #{email}
+          , sysdate
+          , #{password})
+    </insert>
 
 </mapper>

@@ -35,8 +35,7 @@
 	}
 
     .login-box .buttons {
-    	display: flex;
-        justify-content: space-between;
+    	margin: 0;
 	}
 
 	.login-box button {
@@ -67,7 +66,7 @@
 </style>
 <head>
 	<meta charset="UTF-8">
-    <title>로그인 - 팜스프링 ERP</title>
+    <title>회원가입 - 팜스프링 ERP</title>
     <link rel="stylesheet" href="/resources/css/logistics.css" type="text/css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css" />
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
@@ -82,7 +81,7 @@
 	            <div></div>
 	        </div>
 	        <div class="login-box">
-			    <h2>로그인</h2>
+			    <h2>회원가입</h2>
 		    	<div class = "form-group">
 		    		<div class = "label">사업단위</div>
 			    	<div>
@@ -102,9 +101,28 @@
 					<div class = "label">패스워드</div>
 			        <input type="password" id="password" name="password">
 			    </div>
+			    <div class="form-group">
+			    	<div class = "label">이름</div>
+			        <input type="text" id="name" name="name">
+			    </div>
+			    <div class="form-group">
+			    	<div class = "label">부서</div>
+			        <input type="text" id="department" name="department">
+			    </div>
+			    <div class="form-group">
+			    	<div class = "label">연락처</div>
+			        <input type="text" id="phone" name="phone">
+			    </div>
+			    <div class="form-group">
+			    	<div class = "label">핸드폰</div>
+			        <input type="text" id="mobile" name="mobile">
+			    </div>
+			    <div class="form-group">
+			    	<div class = "label">이메일</div>
+			        <input type="text" id="email" name="email">
+			    </div>
 		        <div class="buttons">
-		            <button type="submit" class="btn btn-secondary" onclick = "login_check()">로그인</button>
-		            <button type="button" class="btn btn-secondary" onclick="location.href='/Contact/signup'">회원가입</button>
+		            <button type="button" class="btn btn-secondary" onclick="signin()">회원가입</button>
 		        </div>
 			</div>
 		</div>
@@ -115,29 +133,61 @@
 
 <script>
 
-	function login_check() {
+	function signin() {
+		
+		var bu_Id = document.getElementById("bu_Id").value.trim();
+	    var contact_Id = document.getElementById("username").value.trim();
+	    var password = document.getElementById("password").value.trim();
+	    var contact_Name = document.getElementById("name").value.trim();
+	    
+		// ✅ 필수값 검증
+	    if (!bu_Id) {
+	        alert("사업단위를 입력해주세요.");
+	        document.getElementById("bu_Id").focus();
+	        return;
+	    }
+	    if (!contact_Id) {
+	        alert("아이디를 입력해주세요.");
+	        document.getElementById("username").focus();
+	        return;
+	    }
+	    if (!password) {
+	        alert("비밀번호를 입력해주세요.");
+	        document.getElementById("password").focus();
+	        return;
+	    }
+	    if (!contact_Name) {
+	        alert("이름 입력해주세요.");
+	        document.getElementById("name").focus();
+	        return;
+	    }
 		
 		var formData = {
 			bu_Id: document.getElementById("bu_Id").value,
 			contact_Id: document.getElementById("username").value,
-			password: document.getElementById("password").value
+			password: document.getElementById("password").value,
+			contact_Name: document.getElementById("name").value,
+			department: document.getElementById("department").value,
+			phone: document.getElementById("phone").value,
+			mobile: document.getElementById("mobile").value,
+			email: document.getElementById("email").value
 		}
 		
-		$.ajax({
-			url: '/Contact/login_check',
-			data: formData,
-			type: 'GET',
-			dataType: 'json',
-			success: function(result) {
-				if (result.result == "success") {
-	        		location.href = "/InvFlowConfig/invflowconfig";
+	    $.ajax({
+	        url: '/Contact/save',
+	        type: 'POST',
+	        data: formData,
+	        success: function(result) {
+	        	if (result == "success") {
+	        		alert("회원가입이 완료되었습니다.");
+	        		location.href = "/Contact/login";
 	        	} else {
-	        		alert("아이디 또는 비밀번호가 틀렸습니다.");
+	        		alert("이미 등록된 아이디 입니다.");
 	        	}
-			},
+	        },
 	        error: function(xhr, status, error) {
 	            console.error("저장 실패:", error);
 	        }
-		});
+	    });
 	}
 </script>
