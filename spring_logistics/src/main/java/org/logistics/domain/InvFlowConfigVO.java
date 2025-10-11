@@ -18,6 +18,7 @@ public class InvFlowConfigVO {
 	private String bu_Dependent_Flag;			// 사업단위종속여부
 	private String allow_Stock_Shortage;		// 재구부족허용
 	private String manager_Control_Flag;		// 창고담당자통제
+	private String manager_Regist_Yn;			// 창고담당자등록
 	private String Address;						// 주소
 	private String exclude_From_Available;		// 가용재고미포함
 	private String available_Control_Flag;		// 가용재고통제

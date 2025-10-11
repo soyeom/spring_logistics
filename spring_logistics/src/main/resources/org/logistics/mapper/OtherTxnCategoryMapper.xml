@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.logistics.mapper.OtherTxnCategoryMapper">
+
+  <!-- ========================================================= -->
+  <!-- 🗂️ OtherTxnCategoryMapper.xml -->
+  <!-- その他入出庫区分管理 SQLマッピングファイル -->
+  <!-- (기타 입출고 구분 관리 SQL 매핑 파일) -->
+  <!-- ========================================================= -->
+
+
+  <!-- ================== 🔍 조회 ================== -->
+  <!-- ✅ 区分一覧照会SQL / 구분 목록 조회 -->
+  <select id="getList" parameterType="string" resultType="org.logistics.model.OtherTxnCategory">
+    SELECT
+        TXN_CODE          AS txnCode,            -- トランザクションコード / 거래코드
+        BU_ID             AS buId,               -- 事業部ID / 사업부ID
+        TXN_TYPE          AS txnType,            -- 区分タイプ / 구분유형
+        CATEGORY_NAME     AS categoryName,       -- 区分名 / 구분명
+        SORT_ORDER        AS sortOrder,          -- 表示順 / 정렬순서
+        USE_YN            AS useYn,              -- 使用可否 / 사용여부
+        ACCOUNT_SUBJECT   AS accountSubject,     -- 勘定科目 / 회계과목
+        COST_TYPE         AS costType,           -- 費用区分 / 비용구분
+        IS_FINISHED_PRODUCT AS isFinishedProduct,-- 製品フラグ / 완제품여부
+        IS_MATERIAL       AS isMaterial,         -- 原材料フラグ / 원자재여부
+        IS_SALES_USE      AS isSalesUse,         -- 販売用途 / 판매용여부
+        ADJUST_OUT        AS adjustOut,          -- 調整出庫 / 조정출고
+        ADJUST_IN         AS adjustIn,           -- 調整入庫 / 조정입고
+        IS_VAT_TARGET     AS isVatTarget,        -- 消費税対象 / 부가세대상
+        VAT_PROCESS_TYPE  AS vatProcessType,     -- 税処理タイプ / 세금처리유형
+        IS_AS             AS isAs,               -- A/S対象 / AS대상여부
+        IS_ITEM_JOURNAL   AS isItemJournal,      -- 品目仕訳 / 품목전표여부
+        IS_BYPRODUCT_IN   AS isByproductIn,      -- 副産物入庫 / 부산물입고
+        IS_RETURN_IN      AS isReturnIn,         -- 返品入庫 / 반품입고
+        IS_MOVE           AS isMove,             -- 移動フラグ / 이동여부
+        IS_TRANSFER       AS isTransfer,         -- 振替フラグ / 전환여부
+        IS_AS_OUT         AS isAsOut,            -- A/S出庫 / AS출고
+        IS_AS_RETURN      AS isAsReturn,         -- A/S返品 / AS반품
+        IS_FREE_SUPPLY    AS isFreeSupply,       -- 無償支給 / 무상지급
+        IS_DISPATCH_TARGET AS isDispatchTarget,  -- 配送対象 / 출하대상
+        DESCRIPTION       AS description,        -- 備考 / 비고
+        CREATED_AT        AS createdAt           -- 登録日時 / 등록일시
+    FROM other_txn_category
+    WHERE txn_type = #{txnType}
+    ORDER BY sort_order
+  </select>
+
+
+  <!-- ================== 📝 등록 ================== -->
+  <!-- ✅ 区分マスタ新規登録SQL / 구분 마스터 신규 등록 -->
+  <insert id="insert" parameterType="org.logistics.model.OtherTxnCategory">
+    INSERT INTO other_txn_category
+    (
+      txn_code, bu_id, txn_type, category_name, sort_order, use_yn,
+      account_subject, cost_type, is_finished_product, is_material,
+      is_sales_use, adjust_out, adjust_in, is_vat_target, vat_process_type,
+      is_as, is_item_journal, is_byproduct_in, is_return_in,
+      is_move, is_transfer, is_as_out, is_as_return,
+      is_free_supply, is_dispatch_target, description, created_at
+    )
+    VALUES
+    (
+      #{txnCode}, #{buId}, #{txnType}, #{categoryName}, #{sortOrder}, #{useYn},
+      #{accountSubject}, #{costType}, #{isFinishedProduct}, #{isMaterial},
+      #{isSalesUse}, #{adjustOut}, #{adjustIn}, #{isVatTarget}, #{vatProcessType},
+      #{isAs}, #{isItemJournal}, #{isByproductIn}, #{isReturnIn},
+      #{isMove}, #{isTransfer}, #{isAsOut}, #{isAsReturn},
+      #{isFreeSupply}, #{isDispatchTarget}, #{description}, SYSDATE
+    )
+  </insert>
+
+
+  <!-- ================== ✏️ 수정 ================== -->
+  <!-- ✅ 区分マスタ更新SQL / 구분 마스터 수정 -->
+  <update id="update" parameterType="org.logistics.model.OtherTxnCategory">
+    UPDATE other_txn_category
+    SET category_name       = #{categoryName},
+        sort_order          = #{sortOrder},
+        use_yn              = #{useYn},
+        account_subject     = #{accountSubject},
+        cost_type           = #{costType},
+        is_finished_product = #{isFinishedProduct},
+        is_material         = #{isMaterial},
+        is_sales_use        = #{isSalesUse},
+        adjust_out          = #{adjustOut},
+        adjust_in           = #{adjustIn},
+        is_vat_target       = #{isVatTarget},
+        vat_process_type    = #{vatProcessType},
+        is_as               = #{isAs},
+        is_item_journal     = #{isItemJournal},
+        is_byproduct_in     = #{isByproductIn},
+        is_return_in        = #{isReturnIn},
+        is_move             = #{isMove},
+        is_transfer         = #{isTransfer},
+        is_as_out           = #{isAsOut},
+        is_as_return        = #{isAsReturn},
+        is_free_supply      = #{isFreeSupply},
+        is_dispatch_target  = #{isDispatchTarget},
+        description         = #{description}
+    WHERE txn_code = #{txnCode}
+      AND bu_id    = #{buId}
+  </update>
+
+
+  <!-- ================== 🗑️ 삭제 ================== -->
+  <!-- ✅ 区分マスタ削除SQL / 구분 마스터 삭제 -->
+  <delete id="delete" parameterType="map">
+    DELETE FROM other_txn_category
+    WHERE txn_code = #{txnCode}
+      AND bu_id = #{buId}
+  </delete>
+
+</mapper>
