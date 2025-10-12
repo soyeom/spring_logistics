@@ -3,13 +3,13 @@ package org.logistics.service;
 import java.util.List;
 import java.util.Map;
 
-import org.logistics.domain.WarehouseVO;
+import org.logistics.domain.WarehouseFlagVO;
 
 public interface WarehouseSettingService {
 
 	// 목록 가져오기(リスト取得)
-	List<WarehouseVO> getWarehouses();
+	List<WarehouseFlagVO> getWarehouses();
 
     //업데이트 기능（アップデート機能）
-	void updateWarehouseFlags(WarehouseVO warehouse);
+	void updateWarehouseFlags(WarehouseFlagVO warehouse);
 }

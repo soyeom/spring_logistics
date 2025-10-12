@@ -190,14 +190,26 @@
         </where>
     </select>
     
-        <select id="warehousename_List" resultType="org.logistics.domain.PopupVO">
-        SELECT DISTINCT w.warehouse_id   AS column1
-             , w.warehouse_name          AS column2
-             , w.bu_id                   AS column3
-        FROM warehouse_detail w
+        <select id="warehouse_List" resultType="org.logistics.domain.PopupVO">
+        SELECT 
+            wd.warehouse_name AS column1,
+            wd.warehouse_id AS column2,
+            bu.bu_name AS column3,
+            wm.warehouse_internal_code AS column4,
+            bu.bu_id AS column5,
+            wm.warehouse_master_id AS column6
+        FROM warehouse_detail wd
+        JOIN business_unit bu
+            ON wd.bu_id = bu.bu_id
+        JOIN warehouse_master wm
+            ON wd.warehouse_master_id = wm.warehouse_master_id
+           AND wd.bu_id = wm.bu_id
         <where>
             <if test="gubun == '10'">
-                w.warehouse_name LIKE '%' || #{text} || '%'
+                wd.warehouse_id LIKE '%' || #{text} || '%'
+            </if>
+             <if test="gubun == '20'">
+                wd.warehouse_name LIKE '%' || #{text} || '%'
             </if>
         </where>
   </select>

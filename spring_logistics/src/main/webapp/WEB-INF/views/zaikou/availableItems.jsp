@@ -465,30 +465,37 @@
 		// 입고예정조회 (入庫予定照会)
 		// =============================
 		function loadInbound(itemId, warehouseId) {
-  $.ajax({
-    url: "/inbound/list",
-    type: "GET",
-    data: { itemId: itemId, warehouseId: warehouseId },
-    dataType: "json",
-    success: function(result) {
-    	  const tbody = document.getElementById("inbound-tbody");
-    	  tbody.innerHTML = "";
-    	  result.forEach(function(row) {
-    	    const dateStr = row.inboundDate ? new Date(row.inboundDate).toISOString().slice(0, 10) : '';
-    	    const tr = document.createElement("tr");
-    	    tr.innerHTML =
-    	      '<td class="text-center">' + dateStr + '</td>' +
-    	      '<td class="text-center">' + (row.inboundType || '') + '</td>' +
-    	      '<td class="text-center">' + (row.inboundQty || '') + '</td>' +
-    	      '<td class="text-center">' + (row.inboundDetailId || '') + '</td>' +
-    	      '<td class="text-center">' + (row.note || '') + '</td>';
-    	    tbody.appendChild(tr);
-    	  });
-    	}
+			$.ajax({
+				url : "/inbound/list",
+				type : "GET",
+				data : {
+					itemId : itemId,
+					warehouseId : warehouseId
+				},
+				dataType : "json",
+				success : function(result) {
+					const tbody = document.getElementById("inbound-tbody");
+					tbody.innerHTML = "";
+					result.forEach(function(row) {
+						const dateStr = row.inboundDate ? new Date(
+								row.inboundDate).toISOString().slice(0, 10)
+								: '';
+						const tr = document.createElement("tr");
+						tr.innerHTML = '<td class="text-center">' + dateStr
+								+ '</td>' + '<td class="text-center">'
+								+ (row.inboundType || '') + '</td>'
+								+ '<td class="text-center">'
+								+ (row.inboundQty || '') + '</td>'
+								+ '<td class="text-center">'
+								+ (row.inboundDetailId || '') + '</td>'
+								+ '<td class="text-center">' + (row.note || '')
+								+ '</td>';
+						tbody.appendChild(tr);
+					});
+				}
 
-  });
-}
-
+			});
+		}
 
 		// =============================
 		// 출고예정조회(出庫予定照会)
@@ -507,15 +514,20 @@
 					tbody.innerHTML = "";
 
 					result.forEach(function(row) {
-			    	    const dateStr = row.outboundDate ? new Date(row.outboundDate).toISOString().slice(0, 10) : '';
-			    	    const tr = document.createElement("tr");
-			    	    tr.innerHTML =
-			    	      '<td class="text-center">' + dateStr + '</td>' +
-			    	      '<td class="text-center">' + (row.outboundType || '') + '</td>' +
-			    	      '<td class="text-center">' + (row.outboundQty || '') + '</td>' +
-			    	      '<td class="text-center">' + (row.outboundDetailId || '') + '</td>' +
-			    	      '<td class="text-center">' + (row.note || '') + '</td>';
-			    	    tbody.appendChild(tr);
+						const dateStr = row.outboundDate ? new Date(
+								row.outboundDate).toISOString().slice(0, 10)
+								: '';
+						const tr = document.createElement("tr");
+						tr.innerHTML = '<td class="text-center">' + dateStr
+								+ '</td>' + '<td class="text-center">'
+								+ (row.outboundType || '') + '</td>'
+								+ '<td class="text-center">'
+								+ (row.outboundQty || '') + '</td>'
+								+ '<td class="text-center">'
+								+ (row.outboundDetailId || '') + '</td>'
+								+ '<td class="text-center">' + (row.note || '')
+								+ '</td>';
+						tbody.appendChild(tr);
 					});
 
 				}
@@ -523,7 +535,7 @@
 		}
 
 		// =============================
-		// ポップアップ
+		// 팝업 (ポップアップ)
 		// =============================
 		function openPopup(url) {
 			var popupWidth = 900, popupHeight = 600;
@@ -536,7 +548,7 @@
 		}
 
 		function openWarehousePopup() {
-			openPopup("/popup/warehousePopup");
+			openPopup("/popup/warehouse_popup");
 		}
 		function openBigCategoryPopup() {
 			openPopup("/popup/category_popup_big");
@@ -554,10 +566,10 @@
 		//팝업에서 선택된 행 데이터가 부모창으로 넘어올 때 호출되는 콜백
 		//ポップアップで選択した行データが親画面へ渡される際のコールバック
 		function item_RowData(data) {
-			let targetId = "bigCategory"; // 기본
+			let targetId = "bigCategory"; 
 
-			//데이터 배열 길이로 팝업 종류를 판별
-			//データ配列の長さでポップアップの種類を判定
+			// 데이터 배열 길이에 따라 어떤 입력칸에 넣을지 판단
+		    // 配列の長さによって、どの入力欄に値を入れるかを判定
 			if (data.length === 7) {
 				targetId = "itemName";
 			} else if (data.length === 2) {
@@ -565,14 +577,28 @@
 			} else if (data.length === 3) {
 				targetId = "midCategory";
 			} else if (data.length === 4) {
-				targetId = "smallCategory";
+				//창고 데이터인지 판단 (두 번째 값이 코드나 숫자 형태면)
+		        //倉庫データかどうかを判定（2番目の値がコードまたは数字の場合)
+				if (/^[A-Za-z]*\d+$/.test(data[1])) {
+					targetId = "warehouseName";
+				} else {
+					targetId = "smallCategory";
+				}
 			} else if (data.length === 5) {
 				targetId = "warehouseName";
 			}
 
+			//실제 입력할 텍스트 값 초기화
+		    //実際に入力するテキスト値を初期化
 			let textValue = "";
 
 			if (targetId === "itemName") {
+				textValue = data[2];
+			} else if (targetId === "warehouseName") {
+				textValue = data[0]; 
+			} else if (targetId === "smallCategory") {
+				textValue = data[3] || data[0];
+			} else if (targetId === "midCategory") {
 				textValue = data[2];
 			} else {
 				textValue = data[1] || data[0];
@@ -581,15 +607,9 @@
 			const inputEl = document.getElementById(targetId);
 			if (inputEl) {
 				inputEl.value = textValue;
-			} else {
-				//대상 input을 찾지 못한 경우 방어 처리
-				//対象の input が見つからない場合のフォールバック
-				console.warn("⚠️ 대상 input 못찾음. bigCategory 기본 세팅");
-				document.getElementById("bigCategory").value = textValue;
 			}
 
-			//값 세팅 후 자동 조회 실행
-			//値設定後に自動検索を実行
+			// 자동 조회 실행
 			searchAvailable();
 		}
 	</script>

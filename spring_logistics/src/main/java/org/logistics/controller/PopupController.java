@@ -145,17 +145,17 @@ public class PopupController {
 		return popupService.warehousecode_List(gubun, text);
 	}
 
-	@GetMapping("/warehousePopup")
+	@GetMapping("/warehouse_popup")
 	public void warehousePopup(Model model, @RequestParam(required = false) String gubun,
 			@RequestParam(required = false) String text) {
-		model.addAttribute("warehouseNamelist", popupService.warehousename_List(gubun, text));
+		model.addAttribute("list", popupService.warehouse_List(gubun, text));
 	}
 
-	@GetMapping("/warehousePopup/list")
+	@GetMapping("/warehouse_popup/list")
 	@ResponseBody
 	public List<PopupVO> warehouse_name_list(@RequestParam(required = false) String gubun,
 			@RequestParam(required = false) String text) {
-		return popupService.warehousename_List(gubun, text);
+		return popupService.warehouse_List(gubun, text);
 	}
 	
 	// 수주 진형

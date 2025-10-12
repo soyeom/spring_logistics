@@ -2,7 +2,7 @@ package org.logistics.controller;
 
 import java.util.List;
 
-import org.logistics.domain.WarehouseVO;
+import org.logistics.domain.WarehouseFlagVO;
 import org.logistics.service.WarehouseSettingService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -24,7 +24,7 @@ public class WarehouseSettingController {
 	//재고 조회 기능(在庫照会機能）
 	@GetMapping("/setting")
 	public String listWarehouses(Model model) {
-		List<WarehouseVO> list = service.getWarehouses();
+		List<WarehouseFlagVO> list = service.getWarehouses();
 		model.addAttribute("warehouseList", list);
 		return "zaikou/warehouseSetting";
 	}
@@ -32,9 +32,9 @@ public class WarehouseSettingController {
 	//업데이트 기능（アップデート機能）
 	@PostMapping("/update")
 	@ResponseBody
-	public String updateWarehouses(@RequestBody List<WarehouseVO> warehouses) {
+	public String updateWarehouses(@RequestBody List<WarehouseFlagVO> warehouses) {
 
-		for (WarehouseVO wh : warehouses) {
+		for (WarehouseFlagVO wh : warehouses) {
 
 			// 체크박스가 선택되지 않으면(null) 기본값을 "N"으로 설정 (チェックボックスが選択されない場合(null)、デフォルトを"N"に設定)
 			if (wh.getAssetStockFlag() == null)

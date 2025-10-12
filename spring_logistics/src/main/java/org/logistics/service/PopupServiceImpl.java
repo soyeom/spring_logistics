@@ -71,9 +71,9 @@ public class PopupServiceImpl implements PopupService {
 	}
 	
 	@Override
-	public List<PopupVO> warehousename_List(String gubun, String text) {
+	public List<PopupVO> warehouse_List(String gubun, String text) {
 		
-		return popupMapper.warehousename_List(gubun, text);
+		return popupMapper.warehouse_List(gubun, text);
 	}
 
 	// 수주 진형

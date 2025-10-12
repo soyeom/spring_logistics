@@ -299,12 +299,19 @@
 
 			<script>
 			function doSearch() {
-			    var formData = {
-			        buId : $("#buId").val(),
-			        warehouseName : $("#warehouseName").val(),
-			        assetClass : $("#assetClass").val(),
-			        criteria: $("#criteria").val()
-			    };
+				var formData = {
+				        buId: $("#buId").val(),
+				        criteria: $("#criteria").val(),
+				        warehouseName: $("#warehouseName").val(),
+				        assetClass: $("#assetClass").val(),
+				        spec: $("#spec").val(),
+				        importanceLevel: $("#importanceLevel").val(),
+				        bigCategory: $("#bigCategory").val(),
+				        midCategory: $("#midCategory").val(),
+				        smallCategory: $("#smallCategory").val(),
+				        itemName: $("#itemName").val(),
+				        itemId: $("#itemId").val()
+				    };
 
 			    $.ajax({
 			        url : '/warehouse/stockList',
@@ -350,7 +357,7 @@
 			}
 
 			function openWarehousePopup() {
-				openPopup("/popup/warehousePopup");
+				openPopup("/popup/warehouse_popup");
 			}
 			function openBigCategoryPopup() {
 				openPopup("/popup/category_popup_big");
@@ -365,6 +372,47 @@
 				openPopup("/popup/item_name_popup");
 			}
 
+			
+			function item_RowData(data) {
+				let targetId = "bigCategory";
+
+				if (data.length === 7) {
+					targetId = "itemName";
+				} else if (data.length === 2) {
+					targetId = "bigCategory";
+				} else if (data.length === 3) {
+					targetId = "midCategory";
+				} else if (data.length === 4) {
+					if (/^[A-Za-z]*\d+$/.test(data[1])) {
+						targetId = "warehouseName";
+					} else {
+						targetId = "smallCategory";
+					}
+				} else if (data.length === 5) {
+					targetId = "warehouseName";
+				}
+
+				let textValue = "";
+
+				if (targetId === "itemName") {
+					textValue = data[2];
+				} else if (targetId === "warehouseName") {
+					textValue = data[0]; //
+				} else if (targetId === "smallCategory") {
+					textValue = data[3] || data[0]; // 
+				} else if (targetId === "midCategory") {
+					textValue = data[2];
+				} else {
+					textValue = data[1] || data[0];
+				}
+
+				const inputEl = document.getElementById(targetId);
+				if (inputEl) {
+					inputEl.value = textValue;
+				}
+				
+				doSearch();
+			}
 			</script>
 </body>
 </html>
