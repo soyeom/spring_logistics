@@ -9,7 +9,7 @@
 <html>
 <head>
 	<meta charset="UTF-8">
-    <title>품목 중분류</title>
+    <title>品目中分類</title>
     <link rel="stylesheet" type="text/css" href="/resources/css/popup.css">
     <link rel="stylesheet" href="/resources/css/logistics.css" type="text/css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css" />
@@ -18,31 +18,31 @@
 <body style = "background-color: #fff;">
 	<div class="popup-wrapper">
 		<!-- 헤더 -->
-		<div class = "popup-header">품목 중분류 조회</div>	  
+		<div class = "popup-header">品目中分類 照会</div>	  
 	     <!-- 검색바 -->
 	     <div class = "popup-search-bar">
 	     	<div style = "flex: 2;">
      			<select id = "gubun">
-	            	<option value = "0">전체</option>
-	            	<option value = "10">중분류</option>
+	            	<option value = "0">全体</option>
+	            	<option value = "10">中分類</option>
 	        	</select>
 	     	</div>
 	     	<div style = "flex: 7;">
-	     		<input type="text" id = "text" placeholder="검색어를 입력하세요" autocomplete="off">
+	     		<input type="text" id = "text" placeholder="検索語を入力してください" autocomplete="off">
 	     	</div>
 	     	<div style = "flex: 1;">
-	     		<button class="btn-primary" onclick = "search()">검색</button>
+	     		<button class="btn-primary" onclick = "search()">検索</button>
 	     	</div>
 	     </div>
-	    <!-- 나머지 컨텐츠 -->
+	    <!-- メインコンテンツ -->
 	    <div class="popup-body">
        		<div class = "table-container" style = "height: 400px;">
 				<table class="table-single-select" style = "width: 100%">
 					<thead>
 						<tr>
-					    	<th>품번</th>
-					        <th>대분류</th>
-					        <th>중분류</th>
+					    	<th>品番</th>
+					        <th>大分類</th>
+					        <th>中分類</th>
 				        </tr>
 				    </thead>
 				    <tbody id = "result-tbody">
@@ -102,9 +102,9 @@
 			dataType: 'json',
 			success: function(result) {
 				const tbody = document.getElementById("result-tbody");
-	            tbody.innerHTML = ""; // 기존 내용 초기화
+	            tbody.innerHTML = ""; // 既存の内容初期化
 	            
-	         	// result 배열 반복
+	         	// result 配列を反復処理し、テーブル行を生成
 	            result.forEach(function(board) {
 	            	const tr = document.createElement("tr");
 	
@@ -125,12 +125,12 @@
 	        return;
 	    }
 	
-	    // td 안의 텍스트를 배열로 수집
+	    // td 内のテキストを配列として収集
 	    const data = Array.from(selectedRow.querySelectorAll("td")).map(td => td.textContent.trim());
 	
-	 	// 부모창 함수 호출 + 데이터 전달
+	 	// 親ウィンドウの関数を呼び出し + データを渡す
 		window.opener.item_RowData(data);
-		// 팝업 닫기
+		// ポップアップ閉める
 	  	window.close();
 	}
 	

@@ -13,7 +13,8 @@
 		     , b.manager_party_id           
 		     , b.bu_dependent_flag          
 		     , b.allow_stock_shortage       
-		     , b.manager_control_flag       
+		     , b.manager_control_flag
+		     , case when (select count(*) from warehouse_contact where bu_id = b.bu_id and warehouse_id = b.warehouse_id and warehouse_master_id = b.warehouse_master_id) > 0 then 'Y' else 'N' end manager_regist_yn    
 		     , b.address                    
 		     , b.exclude_from_available     
 		     , b.available_control_flag     
@@ -36,7 +37,8 @@
 		     , b.manager_party_id           
 		     , b.bu_dependent_flag          
 		     , b.allow_stock_shortage       
-		     , b.manager_control_flag       
+		     , b.manager_control_flag
+		     , case when (select count(*) from warehouse_contact where bu_id = b.bu_id and warehouse_id = b.warehouse_id and warehouse_master_id = b.warehouse_master_id) > 0 then 'Y' else 'N' end manager_regist_yn   
 		     , b.address                    
 		     , b.exclude_from_available     
 		     , b.available_control_flag     
@@ -54,7 +56,9 @@
 	
 	<select id = "getWareHouseItemList" resultType = "org.logistics.domain.WareHouseItemListVO">
 		
-		select *
+		select a.bu_Id, a.warehouse_Master_Id, a.wareHouse_Id
+		     , b.item_Id, b.item_name, b.spec, b.safety_Stock_Qty
+		     , a.warehouse_name as storage_Location 
 		from (
 		    select a.*, b.item_id
 		    from warehouse_detail a, warehouse_item b
@@ -78,7 +82,43 @@
         and a.warehouse_id = #{wareHouse_Id}
 	
 	</select>
-		
+	
+	<update id = "save" parameterType="org.logistics.domain.InvFlowConfigVO">
+		update warehouse_detail
+		set allow_stock_shortage = #{allow_Stock_Shortage}
+  		  , manager_control_flag = #{manager_Control_Flag}
+		  , exclude_from_available = #{exclude_From_Available}
+		  , available_control_flag = #{available_Control_Flag}
+		  , use_yn = #{use_Yn}
+		where bu_id = #{bu_Id} 
+		and warehouse_master_id = #{wareHouse_Master_Id}
+		and warehouse_id = #{wareHouse_Id}
+	</update>
+	
+    <delete id="delete_Detail1">
+        
+        DELETE FROM warehouse_item
+        WHERE bu_id = #{bu_Id}
+        AND warehouse_master_id = #{wareHouse_Master_Id}
+        AND warehouse_id = #{wareHouse_Id}
+    
+    </delete>
+    
+    <insert id="save_Detail1" parameterType="org.logistics.domain.WareHouseContactListVO">
+        INSERT INTO warehouse_item values (#{bu_Id}, #{wareHouse_Master_Id}, #{wareHouse_Id}, #{item_Id}, sysdate)
+    </insert>
+	
+    <delete id="delete_Detail2">
+        DELETE FROM warehouse_contact
+        WHERE bu_id = #{bu_Id}
+        AND warehouse_master_id = #{wareHouse_Master_Id}
+        AND warehouse_id = #{wareHouse_Id}
+    </delete>
+    
+    <insert id="save_Detail2" parameterType="org.logistics.domain.WareHouseItemListVO">
+        INSERT INTO warehouse_contact values (#{bu_Id}, #{contact_Id}, #{wareHouse_Id}, #{wareHouse_Master_Id}, sysdate)
+    </insert>
+
 	<select id = "getOutBoundMaster" resultType = "org.logistics.domain.OutBoundMasterVO">
 		select a.bu_id, b.bu_name, a.out_id
 		from out_master a, business_unit b

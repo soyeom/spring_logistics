@@ -1,0 +1,337 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.logistics.mapper.OrderMapper">
+
+	<!-- ================== OrderDTO 매핑 ================== -->
+	<resultMap id="OrderResultMap"
+		type="org.logistics.model.OrderDTO">
+		<id property="orderId" column="inbound_id" />
+		<result property="buId" column="bu_id" />
+		<result property="inboundDate" column="inbound_date" />
+		<result property="localFlag" column="local_flag" />
+		<result property="inboundType" column="inbound_type" />
+		<result property="inboundComplete" column="inbound_complete" />
+		<result property="partyId" column="party_id" />
+		<result property="contactId" column="contact_id" />
+		<result property="partyName" column="party_name" />
+
+		<result property="contactName" column="contact_name" />
+		<result property="department" column="department" />
+		<result property="currencyCode" column="currency_code" />
+		<result property="createdAt" column="created_at" />
+	</resultMap>
+
+	<!-- ================== OrderDetailDTO 매핑 ================== -->
+	<resultMap id="OrderDetailResultMap"
+		type="org.logistics.model.OrderDetailDTO">
+		<id property="inboundDetailId" column="inbound_detail_id" />
+		<result property="inboundId" column="inbound_id" />
+		<result property="buId" column="bu_id" />
+		<result property="itemId" column="item_id" />
+		<result property="qty" column="qty" />
+		<result property="surtaxYn" column="surtax_yn" />
+		<result property="unitPrice" column="unit_price" />
+		<result property="amount" column="amount" />
+		<result property="note" column="note" />
+		<result property="warehouseId" column="warehouse_id" />
+		<result property="itemName" column="item_name" />
+		<result property="spec" column="spec" />
+		<result property="unit" column="base_unit" />
+		<result property="warehouseName"
+			column="warehouse_internal_code" />
+		<result property="inboundDate" column="inbound_date" />
+		<result property="inboundComplete" column="inbound_complete" />
+		<result property="warehouseName" column="warehouse_name" />
+		<result property="warehouseCode"
+			column="warehouse_internal_code" />
+	</resultMap>
+
+	<!-- ================== 마스터 등록 ================== -->
+	<insert id="insertOrder"
+		parameterType="org.logistics.model.OrderDTO">
+		INSERT INTO inbound_master (
+		inbound_id, bu_id,
+		inbound_date, local_flag,
+		party_id, contact_id, inbound_type,
+		inbound_complete, created_at
+		) VALUES (
+		#{orderId,jdbcType=VARCHAR},
+		#{buId,jdbcType=VARCHAR},
+		TO_DATE(#{inboundDate,jdbcType=VARCHAR},
+		'YYYY-MM-DD'),
+		#{localFlag,jdbcType=VARCHAR},
+		#{partyId,jdbcType=VARCHAR}, #{contactId,jdbcType=VARCHAR},
+		#{inboundType,jdbcType=VARCHAR},
+		#{inboundComplete,jdbcType=VARCHAR},
+		SYSDATE
+		)
+	</insert>
+
+	<!-- ================== 마스터 단건 조회 ================== -->
+	<select id="selectOrder" resultMap="OrderResultMap">
+		SELECT ib.*, p.party_name,
+		c.contact_name, c.department
+		FROM inbound_master ib
+		LEFT JOIN party p ON
+		ib.party_id = p.party_id
+		LEFT JOIN contact c ON ib.contact_id =
+		c.contact_id
+		WHERE ib.inbound_id = #{orderId,jdbcType=VARCHAR}
+		AND
+		ib.bu_id = #{buId,jdbcType=VARCHAR}
+	</select>
+
+	<!-- ================== 마스터 수정 ================== -->
+	<update id="updateOrder"
+		parameterType="org.logistics.model.OrderDTO">
+		UPDATE inbound_master
+		SET inbound_date =
+		TO_DATE(#{inboundDate,jdbcType=VARCHAR},
+		'YYYY-MM-DD'),
+		local_flag =
+		#{localFlag,jdbcType=VARCHAR},
+		party_id = #{partyId,jdbcType=VARCHAR},
+		contact_id = #{contactId,jdbcType=VARCHAR},
+		inbound_type =
+		#{inboundType,jdbcType=VARCHAR},
+		inbound_complete=
+		#{inboundComplete,jdbcType=VARCHAR}
+		WHERE inbound_id =
+		#{orderId,jdbcType=VARCHAR}
+		AND bu_id = #{buId,jdbcType=VARCHAR}
+	</update>
+
+	<!-- ================== 마스터 삭제 ================== -->
+	<delete id="deleteOrder">
+		DELETE FROM inbound_master
+		WHERE inbound_id =
+		#{orderId,jdbcType=VARCHAR}
+		AND bu_id = #{buId,jdbcType=VARCHAR}
+	</delete>
+
+	<!-- ================== 디테일 등록 ================== -->
+	<insert id="insertOrderDetail"
+		parameterType="org.logistics.model.OrderDetailDTO">
+		INSERT INTO inbound_detail (
+		inbound_detail_id, bu_id,
+		inbound_id, item_id, qty,
+		surtax_yn, unit_price, amount, note,
+		warehouse_id
+		) VALUES (
+		#{inboundDetailId,jdbcType=VARCHAR},
+		#{buId,jdbcType=VARCHAR}, #{inboundId,jdbcType=VARCHAR},
+		#{itemId,jdbcType=VARCHAR}, #{qty,jdbcType=VARCHAR},
+		#{surtaxYn,jdbcType=VARCHAR}, #{unitPrice,jdbcType=VARCHAR},
+		#{amount,jdbcType=VARCHAR}, #{note,jdbcType=VARCHAR},
+		#{warehouseId,jdbcType=VARCHAR}
+		)
+	</insert>
+
+	<!-- ================== 상세조회 ================== -->
+	<select id="selectOrderDetails" resultMap="OrderDetailResultMap">
+		SELECT
+		d.inbound_detail_id,
+		d.inbound_id,
+		d.bu_id,
+		d.item_id,
+		i.item_name,
+		i.spec,
+		i.base_unit AS unit,
+		d.qty,
+		d.unit_price,
+		d.amount,
+		d.surtax_yn,
+		d.note,
+		d.warehouse_id,
+		wd.warehouse_name AS warehouseName,
+		wm.warehouse_internal_code AS warehouseCode,
+		TO_CHAR(ib.inbound_date,
+		'YYYY-MM-DD') AS inboundDate,
+		ib.inbound_complete AS inboundComplete,
+		p.party_name AS partyName
+		FROM inbound_detail d
+		JOIN item_master i ON
+		d.item_id = i.item_id
+		LEFT JOIN warehouse_detail wd
+		ON d.warehouse_id =
+		wd.warehouse_id
+		AND d.bu_id = wd.bu_id
+		LEFT JOIN warehouse_master wm
+		ON
+		wd.warehouse_master_id = wm.warehouse_master_id
+		AND wd.bu_id = wm.bu_id
+		LEFT JOIN inbound_master ib ON d.inbound_id = ib.inbound_id
+		LEFT JOIN
+		party p ON ib.party_id = p.party_id
+		WHERE d.inbound_id = #{orderId}
+		AND
+		d.bu_id = #{buId}
+	</select>
+
+
+
+	<!-- ================== 디테일 삭제 ================== -->
+	<delete id="deleteOrderDetails">
+		DELETE FROM inbound_detail
+		WHERE inbound_id =
+		#{orderId,jdbcType=VARCHAR}
+		AND bu_id = #{buId,jdbcType=VARCHAR}
+	</delete>
+
+	<!-- ================== 검색 ================== -->
+	<select id="searchOrders" resultMap="OrderResultMap">
+		SELECT ib.*
+		FROM inbound_master ib
+		<where>
+			<if test="buId != null and buId != ''">
+				AND ib.bu_id = #{buId,jdbcType=VARCHAR}
+			</if>
+			<if test="inboundType != null and inboundType != ''">
+				AND ib.inbound_type = #{inboundType,jdbcType=VARCHAR}
+			</if>
+			<if test="localFlag != null and localFlag != ''">
+				AND ib.local_flag = #{localFlag,jdbcType=VARCHAR}
+			</if>
+			<if test="startDate != null and startDate != ''">
+				AND ib.inbound_date &gt;=
+				TO_DATE(#{startDate,jdbcType=VARCHAR},
+				'YYYY-MM-DD')
+			</if>
+			<if test="endDate != null and endDate != ''">
+				AND ib.inbound_date &lt;=
+				TO_DATE(#{endDate,jdbcType=VARCHAR},
+				'YYYY-MM-DD')
+			</if>
+		</where>
+		ORDER BY ib.inbound_date DESC
+	</select>
+
+	<!-- ================== Item Master 전체 조회 ================== -->
+	<select id="selectItemMasterByBuId"
+		resultMap="OrderDetailResultMap">
+		SELECT i.item_id, i.item_name, i.spec, i.base_unit,
+		'0' qty,
+		'N' surtax_yn, '0' unit_price, '0' amount,
+		NULL note, NULL
+		warehouse_id,
+		NULL warehouse_internal_code,
+		NULL inbound_date, 'N'
+		inbound_complete
+		FROM item_master i
+		WHERE i.bu_id =
+		#{buId,jdbcType=VARCHAR}
+		ORDER BY i.item_id
+	</select>
+
+	<!-- ================== 공통 ================== -->
+	<select id="getBusinessUnitList"
+		resultType="org.logistics.model.BusinessUnitVO">
+		SELECT
+		bu_id AS buId,
+		bu_name AS buName
+		FROM business_unit
+	</select>
+
+
+	<select id="getInboundTypeList" resultType="java.lang.String">
+		SELECT DISTINCT
+		inbound_type
+		FROM inbound_master
+	</select>
+
+	<select id="getInboundTypeListByBuId"
+		resultType="java.lang.String">
+		SELECT DISTINCT inbound_type
+		FROM inbound_master
+		WHERE bu_id
+		= #{buId,jdbcType=VARCHAR}
+	</select>
+
+	<select id="getLocalFlagList" resultType="java.lang.String">
+		SELECT DISTINCT
+		local_flag
+		FROM inbound_master
+	</select>
+
+	<select id="getConsignmentList" resultType="string">
+		SELECT DISTINCT
+		consignment_gubun
+		FROM out_master
+	</select>
+
+	<select id="getCurrencyList" resultType="string">
+		SELECT currency_code
+		FROM currency_rate
+	</select>
+
+
+	<!-- ================== 수주 디테일 (inbound_detail + item_master) ================= -->
+	<select id="inboundDetail_List"
+		resultType="org.logistics.domain.PopupVO">
+		SELECT d.inbound_id AS column1 -- 수주번호
+		, i.item_id AS
+		column2 -- 품번
+		, i.item_name AS column3 -- 품명
+		, i.spec AS column4 -- 규격
+		,
+		d.qty AS column5 -- 수량
+		, d.unit_price AS column6 -- 단가
+		, d.amount AS
+		column7 -- 금액
+		, d.surtax_yn AS column8 -- 부가세포함 여부
+		, d.note AS column9
+		-- 특이사항
+		, d.warehouse_id AS column10 -- 창고
+		, TO_CHAR(d.created_at,
+		'YYYY-MM-DD') AS column11 -- 등록일자
+		FROM inbound_detail d
+		JOIN item_master
+		i ON d.item_id = i.item_id
+		WHERE d.inbound_id = #{inboundId}
+		ORDER BY
+		d.created_at
+	</select>
+
+	<select id="getOrderList" resultType="org.logistics.model.OrderDetailDTO">
+    select a.inbound_detail_id as inboundDetailId, -- inbound_detail_id
+           a.inbound_id        as inboundId,       -- inbound_id
+           a.bu_id             as buId,            -- 사업단위
+           a.item_id           as itemId,          -- 품목ID
+           a.qty               as qty,             -- 수량
+           a.surtax_yn         as surtaxYn,        -- 부가세포함
+           a.unit_price        as unitPrice,       -- 단가
+           a.amount            as amount,          -- 판매금액
+           a.note              as note,            -- 특이사항
+           a.warehouse_id      as warehouseId,     -- 창고ID
+           
+           b.item_name         as itemName,        -- 품명
+           b.spec              as spec,            -- 규격
+           b.base_unit         as baseUnit,        -- 판매단위
+           p.party_name        as partyName,       -- 납품거래처명
+           null                as vat,             -- 부가세 (추후 계산/조인)
+           null                as krwAmount,       -- 원화판매금액
+           null                as krwVat,          -- 원화부가세
+          
+           m.inbound_date      as inboundDate,     -- 납기일
+           null                as extraOutType,    -- 기타출고구분
+           null                as inboundComplete  -- 입고완료 여부
+    from inbound_detail a
+    join item_master b
+      on a.bu_id = b.bu_id
+     and a.item_id = b.item_id
+    join inbound_master m          -- ✅ 수주 마스터
+      on a.inbound_id = m.inbound_id
+     and a.bu_id = m.bu_id
+    join party p                   -- ✅ 거래처
+      on m.party_id = p.party_id
+  
+    where a.bu_id = #{buId}
+      and a.inbound_id = #{orderId}
+</select>
+
+
+
+</mapper>

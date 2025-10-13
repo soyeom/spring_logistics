@@ -38,17 +38,19 @@
 	    <!-- 나머지 컨텐츠 -->
 	    <div class="popup-body">
        		<div class = "table-container" style = "height: 400px;">
-				<table class="table-single-select" style = "width: 100%">
+				<table class="table-single-select">
 					<thead>
 						<tr>
-					    	<th>품번</th>
-					        <th>규격</th>
-					        <th>품명</th>
-					        <th>품목자산분류</th>
-					        <th>소분류</th>
-					        <th>단위</th>
-					        <th>기준단위</th>
-					        <th>영문명</th>
+					    	<th style = "width: 100px">품번</th>
+					        <th style = "width: 100px">품명</th>
+					        <th style = "width: 100px">규격</th>
+					        <th style = "width: 100px">품목자산분류</th>
+					        <th style = "width: 100px">소분류</th>
+					        <th style = "width: 100px">단위</th>
+					        <th style = "width: 100px">기준단위</th>
+					        <th style = "width: 100px">영문명</th>
+					        <th style = "width: 100px">안전재고수량</th>
+					        <th style = "width: 100px">보관위치</th>
 				        </tr>
 				    </thead>
 				    <tbody id = "result-tbody">
@@ -62,6 +64,8 @@
 				    			<td class = "text-center"><c:out value = "${board.column6}" /></td>
 				    			<td class = "text-center"><c:out value = "${board.column7}" /></td>
 				    			<td class = "text-center"><c:out value = "${board.column8}" /></td>
+				    			<td class = "text-center"><c:out value = "${board.column9}" /></td>
+				    			<td class = "text-center"><c:out value = "${board.column10}" /></td>
 					    	</tr>
 				    	</c:forEach>
 				    </tbody>
@@ -129,7 +133,9 @@
 	                    '<td class="text-center">' + (board.column5 || '') + '</td>' +
 	                    '<td class="text-center">' + (board.column6 || '') + '</td>' +
 	                    '<td class="text-center">' + (board.column7 || '') + '</td>' +
-	                    '<td class="text-center">' + (board.column8 || '') + '</td>';
+	                    '<td class="text-center">' + (board.column8 || '') + '</td>' +
+	                    '<td class="text-center">' + (board.column9 || '') + '</td>' +
+	                    '<td class="text-center">' + (board.column10 || '') + '</td>';
 	                   
 	                tbody.appendChild(tr);
 	            });
@@ -144,8 +150,10 @@
 	    }
 
 	    // td 안의 텍스트를 배열로 수집
-	    const data = Array.from(selectedRow.querySelectorAll("td")).map(td => td.textContent.trim());
-
+	    const data = Array.from(selectedRow.querySelectorAll("td")).map(function(td) {
+		    return td.textContent.trim();
+		});
+	    
 	 	// 부모창 함수 호출 + 데이터 전달
 		window.opener.item_RowData(data);
 		// 팝업 닫기

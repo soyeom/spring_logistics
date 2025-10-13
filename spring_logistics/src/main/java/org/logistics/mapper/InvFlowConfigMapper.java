@@ -17,8 +17,15 @@ public interface InvFlowConfigMapper {
 	public List<WareHouseItemListVO> getWareHouseItemList(@Param ("bu_Id") String bu_Id, @Param ("wareHouse_Id") String wareHouse_Id);
 	public List<WareHouseContactListVO> getWareHouseContactList(@Param ("bu_Id") String bu_Id, @Param ("wareHouse_Id") String wareHouse_Id);
 	
+	public void save(InvFlowConfigVO vo);
+	public void save_Detail1(WareHouseItemListVO vo);
+	public void save_Detail2(WareHouseContactListVO vo);
+	
+	public void delete_Detail1(@Param ("bu_Id") String bu_Id, @Param ("wareHouse_Master_Id") String wareHouse_Master_Id, @Param ("wareHouse_Id") String wareHouse_Id);
+	public void delete_Detail2(@Param ("bu_Id") String bu_Id, @Param ("wareHouse_Master_Id") String wareHouse_Master_Id, @Param ("wareHouse_Id") String wareHouse_Id);
+	
+	
 	// 출고처리 
-	public List<OutBoundMasterVO> getOutBoundMaster();
 	public List<OutBoundMasterVO> getOutBoundDetail1(@Param ("bu_Id") String bu_Id, @Param ("out_Id") String out_Id);
 	public List<OutBoundMasterVO> getOutBoundDetail2(@Param ("bu_Id") String bu_Id, @Param ("out_Id") String out_Id);
 	public void outBoundMasterSave(OutBoundMasterVO obm);

@@ -9,7 +9,7 @@
 <html>
 <head>
 	<meta charset="UTF-8">
-    <title>품명</title>
+    <title>品名</title>
     <link rel="stylesheet" type="text/css" href="/resources/css/popup.css">
     <link rel="stylesheet" href="/resources/css/logistics.css" type="text/css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css" />
@@ -18,20 +18,20 @@
 <body style = "background-color: #fff;">
 	<div class="popup-wrapper">
 		<!-- 헤더 -->
-		<div class = "popup-header">품명 조회</div>	  
+		<div class = "popup-header">品名 照会</div>	  
 	     <!-- 검색바 -->
 	     <div class = "popup-search-bar">
 	     	<div style = "flex: 2;">
      			<select id = "gubun">
-	            	<option value = "0">전체</option>
-	            	<option value = "10">품명</option>
-	            	<option value = "20">품번</option>
-	            	<option value = "30">규격</option>
-	            	<option value = "40">영문명</option>
+	            	<option value = "0">全体</option>
+	            	<option value = "10">品名</option>
+	            	<option value = "20">品番</option>
+	            	<option value = "30">規格</option>
+	            	<option value = "40">英字名</option>
 	        	</select>
 	     	</div>
 	     	<div style = "flex: 7;">
-	     		<input type="text" id = "text" placeholder="검색어를 입력하세요" autocomplete="off">
+	     		<input type="text" id = "text" placeholder="検索語を入力してください" autocomplete="off">
 	     	</div>
 	     	<div style = "flex: 1;">
 	     		<button class="btn-primary" onclick = "search()">검색</button>
@@ -43,13 +43,13 @@
 				<table class="table-single-select" style = "width: 100%">
 					<thead>
 						<tr>
-					    	<th>품번</th>
-					        <th>규격</th>
-					        <th>품명</th>
-					        <th>품목자산분류</th>
-					        <th>소분류</th>
-					        <th>단위</th>
-					        <th>영문명</th>
+					    	<th>品番</th>
+					        <th>規格</th>
+					        <th>品名</th>
+					        <th>品目資産分類</th>
+					        <th>小分類</th>
+					        <th>単位</th>
+					        <th>英字名</th>
 				        </tr>
 				    </thead>
 				    <tbody id = "result-tbody">
@@ -115,9 +115,9 @@
 			dataType: 'json',
 			success: function(result) {
 				const tbody = document.getElementById("result-tbody");
-	            tbody.innerHTML = ""; // 기존 내용 초기화
+	            tbody.innerHTML = ""; // 既存の内容初期化
 	            
-	         	// result 배열 반복
+	         	// result 配列を反復処理し、テーブル行を生成
 	            result.forEach(function(board) {
 	            	const tr = document.createElement("tr");
 	
@@ -142,12 +142,12 @@
 	        return;
 	    }
 	
-	    // td 안의 텍스트를 배열로 수집
+	    // td 内のテキストを配列として収集
 	    const data = Array.from(selectedRow.querySelectorAll("td")).map(td => td.textContent.trim());
 	
-	 	// 부모창 함수 호출 + 데이터 전달
+	 	// 親ウィンドウの関数を呼び出し + データを渡す
 		window.opener.item_RowData(data);
-		// 팝업 닫기
+		// ポップアップ閉める
 	  	window.close();
 	}
 	
