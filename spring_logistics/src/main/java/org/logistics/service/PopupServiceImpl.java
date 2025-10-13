@@ -81,4 +81,9 @@ public class PopupServiceImpl implements PopupService {
 	public List<PopupVO> inboundMaster_List(String gubun, String text) {
 		return popupMapper.inboundMaster_List(gubun, text);
 	}
+
+	@Override
+	public List<PopupVO> currency_List(String gubun, String text) {
+		return popupMapper.currency_List(gubun, text);
+	}
 }

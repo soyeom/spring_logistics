@@ -26,7 +26,12 @@ public interface InvFlowConfigService {
 	// 출고처리 VO
 	public List<OutBoundMasterVO> getOutBoundDetail1(String bu_Id, String out_Id);
 	public List<OutBoundMasterVO> getOutBoundDetail2(String bu_Id, String out_Id);
-	public void outBoundMasterSave(OutBoundMasterVO obm);
+	
+	public void newOutBoundMasterSave(OutBoundMasterVO obm);
+	public void updateOutBoundMasterSave(OutBoundMasterVO obm);
+	public String new_Out_Id(String long1);
+	public void outBound_Save_Detail(OutBoundMasterVO vo);
+	public void outBound_Delete_Detail(String bu_Id, String out_Id);
 	
 	// 공통
 	public List<CommonVO> business_UnitList();

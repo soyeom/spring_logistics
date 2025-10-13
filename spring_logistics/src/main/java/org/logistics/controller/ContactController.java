@@ -56,7 +56,7 @@ public class ContactController {
 		session.invalidate();
 		String referer = request.getHeader("Referer"); // 이전 페이지 URL 가져오기
 		
-		return referer;
+		return "redirect:" + referer;
 	}
 	
 	// 회원가입
