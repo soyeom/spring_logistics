@@ -99,7 +99,7 @@
 		};
 		
 		$.ajax({
-			url: '/popup/warehouse_list',
+			url: '/popup/warehouse_popup_list',
 			data: formData,
 			type: 'GET',
 			dataType: 'json',
