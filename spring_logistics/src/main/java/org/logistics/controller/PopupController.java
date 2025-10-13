@@ -37,26 +37,6 @@ public class PopupController {
 		return popupService.item_List(gubun, text);
 	}
 
-	// 倉庫ポップアップ
-	// @GetMapping("/warehouse_popup") 매핑을 유지합니다.
-	@GetMapping("/warehouse_popup")
-	public void warehouse_Popup(Model model,
-			@RequestParam(required = false) String gubun,
-			@RequestParam(required = false) String text) {
-
-		model.addAttribute("list", popupService.warehouse_List(gubun, text)); // マスタ照会
-	}
-
-	// 倉庫リスト照会 (AJAX)
-	@GetMapping("/warehouse_list")
-	@ResponseBody
-	public List<PopupVO> warehouse_list(@RequestParam(required = false) String gubun,
-			@RequestParam(required = false) String text) {
-		log.info("Warehouse Search AJAX Request: gubun=" + gubun + ", text=" + text);
-		return popupService.warehouse_List(gubun, text);
-	}
-
-
 	// 担当者ポップアップ
 	@GetMapping("/contact_popup")
 	public void contact_Popup(Model model, @RequestParam(required = false) String gubun,
@@ -183,25 +163,19 @@ public class PopupController {
 		return popupService.warehousecode_List(gubun, text);
 	}
     
-    // --- 중복 매핑으로 제거된 부분: warehousePopup ---
-    /*
 	@GetMapping("/warehouse_popup")
 	public void warehousePopup(Model model, @RequestParam(required = false) String gubun,
 			@RequestParam(required = false) String text) {
 		model.addAttribute("list", popupService.warehouse_List(gubun, text));
 	}
-    */
 
-    // --- warehouse_List와 기능이 겹쳐서 제거된 부분: warehouse_name_list ---
-    /*
 	@GetMapping("/warehouse_popup/list")
 	@ResponseBody
 	public List<PopupVO> warehouse_name_list(@RequestParam(required = false) String gubun,
 			@RequestParam(required = false) String text) {
 		return popupService.warehouse_List(gubun, text);
 	}
-    */
-
+    
 	// 受注マスタポップアップ
 	@GetMapping("/inbound_popup")
 	public void inbound_Popup(Model model, @RequestParam(required = false) String gubun,
