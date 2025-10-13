@@ -204,9 +204,9 @@
 	<select id="warehouse_List" resultType="org.logistics.domain.PopupVO">
 		SELECT
 		wd.warehouse_name AS column1, -- 창고명
-		wm.warehouse_master_id AS column2, -- 창고코드
+		TO_CHAR(wm.warehouse_master_id) AS column2, -- 창고코드 (TO_CHAR 적용)
 		bu.bu_name AS column3, -- 사업단위
-		wm.warehouse_internal_code AS column4 -- 창고구분
+		TO_CHAR(wm.warehouse_internal_code) AS column4 -- 창고구분 (TO_CHAR 적용)
 		FROM warehouse_detail wd
 		JOIN business_unit bu
 		ON wd.bu_id = bu.bu_id
