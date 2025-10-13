@@ -26,23 +26,18 @@
 <script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
 <script src="https://cdn.datatables.net/colreorder/1.7.0/js/dataTables.colReorder.min.js"></script>
 
-
 <style>
-/* --------------------------------------
-    ポップアップボタンを含む入力グループ
--------------------------------------- */
+/* ポップアップボタンを含む入力グループ */
 .input-group {
 	display: flex;
 	align-items: center;
 	width: 100%;
 }
-
 .input-group input[type="text"], .input-group input[type="number"],
-	.input-group select {
+.input-group select {
 	flex-grow: 1;
 	margin-right: 5px;
 }
-
 .input-group .btn-primary {
 	flex-shrink: 0;
 	height: 30px;
@@ -53,47 +48,38 @@
 	justify-content: center;
 }
 
-/* --------------------------------------
-    期間間隔および比較回数入力グループ
--------------------------------------- */
+/* 期間間隔および比較回数入力グループ */
 .input-with-text {
 	display: flex;
 	align-items: center;
 	gap: 5px;
 }
-
 .input-with-text input {
 	width: 60px;
 	text-align: center;
 }
-
 .input-with-text span {
 	flex-shrink: 0;
 }
 
-/* --------------------------------------
-    DataTables 스타일 (컬럼 폭 문제 해결을 위한 조정)
--------------------------------------- */
+/* DataTables スタイル */
 .table-container {
     padding: 20px;
     background-color: #fff;
     border: 1px solid #ddd;
     border-radius: 8px;
-    overflow-x: auto; /* 테이블이 넘칠 경우 스크롤 허용 */
+    overflow-x: auto;
 }
-
-/* DataTables의 기본 스타일 */
 #analysisTable {
-    width: 100% !important; /* DataTables가 width를 계산할 때 100%로 시작하도록 강제 */
+    width: 100% !important;
     border-collapse: collapse;
     font-size: 14px;
 }
-
 #analysisTable th, #analysisTable td {
     padding: 10px;
     text-align: left;
     border: 1px solid #e0e0e0;
-    white-space: nowrap; /* 내용이 잘리지 않도록 (DataTables에서 필요) */
+    white-space: nowrap;
 }
 #analysisTable thead th {
     background-color: #f5f5f5;
@@ -102,20 +88,18 @@
     position: sticky;
     top: 0;
 }
-
 #analysisTable tbody tr:nth-child(even) {
     background-color: #fafafa;
 }
-
 #analysisTable tbody tr:hover {
     background-color: #e6f7ff;
 }
-/* DataTables 헤더-바디 불일치 해결을 위한 추가 스타일 */
+/* DataTables ヘッダー・ボディ不一致解決 */
 .dataTables_scrollHeadInner {
     width: 100% !important;
 }
 #analysisTable.dataTable {
-    table-layout: fixed; /* 컬럼 폭을 고정적으로 지정 (DataTables가 autoWidth:false일 때 유용) */
+    table-layout: fixed;
 }
 </style>
 </head>
@@ -127,7 +111,7 @@
 					alt="ホーム画面" class="home-icon"></a>
 			</span>
 		</div>
-			<aside class="sidebar">
+		<aside class="sidebar">
 			<div class="sidebar-header">
 				<div class="profile">
 					<img src="https://cdn-icons-png.flaticon.com/512/7598/7598657.png"
@@ -139,71 +123,40 @@
 					</div>
 				</div>
 			</div>
-
 			<nav class="menu">
 				<div class="menu-item">
-					<div class="title">
-						<a href="#">入庫および出庫</a>
-					</div>
+					<div class="title"><a href="#">入庫および出庫</a></div>
 					<div class="submenu">
-						<div>
-							<a href="#">入庫履歴</a>
-						</div>
-						<div>
-							<a href="#">出庫履歴</a>
-						</div>
+						<div><a href="#">入庫履歴</a></div>
+						<div><a href="#">出庫履歴</a></div>
 					</div>
 				</div>
 				<div class="menu-item">
-					<div class="title">
-						<a href="#">在庫出荷統制</a>
-					</div>
+					<div class="title"><a href="#">在庫出荷統制</a></div>
 					<div class="submenu">
-						<div>
-							<a href="#">出荷計画</a>
-						</div>
-						<div>
-							<a href="#">出荷履歴</a>
-						</div>
+						<div><a href="#">出荷計画</a></div>
+						<div><a href="#">出荷履歴</a></div>
 					</div>
 				</div>
 				<div class="menu-item">
-					<div class="title">
-						<a href="#">在庫管理</a>
-					</div>
+					<div class="title"><a href="#">在庫管理</a></div>
 					<div class="submenu">
-						<div>
-							<a href="#">在庫現況</a>
-						</div>
-						<div>
-							<a href="#">在庫移動</a>
-						</div>
-						<div>
-							<a href="#">在庫照会</a>
-						</div>
+						<div><a href="#">在庫現況</a></div>
+						<div><a href="#">在庫移動</a></div>
+						<div><a href="#">在庫照会</a></div>
 					</div>
 				</div>
 				<div class="menu-item">
-					<div class="title">
-						<a href="#">事業部門別受払集計</a>
-					</div>
+					<div class="title"><a href="#">事業部門別受払集計</a></div>
 					<div class="submenu">
-						<div>
-							<a href="#">事業所別集計</a>
-						</div>
-						<div>
-							<a href="#">月別推移</a>
-						</div>
+						<div><a href="#">事業所別集計</a></div>
+						<div><a href="#">月別推移</a></div>
 					</div>
 				</div>
 				<div class="menu-item">
-					<div class="title">
-						<a href="#">在庫変動推移分析</a>
-					</div>
+					<div class="title"><a href="#">在庫変動推移分析</a></div>
 					<div class="submenu">
-						<div>
-							<a href="#">グラフ表示</a>
-						</div>
+						<div><a href="#">グラフ表示</a></div>
 					</div>
 				</div>
 			</nav>
@@ -212,7 +165,6 @@
 		<div class="main">
 			<div class="main-header">
 				<div>
-					
 					<span class="btn btn-secondary btn-icon toggle-sidebar">≡</span>
 				</div>
 				<div>
@@ -234,11 +186,9 @@
 					<div class="filters-count">
 						<div class="filters-text">事業部門</div>
 						<div class="filters-value">
-							<select id="buId" name="bu_id">
-								</select>
+							<select id="buId" name="bu_id"></select>
 						</div>
 					</div>
-
 					<div class="filters-count">
 						<div class="filters-text">倉庫</div>
 						<div class="filters-value">
@@ -251,7 +201,6 @@
 							</div>
 						</div>
 					</div>
-
 					<div class="filters-count">
 						<div class="filters-text">在庫基準</div>
 						<div class="filters-value">
@@ -261,7 +210,6 @@
 							</select>
 						</div>
 					</div>
-
 					<div class="filters-count">
 						<div class="filters-text">重要度</div>
 						<div class="filters-value">
@@ -291,7 +239,6 @@
 							</select>
 						</div>
 					</div>
-
 					<div class="filters-count">
 						<div class="filters-text">品目小分類</div>
 						<div class="filters-value">
@@ -306,14 +253,12 @@
 							</div>
 						</div>
 					</div>
-
 					<div class="filters-count">
 						<div class="filters-text">品名</div>
 						<div class="filters-value">
 							<input type="text" id="itemName">
 						</div>
 					</div>
-
 					<div class="filters-count">
 						<div class="filters-text">品番</div>
 						<div class="filters-value">
@@ -347,7 +292,6 @@
 								readonly>
 						</div>
 					</div>
-
 					<div class="filters-count">
 						<div class="filters-text">期間間隔</div>
 						<div class="filters-value">
@@ -356,7 +300,6 @@
 							</div>
 						</div>
 					</div>
-
 					<div class="filters-count">
 						<div class="filters-text">比較回数</div>
 						<div class="filters-value">
@@ -365,7 +308,6 @@
 							</div>
 						</div>
 					</div>
-
 					<div class="filters-count">
 						<div class="filters-text">分析項目</div>
 						<div class="filters-value">
@@ -381,7 +323,7 @@
 			</div>
 
 			<div class="result-container table-container">
-				<table id="analysisTable" class="display"> 
+				<table id="analysisTable" class="display">
 					<thead>
 						<tr id="resultHeadRow">
 							<th>品目資産分類</th>
@@ -392,7 +334,7 @@
 							<th>規格</th>
 							<th>品目中分類</th>
 							<th>単位</th>
-							</tr>
+						</tr>
 					</thead>
 					<tbody id="resultBody"></tbody>
 				</table>
@@ -404,7 +346,7 @@
 var ctx = '${pageContext.request.contextPath}';
 const POPUP_WIDTH = 900, POPUP_HEIGHT = 600;
 
-// ======================== 事業部門(BU)リストをロード ========================
+// 事業部門(BU)リストをロード
 function loadBusinessUnits() {
     $.ajax({
         url: ctx + '/common/bus',
@@ -430,39 +372,33 @@ function loadBusinessUnits() {
     });
 }
 
-// ======================== ポップアップを開く (倉庫) ========================
+// ポップアップを開く (倉庫)
 function open_Warehouse() {
-    var left = (screen.width - POPUP_WIDTH) / 2;
-    var top = (screen.height - POPUP_HEIGHT) / 2;
-    window.open(ctx + '/popup/warehouse_popup', "warehouse_popup",
-        "width=" + POPUP_WIDTH + ",height=" + POPUP_HEIGHT + ",left=" + left + ",top=" + top + ",scrollbars=yes,resizable=yes");
+    var left = (screen.width - POPUP_WIDTH) / 2;
+    var top = (screen.height - POPUP_HEIGHT) / 2;
+    window.open(ctx + '/popup/warehouse_popup', "warehouse_popup",
+        "width=" + POPUP_WIDTH + ",height=" + POPUP_HEIGHT + ",left=" + left + ",top=" + top + ",scrollbars=yes,resizable=yes");
 }
 
-// ポップアップから選択された倉庫データを受け取る
-window.item_RowData = function(data) {
-    // [0]: 倉庫名, [3]: 倉庫ID (Long Type)
-    $("#warehouseName").val(data[0]);
-    $("#warehouseId").val(data[3]); 
-    console.log("倉庫選択:", data);
-};
-
-// ポップアップから選択された小分類データを受け取る
+// 品目小分類ポップアップを開く
 function open_Isc() {
     var left = (screen.width - POPUP_WIDTH) / 2;
     var top = (screen.height - POPUP_HEIGHT) / 2;
-    window.open(ctx + '/popup/itemSmallcategory_popup',
+    window.open(ctx + '/popup/category_popup_small', 
         "itemSmallcategory_popup", "width=" + POPUP_WIDTH + ",height=" + POPUP_HEIGHT + ",left=" + left + ",top=" + top + ",scrollbars=yes,resizable=yes");
 }
 
-window.setItemSmallCategoryData = function(data) {
-    $("#itemSmallCategory").val(data[0]);
-    $("#itemSmallCategoryName").val(data[1]);
-    console.log("小分類選択:", data);
+// 🚩 공통 데이터 수신 함수 (기본값: 창고 데이터 처리)
+window.item_RowData = function(data) {
+    // [0]: 倉庫名, [3]: 倉庫ID (Long Type)
+    $("#warehouseName").val(data[0]);
+    $("#warehouseId").val(data[3]);	
+    console.log("기본(창고) 선택:", data);
 };
 
-// ======================== ページロード後に実行 ========================
+// ページロード後に実行
 $(document).ready(function() {
-    //사이드바
+    // 사이드바
     $('.toggle-sidebar').on('click', function() {
         $('.layout').toggleClass('sidebar-collapsed');
     });
@@ -478,7 +414,7 @@ $(document).ready(function() {
 
     // 初期化関数
     window.resetSearch = function() {
-        // ⚠️ DataTablesインスタンスがあれば削除
+        // DataTablesインスタンスがあれば削除
         if ($.fn.DataTable.isDataTable('#analysisTable')) {
             $('#analysisTable').DataTable().destroy();
         }
@@ -521,7 +457,7 @@ $(document).ready(function() {
                 let tbody = $("#resultBody").empty();
                 let periods = [];
                 
-                // ⚠️ DataTables インスタンスがあればディストロイ
+                // DataTables インスタンスがあればディストロイ
                 if ($.fn.DataTable.isDataTable('#analysisTable')) {
                     $('#analysisTable').DataTable().destroy();
                 }
@@ -544,12 +480,10 @@ $(document).ready(function() {
                 if (!data || data.length === 0) {
                     let totalCols = 8 + periods.length;
                     tbody.append("<tr><td colspan='" + totalCols + "'>検索結果がありません。</td></tr>");
-                    
-                    // データがない場合 DataTables初期化はパス
                     return;
                 }
 
-                // 4. 結果データテーブルに描画 
+                // 4. 結果データテーブルに描画	
                 $.each(data, function(idx, item) {
                     let row = "<tr>"
                         + "<td>" + (item.itemAssetClass || "") + "</td>"
@@ -587,7 +521,7 @@ $(document).ready(function() {
                     searching: true,
                     ordering: true,
                     info: true,
-                    scrollX: true, 
+                    scrollX: true,	
                     scrollCollapse: true,
                     autoWidth: false,
                 });
@@ -595,7 +529,6 @@ $(document).ready(function() {
                 setTimeout(function(){
                     table.columns.adjust().draw();
                 }, 100);
-
             },
             error : function() {
                 alert("データ検索中にエラーが発生しました。必須値（事業部門など）を確認してください。");
@@ -603,9 +536,27 @@ $(document).ready(function() {
         });
     });
 
-    // Warehouseボタンイベント
-    $("#btnWarehouse").click(open_Warehouse);
-    $("#btnItemSmallCategory").click(open_Isc);
+    // 🚩 Warehouseボタンイベント: item_RowData를 창고용으로 재정의
+    $("#btnWarehouse").click(function() {
+        window.item_RowData = function(data) {
+            // 창고 팝업 데이터 순서: [0]=이름, [3]=ID
+            $("#warehouseName").val(data[0]);
+            $("#warehouseId").val(data[3]);	
+            console.log("창고 선택:", data);
+        };
+        open_Warehouse();
+    });
+
+    // 🚩 ItemSmallCategoryボタンイベント: item_RowData를 소분류용으로 재정의
+    $("#btnItemSmallCategory").click(function() {
+        window.item_RowData = function(data) {
+            // 소분류 팝업 데이터 순서: [0]=품번(ID), [3]=소분류(Name)
+            $("#itemSmallCategory").val(data[0]); 
+            $("#itemSmallCategoryName").val(data[3]); 
+            console.log("소분류 선택:", data);
+        };
+        open_Isc();
+    });
 
     // Enter キーで検索
     $(document).on("keydown", function(e) {
@@ -621,7 +572,7 @@ const sidebar = document.querySelector('.sidebar');
 
 toggleButton.addEventListener('click', function(){
     sidebar.classList.toggle('hidden');
-})
+});
 </script>
 </body>
 </html>
