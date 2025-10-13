@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace = "org.logistics.mapper.ContactMapper">
+	
+	<select id = "login_Check" resultType = "org.logistics.domain.ContactVO">
+		select *
+		from contact
+		where bu_id = #{bu_Id}
+		and contact_Id = #{contact_Id}
+		and password = #{password}
+	</select>
+	
+	<select id = "idCheck" resultType = "int">
+		select count(*) as cnt from contact where bu_id = #{bu_Id} and contact_Id = #{contact_Id}
+	</select>
+	
+	<insert id = "save" parameterType="org.logistics.domain.ContactVO">
+        INSERT INTO contact values (
+        	#{contact_Id}
+          , #{bu_Id}
+          , #{contact_Name}
+          , #{department}
+          , #{phone}
+          , #{mobile}
+          , #{email}
+          , sysdate
+          , #{password})
+    </insert>
+
+</mapper>
