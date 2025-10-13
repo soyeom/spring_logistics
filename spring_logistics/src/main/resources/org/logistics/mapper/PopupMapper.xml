@@ -3,16 +3,15 @@
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="org.logistics.mapper.PopupMapper">
-
-	<select id="contact_List"
-		resultType="org.logistics.domain.PopupVO">
+	
+	<select id="contact_List" resultType="org.logistics.domain.PopupVO">
 		SELECT
-		contact_id AS column1,
-		contact_name AS column2,
-		department AS column3,
-		phone AS column4,
-		mobile AS column5,
-		email AS column6
+			contact_id AS column1,
+			contact_name AS column2,
+			department AS column3,
+			phone AS column4,
+			mobile AS column5,
+			email AS column6
 		FROM contact
 		<where>
 			<if test="gubun == '10'">
@@ -24,12 +23,11 @@
 		</where>
 	</select>
 
-	<select id="itemSmallcategory_List"
-		resultType="org.logistics.domain.PopupVO">
+	<select id="itemSmallcategory_List" resultType="org.logistics.domain.PopupVO">
 		SELECT
-		im.small_category AS column1,
-		im.mid_category AS column2,
-		im.big_category AS column3
+			im.small_category AS column1,
+			im.mid_category AS column2,
+			im.big_category AS column3
 		FROM item_master im
 		<where>
 			<if test="gubun == '10'">
@@ -43,10 +41,9 @@
 			</if>
 		</where>
 		GROUP BY im.small_category, im.mid_category, im.big_category
-		ORDER BY
-		im.big_category, im.mid_category, im.small_category
+		ORDER BY im.big_category, im.mid_category, im.small_category
 	</select>
-
+	
 	<select id="item_List" resultType="org.logistics.domain.PopupVO">
 		SELECT item_Id as column1
 		, item_name as column2
@@ -70,8 +67,7 @@
 		</where>
 	</select>
 
-	<select id="out_Id_List"
-		resultType="org.logistics.domain.PopupVO">
+	<select id="out_Id_List" resultType="org.logistics.domain.PopupVO">
 		SELECT out_id as column1
 		, bu_id as column2
 		, (SELECT bu_Name FROM business_unit WHERE bu_id = a.bu_Id) as column15
@@ -107,8 +103,7 @@
 		</where>
 	</select>
 
-	<select id="party_List"
-		resultType="org.logistics.domain.PopupVO">
+	<select id="party_List" resultType="org.logistics.domain.PopupVO">
 		SELECT bu_Id as column1
 		, (SELECT bu_Name FROM business_unit WHERE bu_id = a.bu_Id) as column2
 		, party_Id as column3
@@ -137,8 +132,7 @@
 		</where>
 	</select>
 
-	<select id="category_List_Big"
-		resultType="org.logistics.domain.PopupVO">
+	<select id="category_List_Big" resultType="org.logistics.domain.PopupVO">
 		SELECT DISTINCT big_category as column2
 		FROM item_master
 		<where>
@@ -148,8 +142,7 @@
 		</where>
 	</select>
 
-	<select id="category_List_Mid"
-		resultType="org.logistics.domain.PopupVO">
+	<select id="category_List_Mid" resultType="org.logistics.domain.PopupVO">
 		SELECT DISTINCT big_category as column2
 		, mid_category as column3
 		FROM item_master
@@ -160,8 +153,7 @@
 		</where>
 	</select>
 
-	<select id="category_List_Small"
-		resultType="org.logistics.domain.PopupVO">
+	<select id="category_List_Small" resultType="org.logistics.domain.PopupVO">
 		SELECT DISTINCT big_category as column2
 		, mid_category as column3
 		, small_category as column4
@@ -173,8 +165,7 @@
 		</where>
 	</select>
 
-	<select id="itemname_List"
-		resultType="org.logistics.domain.PopupVO">
+	<select id="itemname_List" resultType="org.logistics.domain.PopupVO">
 		SELECT item_id as column1
 		, spec as column2
 		, item_name as column3
@@ -199,8 +190,7 @@
 		</where>
 	</select>
 
-	<select id="warehousecode_List"
-		resultType="org.logistics.domain.PopupVO">
+	<select id="warehousecode_List" resultType="org.logistics.domain.PopupVO">
 		SELECT DISTINCT warehouse_internal_code AS column1
 		, warehouse_internal_code AS column2
 		FROM warehouse_master
@@ -211,8 +201,7 @@
 		</where>
 	</select>
 
-	<select id="warehouse_List"
-		resultType="org.logistics.domain.PopupVO">
+	<select id="warehouse_List" resultType="org.logistics.domain.PopupVO">
 		SELECT
 		wd.warehouse_name AS column1, -- 창고명
 		wm.warehouse_master_id AS column2, -- 창고코드
@@ -235,8 +224,7 @@
 	</select>
 
 
-	<select id="inboundMaster_List"
-		resultType="org.logistics.domain.PopupVO">
+	<select id="inboundMaster_List" resultType="org.logistics.domain.PopupVO">
 		SELECT ib.inbound_id AS column1,
 		bu.bu_name AS column2,
 		TO_CHAR(ib.inbound_date, 'YYYY-MM-DD') AS column3,

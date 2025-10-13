@@ -566,10 +566,8 @@
 		//팝업에서 선택된 행 데이터가 부모창으로 넘어올 때 호출되는 콜백
 		//ポップアップで選択した行データが親画面へ渡される際のコールバック
 		function item_RowData(data) {
-			let targetId = "bigCategory"; 
+			let targetId = "bigCategory";
 
-			// 데이터 배열 길이에 따라 어떤 입력칸에 넣을지 판단
-		    // 配列の長さによって、どの入力欄に値を入れるかを判定
 			if (data.length === 7) {
 				targetId = "itemName";
 			} else if (data.length === 2) {
@@ -577,25 +575,18 @@
 			} else if (data.length === 3) {
 				targetId = "midCategory";
 			} else if (data.length === 4) {
-				//창고 데이터인지 판단 (두 번째 값이 코드나 숫자 형태면)
-		        //倉庫データかどうかを判定（2番目の値がコードまたは数字の場合)
-				if (/^[A-Za-z]*\d+$/.test(data[1])) {
-					targetId = "warehouseName";
-				} else {
-					targetId = "smallCategory";
-				}
+				// ✅ 창고 데이터는 무조건 창고명 입력란에
+				targetId = "warehouseName";
 			} else if (data.length === 5) {
 				targetId = "warehouseName";
 			}
 
-			//실제 입력할 텍스트 값 초기화
-		    //実際に入力するテキスト値を初期化
 			let textValue = "";
 
 			if (targetId === "itemName") {
 				textValue = data[2];
 			} else if (targetId === "warehouseName") {
-				textValue = data[0]; 
+				textValue = data[0]; // 창고명
 			} else if (targetId === "smallCategory") {
 				textValue = data[3] || data[0];
 			} else if (targetId === "midCategory") {
@@ -609,7 +600,6 @@
 				inputEl.value = textValue;
 			}
 
-			// 자동 조회 실행
 			searchAvailable();
 		}
 	</script>
