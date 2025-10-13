@@ -17,74 +17,22 @@
 </head>
 <body>
 	<div class = "layout">
-		<div class="home-bar">
-	        <span>
-	            <a href="/"><img src="https://cdn-icons-png.flaticon.com/512/7598/7598650.png" alt="홈화면" class="home-icon"></a>
-	        </span>
-	    </div>
-	    <aside class="sidebar">
-	        <div class="sidebar-header">
-	            <div class="profile">
-	                <img src="https://cdn-icons-png.flaticon.com/512/7598/7598657.png" alt="프로필">
-	                <p>홍길동님, 안녕하세요 👋</p>
-	                <div class="auth-btns">
-	                    <button class="btn btn-secondary">로그인</button>
-	                    <button class="btn btn-secondary">회원가입</button>
-	                </div>
-	            </div>
-	        </div>
-	        <nav class="menu">
-	            <div class="menu-item">
-	                <div class="title"><a href="#">입고 및 출고</a></div>
-	                <div class="submenu">
-	                    <div><a href="#">입고 내역</a></div>
-	                    <div><a href="#">출고 내역</a></div>
-	                </div>
-	            </div>
-	            <div class="menu-item">
-	                <div class="title"><a href="#">재고 출하통제</a></div>
-	                <div class="submenu">
-	                    <div><a href="#">출하 계획</a></div>
-	                    <div><a href="#">출하 내역</a></div>
-	                </div>
-	            </div>
-	            <div class="menu-item">
-	                <div class="title"><a href="#">재고 관리</a></div>
-	                <div class="submenu">
-	                    <div><a href="#">재고 현황</a></div>
-	                    <div><a href="#">재고 이동</a></div>
-	                    <div><a href="#">재고 조회</a></div>
-	                </div>
-	            </div>
-	            <div class="menu-item">
-	                <div class="title"><a href="#">사업단위별 수불집계</a></div>
-	                <div class="submenu">
-	                    <div><a href="#">사업장별 집계</a></div>
-	                    <div><a href="#">월별 추이</a></div>
-	                </div>
-	            </div>
-	            <div class="menu-item">
-	                <div class="title"><a href="#">재고 변동 추이 분석</a></div>
-	                <div class="submenu">
-	                    <div><a href="#">그래프 보기</a></div>
-	                </div>
-	            </div>
-	        </nav>
-    	</aside>
+		<%@ include file="/WEB-INF/views/logistics.jsp" %>
     	<div class = "main">
     		<div class = "main-header">
     			<div><span class="btn btn-secondary btn-icon toggle-sidebar">≡</span></div>
 	            <div><h1>거래명세서입력</h1></div>
 	            <div>
+	            	<button class="btn btn-secondary search-btn" id = "save" onclick = "new()">신규</button>
 					<button class="btn btn-secondary search-btn" id = "save" onclick = "save()">저장</button>
 					<button class="btn btn-secondary search-btn" id = "save" onclick = "delete()">삭제</button>
 				</div>
     		</div>
     		<div class = "filters">
     			<div class = "filters-main">
-    				<div class = "조회조건"></div>
-    				<div class = "line"></div>
-    			</div>
+        			<div class = "title">조회 조건</div>
+        			<div class = "line"></div>
+	        	</div>
     			<div class = "filters-row">
     				<div class = "filters-count">
 	            		<div class = "filters-text">사업단위</div>
@@ -205,6 +153,7 @@
 		    </div>
     	</div>
 	</div>
+	<script type="text/javascript" src="../resources/js/logistics.js"></script>
 </body>
 </html>
 
