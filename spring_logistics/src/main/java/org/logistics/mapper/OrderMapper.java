@@ -1,11 +1,12 @@
 package org.logistics.mapper;
 
 import java.util.List;
+
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
-import org.logistics.model.BusinessUnitVO;
-import org.logistics.model.OrderDTO;
-import org.logistics.model.OrderDetailDTO;
+import org.logistics.domain.BusinessUnitVO;
+import org.logistics.domain.OrderDTO;
+import org.logistics.domain.OrderDetailDTO;
 
 @Mapper
 public interface OrderMapper {

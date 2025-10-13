@@ -1,4 +1,4 @@
-package org.logistics.model;
+package org.logistics.domain;
 
 import lombok.Data;
 

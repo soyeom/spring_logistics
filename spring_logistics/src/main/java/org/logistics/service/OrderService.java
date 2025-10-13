@@ -1,7 +1,10 @@
 package org.logistics.service;
 
 import java.util.List;
-import org.logistics.model.*;
+
+import org.logistics.domain.BusinessUnitVO;
+import org.logistics.domain.OrderDTO;
+import org.logistics.domain.OrderDetailDTO;
 
 public interface OrderService {
 

@@ -1,6 +1,7 @@
-package org.logistics.model;
+package org.logistics.domain;
 
 import java.util.Date;
+
 import lombok.Data;
 
 @Data

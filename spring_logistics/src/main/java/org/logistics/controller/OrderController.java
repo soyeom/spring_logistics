@@ -2,9 +2,9 @@ package org.logistics.controller;
 
 import java.util.List;
 
-import org.logistics.model.BusinessUnitVO;
-import org.logistics.model.OrderDTO;
-import org.logistics.model.OrderDetailDTO;
+import org.logistics.domain.BusinessUnitVO;
+import org.logistics.domain.OrderDTO;
+import org.logistics.domain.OrderDetailDTO;
 import org.logistics.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;

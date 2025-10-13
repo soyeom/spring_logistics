@@ -1,10 +1,7 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-	pageEncoding="UTF-8"%>
-
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 
-<script type="text/javascript"
-	src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script type="text/javascript" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 <!DOCTYPE html>
 <html>
@@ -36,94 +33,7 @@
 </head>
 <body>
 	<div class="layout">
-		<!-- 홈 아이콘 세로 바. -->
-		<div class="home-bar">
-			<span> <a href="/"><img
-					src="https://cdn-icons-png.flaticon.com/512/7598/7598650.png"
-					alt="홈화면" class="home-icon"></a>
-			</span>
-		</div>
-		<!-- 사이드바 -->
-		<aside class="sidebar">
-			<div class="sidebar-header">
-				<div class="profile">
-					<img src="https://cdn-icons-png.flaticon.com/512/7598/7598657.png"
-						alt="프로필">
-					<p>홍길동님, 안녕하세요 👋</p>
-					<div class="auth-btns">
-						<button class="btn btn-secondary">로그인</button>
-						<button class="btn btn-secondary">회원가입</button>
-					</div>
-				</div>
-			</div>
-			<nav class="menu">
-				<div class="menu-item">
-					<div class="title">
-						<a href="#">입고 및 출고</a>
-					</div>
-					<div class="submenu">
-						<div>
-							<a href="#">입고 내역</a>
-						</div>
-						<div>
-							<a href="#">출고 내역</a>
-						</div>
-					</div>
-				</div>
-				<div class="menu-item">
-					<div class="title">
-						<a href="#">재고 출하통제</a>
-					</div>
-					<div class="submenu">
-						<div>
-							<a href="#">출하 계획</a>
-						</div>
-						<div>
-							<a href="#">출하 내역</a>
-						</div>
-					</div>
-				</div>
-				<div class="menu-item">
-					<div class="title">
-						<a href="#">재고 관리</a>
-					</div>
-					<div class="submenu">
-						<div>
-							<a href="#">재고 현황</a>
-						</div>
-						<div>
-							<a href="#">재고 이동</a>
-						</div>
-						<div>
-							<a href="#">재고 조회</a>
-						</div>
-					</div>
-				</div>
-				<div class="menu-item">
-					<div class="title">
-						<a href="#">사업단위별 수불집계</a>
-					</div>
-					<div class="submenu">
-						<div>
-							<a href="#">사업장별 집계</a>
-						</div>
-						<div>
-							<a href="#">월별 추이</a>
-						</div>
-					</div>
-				</div>
-				<div class="menu-item">
-					<div class="title">
-						<a href="#">재고 변동 추이 분석</a>
-					</div>
-					<div class="submenu">
-						<div>
-							<a href="#">그래프 보기</a>
-						</div>
-					</div>
-				</div>
-			</nav>
-		</aside>
+			<%@ include file="/WEB-INF/views/logistics.jsp" %>
 		<div class="main">
 			<div class="main-header">
 				<!-- 🇯🇵 タイトルバー 영역 / 🇰🇷 상단 헤더 -->
