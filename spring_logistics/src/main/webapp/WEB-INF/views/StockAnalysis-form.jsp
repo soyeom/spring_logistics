@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -105,63 +106,7 @@
 </head>
 <body>
 	<div class="layout">
-		<div class="home-bar">
-			<span> <a href="/"><img
-					src="https://cdn-icons-png.flaticon.com/512/7598/7598650.png"
-					alt="ホーム画面" class="home-icon"></a>
-			</span>
-		</div>
-		<aside class="sidebar">
-			<div class="sidebar-header">
-				<div class="profile">
-					<img src="https://cdn-icons-png.flaticon.com/512/7598/7598657.png"
-						alt="プロフィール">
-					<p>〇〇様、こんにちは 👋</p>
-					<div class="auth-btns">
-						<button class="btn btn-secondary">ログイン</button>
-						<button class="btn btn-secondary">会員登録</button>
-					</div>
-				</div>
-			</div>
-			<nav class="menu">
-				<div class="menu-item">
-					<div class="title"><a href="#">入庫および出庫</a></div>
-					<div class="submenu">
-						<div><a href="#">入庫履歴</a></div>
-						<div><a href="#">出庫履歴</a></div>
-					</div>
-				</div>
-				<div class="menu-item">
-					<div class="title"><a href="#">在庫出荷統制</a></div>
-					<div class="submenu">
-						<div><a href="#">出荷計画</a></div>
-						<div><a href="#">出荷履歴</a></div>
-					</div>
-				</div>
-				<div class="menu-item">
-					<div class="title"><a href="#">在庫管理</a></div>
-					<div class="submenu">
-						<div><a href="#">在庫現況</a></div>
-						<div><a href="#">在庫移動</a></div>
-						<div><a href="#">在庫照会</a></div>
-					</div>
-				</div>
-				<div class="menu-item">
-					<div class="title"><a href="#">事業部門別受払集計</a></div>
-					<div class="submenu">
-						<div><a href="#">事業所別集計</a></div>
-						<div><a href="#">月別推移</a></div>
-					</div>
-				</div>
-				<div class="menu-item">
-					<div class="title"><a href="#">在庫変動推移分析</a></div>
-					<div class="submenu">
-						<div><a href="#">グラフ表示</a></div>
-					</div>
-				</div>
-			</nav>
-		</aside>
-
+	<%@ include file="/WEB-INF/views/logistics.jsp" %> 
 		<div class="main">
 			<div class="main-header">
 				<div>

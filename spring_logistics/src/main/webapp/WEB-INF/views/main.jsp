@@ -42,8 +42,9 @@
                 <h2 class="card__title">사업단위별 수불집계</h2>
             </article>
 
-            <article class="card card--olive" tabindex="0" role="button" aria-label="재고 변동 추이 분석">
+            <article class="card card--olive" tabindex="0" role="button" aria-label="재고 변동 추이 분석"onclick="window.location.href='/stock-analysis/form'">
                 <span class="card__number">5</span>
+                
                 <h2 class="card__title">재고 변동 추이 분석</h2>
             </article>
         </section>
