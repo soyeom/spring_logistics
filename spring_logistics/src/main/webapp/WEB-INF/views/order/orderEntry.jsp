@@ -1,366 +1,708 @@
-<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
+
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 
+<script type="text/javascript"
+	src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<!DOCTYPE html>
 <html>
 <head>
-<title>수주입력</title>
+<meta charset="UTF-8">
+<title>수주입력 - 팜스프링 ERP</title>
+<link rel="stylesheet" href="/resources/css/logistics.css"
+	type="text/css">
 <link rel="stylesheet"
-	href="https://cdn.jsdelivr.net/npm/handsontable/dist/handsontable.full.min.css">
-<script
-	src="https://cdn.jsdelivr.net/npm/handsontable/dist/handsontable.full.min.js"></script>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	href="https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css" />
+<link
+	href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap"
+	rel="stylesheet">
+<meta charset="UTF-8">
 <style>
-
-/* === 공통 규격 === */
-:root {
-  --label-w: 150px;
-  --input-w: 220px;
-  --row-h: 30px;
-  --gap: 14px;
+/* ✅ 테이블 가로 스크롤 문제 해결 / テーブル横スクロール対応 */
+.table-container {
+	overflow-x: auto; /* 가로 스크롤 허용 / 横スクロールを許可 */
+	overflow-y: auto; /* 세로 스크롤도 유지 / 縦スクロールも維持 */
 }
 
-fieldset {
-	border: 1px solid #ddd;
-	margin-bottom: 12px;
-}
-
-legend {
-	font-weight: 700;
-	padding: 0 6px;
-}
-
-.label-red {
-	color: #c00;
-	font-weight: 700;
-	text-align: right;
-	padding-right: 6px;
-}
-
-/* 4쌍(라벨,입력)*4 = 8칸 그리드 (한 줄에 4필드) */
-.form-grid {
-  display: grid;
-  grid-template-columns: var(--label-w) var(--input-w)
-                         var(--label-w) var(--input-w)
-                         var(--label-w) var(--input-w)
-                         var(--label-w) var(--input-w);
-  column-gap: var(--gap);
-  row-gap: 10px;
-  align-items: center;
-}
-
-.form-grid input[type="text"],
-.form-grid input[type="date"],
-.form-grid input[type="number"],
-.form-grid select {
-  width: var(--input-w);
-  height: var(--row-h);
-  box-sizing: border-box;
-}
-
-.form-grid input[readonly] {
-	background: #f5f6f8;
-}
-
-/* 검색 인풋 + 돋보기 버튼 */
-.search-wrap {
-	display: flex;
-	align-items: center;
-}
-
-.btn-icon {
-	width: 30px;
-	height: var(--row-h);
-	margin-left: 4px;
-	cursor: pointer;
-}
-
-/* 오른쪽 버튼 묶음 */
-.btns-right {
-	display: flex;
-	justify-content: flex-end;
-	gap: 8px;
-}
-
-.btn-blue {
-	background: #3b82f6;
-	color: #fff;
-	border: 0;
-	height: var(--row-h);   /* ✅ 오타 수정 */
-	padding: 0 14px;
-	border-radius: 4px;
-	cursor: pointer;
-}
-
-/* % 같이 붙는 입력 */
-.inline {
-	display: flex;
-	align-items: center;
-	gap: 6px;
-}
-
-/* ✅ col-span-2 정의 추가 */
-.col-span-2 {
-	grid-column: span 2;
+.table-container table {
+	width: max-content; /* 내용에 따라 폭 자동 조정 / 内容に応じて幅を自動調整 */
+	min-width: 100%; /* 최소한 컨테이너 폭은 유지 / コンテナ幅を最低限維持 */
+	table-layout: auto; /* 자동 폭 계산 / 自動レイアウト */
 }
 </style>
+
 </head>
-
 <body>
-
-
-
-
-	
-	<h2>수주입력</h2>
-	<!-- ✅ 버튼 -->
-	<div class="toolbar">
-		<button type="button" onclick="searchOrders()">신규</button>
-		<button type="button" onclick="searchOrders()">저장</button>
-		<button type="button" onclick="searchOrders()">삭제</button>
-
-	</div>
-
-	<!-- ✅ 기본정보 -->
-	<fieldset>
-		<legend>기본정보</legend>
-		<div class="form-grid">
-			<div class="label-red">사업단위</div>
-			<select id="buId" name="buId">
-				<option value="">-- 선택 --</option>
-				<!-- ✅ 빈칸 옵션 -->
-				<c:forEach var="bu" items="${buList}">
-					<option value="${bu.buId}">${bu.buName}</option>
-				</c:forEach>
-			</select>
-
-			<div class="label-red">수주일</div>
-			<input type="date" name="createdAt">
-
-			<div class="label-red">수주번호</div>
-			<div class="search-wrap">
-				<input type="text" id="orderId" name="orderId" placeholder="수주번호 선택"
-					readonly />
-				<button type="button" class="btn-icon" onclick="openInboundPopup()">🔍</button>
-
-			</div>
-
-
-			<div class="label-red">Local구분</div>
-			<select name="localFlag">
-				<option value="">-- 선택 --</option>
-				<option value="내수">내수</option>
-				<option value="Local(후LC)">Local(후LC)</option>
-				<option value="Local(전LC)">Local(전LC)</option>
-			</select>
-
-			<div class="label-red">수주구분</div>
-			<select name="inboundType">
-				<option value="">-- 선택 --</option>
-				<option value="구매요청">구매요청</option>
-				<option value="생산의뢰">생산의뢰</option>
-				<option value="거래명세서">거래명세서</option>
-			</select>
-
-
-
-			<div class="label-red">납기일</div>
-			<input type="date" name="inboundDate">
-
-			<div class="label-red">담당자</div>
-			<div class="search-wrap">
-				<input type="text" class="search-input" name="contactName"
-					placeholder="담당자 선택" style="width: 186px;">
-				<button type="button" class="btn-icon">🔍</button>
-			</div>
-
-			<div class="label-red">부서</div>
-			<div class="search-wrap">
-				<input type="text" class="search-input" name="department"
-					placeholder="부서 선택" style="width: 186px;">
-				<button type="button" class="btn-icon">🔍</button>
-			</div>
-
-			<div class="label-red">거래처</div>
-			<div class="search-wrap">
-				<input type="text" class="search-input" name="partyName"
-					placeholder="거래처 선택" style="width: 186px;">
-				<button type="button" class="btn-icon">🔍</button>
-			</div>
-
-			<div class="label-red">거래처번호</div>
-			<div class="search-wrap">
-				<input type="text" class="search-input" name="partyId"
-					placeholder="거래처 번호" style="width: 186px;">
-				<button type="button" class="btn-icon">🔍</button>
-			</div>
-
-
-
-
-
+	<div class="layout">
+		<!-- 홈 아이콘 세로 바. -->
+		<div class="home-bar">
+			<span> <a href="/"><img
+					src="https://cdn-icons-png.flaticon.com/512/7598/7598650.png"
+					alt="홈화면" class="home-icon"></a>
+			</span>
 		</div>
-	</fieldset>
+		<!-- 사이드바 -->
+		<aside class="sidebar">
+			<div class="sidebar-header">
+				<div class="profile">
+					<img src="https://cdn-icons-png.flaticon.com/512/7598/7598657.png"
+						alt="프로필">
+					<p>홍길동님, 안녕하세요 👋</p>
+					<div class="auth-btns">
+						<button class="btn btn-secondary">로그인</button>
+						<button class="btn btn-secondary">회원가입</button>
+					</div>
+				</div>
+			</div>
+			<nav class="menu">
+				<div class="menu-item">
+					<div class="title">
+						<a href="#">입고 및 출고</a>
+					</div>
+					<div class="submenu">
+						<div>
+							<a href="#">입고 내역</a>
+						</div>
+						<div>
+							<a href="#">출고 내역</a>
+						</div>
+					</div>
+				</div>
+				<div class="menu-item">
+					<div class="title">
+						<a href="#">재고 출하통제</a>
+					</div>
+					<div class="submenu">
+						<div>
+							<a href="#">출하 계획</a>
+						</div>
+						<div>
+							<a href="#">출하 내역</a>
+						</div>
+					</div>
+				</div>
+				<div class="menu-item">
+					<div class="title">
+						<a href="#">재고 관리</a>
+					</div>
+					<div class="submenu">
+						<div>
+							<a href="#">재고 현황</a>
+						</div>
+						<div>
+							<a href="#">재고 이동</a>
+						</div>
+						<div>
+							<a href="#">재고 조회</a>
+						</div>
+					</div>
+				</div>
+				<div class="menu-item">
+					<div class="title">
+						<a href="#">사업단위별 수불집계</a>
+					</div>
+					<div class="submenu">
+						<div>
+							<a href="#">사업장별 집계</a>
+						</div>
+						<div>
+							<a href="#">월별 추이</a>
+						</div>
+					</div>
+				</div>
+				<div class="menu-item">
+					<div class="title">
+						<a href="#">재고 변동 추이 분석</a>
+					</div>
+					<div class="submenu">
+						<div>
+							<a href="#">그래프 보기</a>
+						</div>
+					</div>
+				</div>
+			</nav>
+		</aside>
+		<div class="main">
+			<div class="main-header">
+				<!-- 🇯🇵 タイトルバー 영역 / 🇰🇷 상단 헤더 -->
+				<div>
+					<span class="btn btn-secondary btn-icon toggle-sidebar">≡</span>
+				</div>
+				<div>
+					<h1>
+						受注入力
+						<!-- 수주입력 -->
+					</h1>
+				</div>
+				<div>
+					<!-- 버튼들: 조회 / 저장 / 삭제 / 단가적용 -->
+					<button class="btn btn-secondary search-btn" id="search"
+						onclick="searchOrders()">
+						照会
+						<!-- 조회 -->
+					</button>
+					<button class="btn btn-secondary search-btn" id="save"
+						onclick="save_inBound()">
+						保存
+						<!-- 저장 -->
+					</button>
+					<button class="btn btn-secondary search-btn" id="delete"
+						onclick="delete_inBound()">
+						削除
+						<!-- 삭제 -->
+					</button>
+					<button class="btn btn-secondary search-btn" id="applyPrice"
+						onclick="applyUnitPrice()">
+						単価適用
+						<!-- 단가적용 -->
+					</button>
+				</div>
+			</div>
+			<!-- ============================== -->
+			<!-- 🇯🇵 基本情報 / 🇰🇷 기본정보 영역 -->
+			<!-- ============================== -->
+			<div class="filters">
+				<div class="filters-main">
+					<div class="title">
+						基本情報
+						<!-- 기본정보 -->
+					</div>
+					<div class="line"></div>
+				</div>
 
-	<!-- ✅ 추가정보 -->
-	<fieldset>
-		<legend>추가정보</legend>
-		<div class="form-grid">
-			<div class="label-red">통화</div>
-			<div class="search-wrap">
-				<select name="currencyCode" style="width: 186px;">
-					<option value="">-- 선택 --</option>
-					<c:forEach var="cur" items="${currencyList}">
-						<option value="${cur}">${cur}</option>
-					</c:forEach>
-				</select>
-				<button type="button" class="btn-icon"
-					onclick="openCurrencyLookup()" aria-label="통화 검색">🔍</button>
+				<div class="filters-row">
+					<!-- 사업단위 -->
+					<div class="filters-count">
+						<div class="filters-text">
+							事業単位
+							<!-- 사업단위 -->
+						</div>
+						<div class="filters-value">
+							<select id="buId" name="buId">
+								<option value=""></option>
+								<c:forEach var="bu" items="${buList}">
+									<option value="${bu.buId}">${bu.buName}</option>
+								</c:forEach>
+							</select>
+						</div>
+					</div>
+
+					<!-- 수주일 -->
+					<div class="filters-count">
+						<div class="filters-text">
+							受注日
+							<!-- 수주일 -->
+						</div>
+						<div class="filters-value">
+							<input type="date" name="createdAt">
+						</div>
+					</div>
+
+					<!-- 수주번호 -->
+					<div class="filters-count">
+						<div class="filters-text">
+							受注番号
+							<!-- 수주번호 -->
+						</div>
+						<div class="filters-value">
+							<input type="text" id="orderId" name="orderId"
+								placeholder="受注番号を選択">
+							<!-- 수주번호 선택 -->
+							<img
+								src="https://cdn-icons-png.flaticon.com/512/16799/16799970.png"
+								alt="search" class="search-icon" onclick="openInboundPopup()">
+						</div>
+					</div>
+
+					<!-- Local 구분 -->
+					<div class="filters-count">
+						<div class="filters-text">
+							ローカル区分
+							<!-- Local구분 -->
+						</div>
+						<div class="filters-value">
+							<select name="localFlag">
+								<option value=""></option>
+								<option value="내수">内需
+									<!-- 내수 --></option>
+								<option value="Local(전LC)">Local(後LC)
+									<!-- Local(후LC) --></option>
+								<option value="Local(후LC)">Local(前LC)
+									<!-- Local(전LC) --></option>
+							</select>
+						</div>
+					</div>
+
+					<!-- 수주구분 -->
+					<div class="filters-count">
+						<div class="filters-text">
+							受注区分
+							<!-- 수주구분 -->
+						</div>
+						<div class="filters-value">
+							<select name="inboundType">
+								<option value=""></option>
+								<option value="구매요청">購買依頼
+									<!-- 구매요청 --></option>
+								<option value="생산의뢰">生産依頼
+									<!-- 생산의뢰 --></option>
+								<option value="거래명세서">取引明細書
+									<!-- 거래명세서 --></option>
+							</select>
+						</div>
+					</div>
+
+					<!-- 납기일 -->
+					<div class="filters-count">
+						<div class="filters-text">
+							納期日
+							<!-- 납기일 -->
+						</div>
+						<div class="filters-value">
+							<input type="date" name="inboundDate">
+						</div>
+					</div>
+
+					<!-- 담당자 -->
+					<div class="filters-count">
+						<div class="filters-text">
+							担当者
+							<!-- 담당자 -->
+						</div>
+						<div class="filters-value">
+							<input type="text" name="contactName" placeholder="担当者を選択">
+							<!-- 담당자 선택 -->
+							<img
+								src="https://cdn-icons-png.flaticon.com/512/16799/16799970.png"
+								alt="search" class="search-icon" onclick="openContactPopup()">
+						</div>
+					</div>
+
+					<!-- 부서 -->
+					<div class="filters-count">
+						<div class="filters-text">
+							部署
+							<!-- 부서 -->
+						</div>
+						<div class="filters-value">
+							<input type="text" name="department" placeholder="部署を選択">
+							<!-- 부서 선택 -->
+							<img
+								src="https://cdn-icons-png.flaticon.com/512/16799/16799970.png"
+								alt="search" class="search-icon" onclick="">
+						</div>
+					</div>
+
+					<!-- 거래처 -->
+					<div class="filters-count">
+						<div class="filters-text">
+							取引先
+							<!-- 거래처 -->
+						</div>
+						<div class="filters-value">
+							<input type="text" name="partyName" placeholder="取引先を選択">
+							<!-- 거래처 선택 -->
+							<img
+								src="https://cdn-icons-png.flaticon.com/512/16799/16799970.png"
+								alt="search" class="search-icon" onclick="openPartyPopup()">
+						</div>
+					</div>
+
+					<!-- 거래처번호 -->
+					<div class="filters-count">
+						<div class="filters-text">
+							取引先番号
+							<!-- 거래처번호 -->
+						</div>
+						<div class="filters-value">
+							<input type="text" name="partyId" placeholder="取引先番号">
+							<!-- 거래처 번호 -->
+							<img
+								src="https://cdn-icons-png.flaticon.com/512/16799/16799970.png"
+								alt="search" class="search-icon" onclick="">
+						</div>
+					</div>
+				</div>
 			</div>
 
+			<!-- ============================== -->
+			<!-- 🇯🇵 追加情報 / 🇰🇷 추가정보 영역 -->
+			<!-- ============================== -->
+			<div class="filters">
+				<div class="filters-main">
+					<div class="title">
+						追加情報
+						<!-- 추가정보 -->
+					</div>
+					<div class="line"></div>
+				</div>
 
-			<div class="label-red">판매가액계</div>
-			<input type="text" name="salesTotal" value="0" readonly>
+				<div class="filters-row">
+					<!-- 통화 -->
+					<div class="filters-count">
+						<div class="filters-text">
+							通貨
+							<!-- 통화 -->
+						</div>
+						<div class="filters-value">
+							<select id="currencyCode" name="currencyCode"
+								onchange="loadExchangeRate()">
+								<option value=""></option>
+								<c:forEach items="${currencyList}" var="cItem">
+									<option value="${cItem}">${cItem}</option>
+								</c:forEach>
+							</select>
+						</div>
+					</div>
 
-			<div class="label-red">부가세계</div>
-			<input type="text" name="vatTotal" value="0" readonly>
+					<!-- 판매가계액 -->
+					<div class="filters-count">
+						<div class="filters-text">
+							販売価計額
+							<!-- 판매가계액 -->
+						</div>
+						<div class="filters-value">
+							<input type="text" name="salesTotal" value="0" readonly>
+						</div>
+					</div>
 
-			<div class="label-red">총액</div>
-			<input type="text" name="grandTotal" value="0" readonly>
+					<!-- 부가세계 -->
+					<div class="filters-count">
+						<div class="filters-text">
+							付加税額
+							<!-- 부가세계 -->
+						</div>
+						<div class="filters-value">
+							<input type="text" name="vatTotal" value="0" readonly>
+						</div>
+					</div>
 
-			<div class="label-red">환율</div>
-			<input type="number" step="0.01" name="exchangeRate" value="1.00">
+					<!-- 총액 -->
+					<div class="filters-count">
+						<div class="filters-text">
+							総額
+							<!-- 총액 -->
+						</div>
+						<div class="filters-value">
+							<input type="text" name="grandTotal" value="0" readonly>
+						</div>
+					</div>
 
-			<div class="label-red">할인율</div>
-			<div class="inline">
-				<input type="number" step="0.1" name="discountRate" value="0">
-				<span>%</span>
+					<!-- 환율 -->
+					<div class="filters-count">
+						<div class="filters-text">
+							為替レート
+							<!-- 환율 -->
+						</div>
+						<div class="filters-value">
+							<input type="number" step="0.01" name="exchangeRate" value="1.00">
+						</div>
+					</div>
+
+					<!-- 할인율 -->
+					<div class="filters-count">
+						<div class="filters-text">
+							割引率
+							<!-- 할인율 -->
+						</div>
+						<div class="filters-value">
+							<input type="number" step="0.1" name="discountRate" value="0">
+							<span>%</span>
+						</div>
+					</div>
+				</div>
 			</div>
-	</fieldset>
 
-	<!-- ✅ 품목 GRID -->
-	<div id="orderGrid" class="grid"></div>
+			<!-- =============================================================== -->
+			<!-- 📋 テーブル領域 / 테이블 영역 -->
+			<!-- =============================================================== -->
 
-	<script>
-	const container = document.getElementById("orderGrid");
-	const hot = new Handsontable(container, {
-	  data : [],
-	  colHeaders : [ 
-	    "품명", "품번", "규격", "부가세포함", "판매단가", "수량", "판매단위", 
-	    "판매금액", "부가세", "원화판매금액", "원화부가세", 
-	    "납품거래처", "납기일", "특이사항", "창고", "출고구분", "입고완료"
-	  ],
-	  columns : [
-	    { data : "itemName" },              // 품명
-	    { data : "itemId" },                // 품번
-	    { data : "spec" },                  // 규격
-	    {                                    // 부가세포함
-	      data : "surtaxYn",
-	      type : "checkbox",
-	      checkedTemplate: 'Y',
-	      uncheckedTemplate: 'N'
-	    },
-	    { data : "unitPrice", type : "numeric" },   // 판매단가
-	    { data : "qty", type : "numeric" },         // 수량
-	    { data : "baseUnit" },                      // 판매단위
-	    { data : "amount", type : "numeric" },      // 판매금액
-	    { data : "vat", type : "numeric" },         // 부가세
-	    { data : "krwAmount", type : "numeric" },   // 원화판매금액
-	    { data : "krwVat", type : "numeric" },      // 원화부가세
-	    { data : "partyName" },                     // 납품거래처
-	    {                                          // 납기일
-	      data : "inboundDate",
-	      type : "date",
-	      dateFormat : "YYYY-MM-DD"
-	    },
-	    { data : "note" },                          // 특이사항
-	    { data : "warehouseId" },                 // 창고
-	    { data : "extraOutType", type: "dropdown", source: ["불량폐기", "판촉", "연구개발", "실사기타출고", "불량재고정리", "샘플출고"] }, // 기타출고구분
-	    {                                          // 입고완료
-	      data : "inboundComplete",
-	      type : "checkbox",
-	      checkedTemplate: 'Y',
-	      uncheckedTemplate: 'N'
-	    }
-	  ],
-	  stretchH : "all",
-	  rowHeaders : true,
-	  filters : true,
-	  dropdownMenu : true,
-	  licenseKey : "non-commercial-and-evaluation",
-	  minSpareRows : 5,
-	  
-	// ✅ 이벤트 추가
-	  afterChange: function(changes, source) {
-	    if (source === 'loadData' || !changes) return;
+			<div class="table-container" style="height: 300px;">
+				<table class="table-single-select">
+					<thead>
+						<tr>
+							<th style="width: 140px">品名<!-- 품명 --></th>
+							<th style="width: 120px">品番<!-- 품번 --></th>
+							<th style="width: 120px">規格<!-- 규격 --></th>
+							<th style="width: 90px">付加税含む<!-- 부가세포함 --></th>
+							<th style="width: 100px">販売単価<!-- 판매단가 --></th>
+							<th style="width: 90px">数量<!-- 수량 --></th>
+							<th style="width: 90px">販売単位<!-- 판매단위 --></th>
+							<th style="width: 120px">販売金額<!-- 판매금액 --></th>
+							<th style="width: 100px">付加税<!-- 부가세 --></th>
+							<th style="width: 120px">ウォン販売金額<!-- 원화판매금액 --></th>
+							<th style="width: 120px">ウォン付加税<!-- 원화부가세 --></th>
+							<th style="width: 140px">納品取引先<!-- 납품거래처 --></th>
+							<th style="width: 120px">納期日<!-- 납기일 --></th>
+							<th style="width: 150px">特記事項<!-- 특이사항 --></th>
+							<th style="width: 120px">倉庫<!-- 창고 --></th>
+							<th style="width: 90px">入庫完了<!-- 입고완료 --></th>
+						</tr>
+					</thead>
 
-	    changes.forEach(([row, prop, oldValue, newValue]) => {
-	      if (prop === 'surtaxYn' || prop === 'qty' || prop === 'unitPrice') {
-	        const rowData = hot.getSourceDataAtRow(row);
 
-	        const qty = parseFloat(rowData.qty) || 0;
-	        const unitPrice = parseFloat(rowData.unitPrice) || 0;
-	        const amount = qty * unitPrice;
+					<tbody id="result-tbody">
+						<!-- 🔁 JSTL 반복문で受注詳細を出力 / 수주 상세 반복 출력 -->
+						<c:forEach items="${orderList}" var="order">
+							<tr onclick="row_Click(this)">
+								<td class="text-center"><c:out value="${order.itemName}" /></td>
+								<td class="text-center"><c:out value="${order.itemId}" /></td>
+								<td class="text-center"><c:out value="${order.spec}" /></td>
 
-	        // 판매금액 갱신
-	        hot.setDataAtRowProp(row, 'amount', amount);
 
-	        // 부가세 체크 시 계산
-	        if (rowData.surtaxYn === 'Y') {
-	          const vat = Math.round(amount * 0.1); // 10% 부가세
-	          hot.setDataAtRowProp(row, 'vat', vat);
-	        } else {
-	          hot.setDataAtRowProp(row, 'vat', 0);
-	        }
-	      }
+								<!-- 💰 単価・数量などの数値列 / 단가, 수량 등 숫자 컬럼 -->
+								<td class="text-right"><fmt:formatNumber
+										value="${order.unitPrice}" type="number" /></td>
+								<td class="text-right"><fmt:formatNumber
+										value="${order.qty}" type="number" /></td>
+								<td><c:out value="${order.baseUnit}" /></td>
+								<td class="text-right"><fmt:formatNumber
+										value="${order.amount}" type="number" /></td>
+								<td class="text-right"><fmt:formatNumber
+										value="${order.vat}" type="number" /></td>
+								<td class="text-right"><fmt:formatNumber
+										value="${order.krwAmount}" type="number" /></td>
+								<td class="text-right"><fmt:formatNumber
+										value="${order.krwVat}" type="number" /></td>
+								<td><c:out value="${order.partyName}" /></td>
+								<td><fmt:formatDate value="${order.inboundDate}"
+										pattern="yyyy-MM-dd" /></td>
+								<td><c:out value="${order.note}" /></td>
+								<td><c:out value="${order.warehouseName}" /></td>
+
+								<!-- ✅ チェックボックス / 체크박스 -->
+							<tr>
+								...
+								<td class="text-center"><input type="checkbox"
+									name="surtaxYn"
+									<c:if test="${order.surtaxYn == 'Y'}">checked</c:if> /></td> ...
+								<td class="text-center"><input type="checkbox"
+									name="inboundComplete"
+									<c:if test="${order.inboundComplete == 'Y'}">checked</c:if> />
+								</td>
+							</tr>
+						</c:forEach>
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+</body>
+</html>
+<script type="text/javascript" src="../resources/js/logistics.js"></script>
+
+<script>
+	(function() {
+	    const tbody = document.querySelector('.table-single-select tbody');
+	    if (!tbody) return;
+	
+	    let selectedRow = null;
+	
+	    tbody.addEventListener('click', function(e) {
+	        const tr = e.target.closest('tr');
+	        if (!tr) return;
+
+	        if (selectedRow) selectedRow.classList.remove('tr-selected');
+	
+	        tr.classList.add('tr-selected');
+	        selectedRow = tr;
 	    });
-	  }
-	});
+	})();
+	
+	
+		// ✅ 검색 조회
+		function searchOrders() {
+			var formData = {
+				buId : $("#buId").val(),
+				inboundType : $("[name=inboundType]").val(),
+				localFlag : $("[name=localFlag]").val()
+			};
+
+			$.ajax({
+				url : '/order/search',
+				data : formData,
+				type : 'GET',
+				dataType : 'json',
+				success : function(result) {
+					console.log("검색 결과:", result);
+
+					var allDetails = [];
+					$.each(result, function(i, order) {
+						if (order.details) {
+							$.each(order.details, function(j, d) {
+								allDetails.push({
+									itemName : d.itemName || '',
+									itemId : d.itemId || '',
+									spec : d.spec || '',
+									surtaxYn : d.surtaxYn || 'N',
+									unitPrice : d.unitPrice || 0,
+									qty : d.qty || 0,
+									baseUnit : d.baseUnit || '',
+									amount : d.amount || 0,
+									vat : d.vat || 0,
+									krwAmount : d.krwAmount || 0,
+									krwVat : d.krwVat || 0,
+									partyName : order.partyName || '',
+									inboundDate : d.inboundDate || '',
+									note : d.note || '',
+									warehouseName : d.warehouseName || '',
+									inboundComplete : d.inboundComplete || 'N'
+								});
+							});
+						}
+					});
+
+					renderTable(allDetails);
+				},
+				error : function(err) {
+					console.error("검색 에러:", err);
+					alert("조회 실패: " + err.statusText);
+				}
+			});
+		}
+
+		// ✅ 테이블 렌더링
+		function renderTable(dataList) {
+			var tbody = $("#result-tbody");
+			tbody.empty(); // 기존 데이터 제거
+
+			if (!dataList || dataList.length === 0) {
+				tbody
+						.append("<tr><td colspan='16' class='text-center'>데이터가 없습니다.</td></tr>");
+				return;
+			}
+
+			$
+					.each(
+							dataList,
+							function(i, row) {
+								var tr = $("<tr>");
+
+								tr.append("<td>" + (row.itemName || '')
+										+ "</td>");
+								tr
+										.append("<td>" + (row.itemId || '')
+												+ "</td>");
+								tr.append("<td>" + (row.spec || '') + "</td>");
 
 
+		}
+	</script>
 
-	// 저장 로직 (TODO 구현)
-	function saveOrder() { 
-	    alert("저장 기능은 추후 구현 예정"); 
-	}
+<script>
+//✅ ポップアップを開く / 팝업 열기
+function openInboundPopup() {
+    window.open(
+        "/popup/inbound_popup",
+        "inboundPopup",
+        "width=1000,height=600,scrollbars=yes,resizable=yes"
+    );
+}
 
-	function goPurchaseRequest() { location.href = "/order/purchaseRequest"; }
-	function goProductionRequest() { location.href = "/order/productionRequest"; }
-	function goTransactionSlip() { location.href = "/order/transactionSlip"; }
+//✅ ポップアップから親画面に値を渡す / 팝업에서 부모창으로 값 전달
+function inbound_RowData(data) {
+    console.log("팝업에서 받은 데이터:", data);
 
+    // 👉 上部フィールドに値を設定 / 상단 필드 값 채우기
+    $("#orderId").val(data[0]);        // 受注番号 / 수주번호
+    $("#buId").val(data[1]);           // 事業単位 / 사업단위
+    $("[name=inboundDate]").val(data[2]);  // 入庫日 / 입고일
+    $("[name=createdAt]").val(data[8]);    // 登録日 / 등록일
+    $("[name=partyName]").val(data[4]);    // 取引先名 / 거래처명
+    $("[name=contactName]").val(data[5]);  // 担当者名 / 담당자명
+    $("[name=inboundType]").val(data[6]);  // 入庫区分 / 입고구분
+    $("[name=localFlag]").val(data[3]);    // 内外区分 / 내외구분
+    $("[name=partyId]").val(data[9]);      // 取引先ID / 거래처ID
+    $("[name=department]").val(data[10]);  // 部署 / 부서
 
-	// 검색 조회
-function searchOrders() {
-    var formData = { 
-        buId: $("#buId").val(),
-        inboundType: $("[name=inboundType]").val(),
-        localFlag: $("[name=localFlag]").val()
-    };
+    // 👉 詳細データをロード / 상세내역 조회
+    loadOrder(data[1], data[0]); // buId, orderId
+}
 
+//✅ 単件詳細データを取得 / 단건 상세 조회
+function loadOrder(buId, orderId) {
     $.ajax({
-        url: '/order/search',
-        data: formData,
+        url: '/order/in_detail_list',
+        data: { buId: buId, orderId: orderId },
         type: 'GET',
         dataType: 'json',
         success: function(result) {
-            console.log("검색 결과:", result);
+            console.log("단건 조회 결과:", result);
+            renderTable(result || []);
+        },
+        error: function(err) {
+            console.error("단건 조회 에러:", err);
+            alert("단건 조회 실패: " + err.statusText);
+        }
+    });
+}
 
+//✅ テーブルを描画 / 테이블 렌더링
+function renderTable(dataList) {
+    var tbody = $("#result-tbody");
+    tbody.empty();
+
+    if (!dataList || dataList.length === 0) {
+        tbody.append("<tr><td colspan='16' class='text-center'>데이터가 없습니다.</td></tr>");
+        return;
+    }
+
+    $.each(dataList, function(i, row) {
+        var tr = $("<tr>");
+        tr.append("<td>"+(row.itemName||'')+"</td>");
+        tr.append("<td>"+(row.itemId||'')+"</td>");
+        tr.append("<td>"+(row.spec||'')+"</td>");
+        tr.append('<td class="text-center"><input type="checkbox" '+(row.surtaxYn==="Y"?"checked":"")+' onchange="calcVat(this)"></td>');
+        tr.append("<td class='text-right'>"+(row.unitPrice||0)+"</td>");
+        tr.append("<td class='text-right'>"+(row.qty||0)+"</td>");
+        tr.append("<td>"+(row.baseUnit||'')+"</td>");
+        tr.append("<td class='text-right'>"+(row.amount||0)+"</td>");
+        tr.append("<td class='text-right'>"+(row.vat||0)+"</td>");
+        tr.append("<td class='text-right'>"+(row.krwAmount||0)+"</td>");
+        tr.append("<td class='text-right'>"+(row.krwVat||0)+"</td>");
+        tr.append("<td>"+(row.partyName||'')+"</td>");
+        tr.append("<td>"+(row.inboundDate||'')+"</td>");
+        tr.append("<td>"+(row.note||'')+"</td>");
+        tr.append("<td>"+(row.warehouseName || row.warehouseId || '')+"</td>");
+        tr.append('<td class="text-center">'
+        	    + '<input type="checkbox" '
+        	    + (row.inboundComplete === "Y" ? "checked" : "")
+        	    + ' onchange="handleInboundComplete(this)">'
+        	    + '</td>');
+        tbody.append(tr);
+    });
+}
+
+//✅ 全体検索（照会ボタン）/ 전체 검색 (조회 버튼)
+function searchOrders() {
+    $.ajax({
+        url: '/order/search',
+        data: {
+            buId: $("#buId").val(),
+            inboundType: $("[name=inboundType]").val(),
+            localFlag: $("[name=localFlag]").val(),
+            startDate: $("[name=createdAt]").val(),
+            endDate: $("[name=inboundDate]").val(),
+            partyId: $("[name=partyId]").val(),
+            contactId: $("[name=contactId]").val()   
+        },
+        type: 'GET',
+        dataType: 'json',
+        success: function(result) {
             let allDetails = [];
             result.forEach(function(order) {
                 if (order.details) {
-                    allDetails.push(...order.details.map(d => ({
-                        ...d,
-                        orderId: order.orderId,
-                        partyName: order.partyName,
-                        inboundType: order.inboundType, 
-                        vat: d.vat || 0,
-                        krwAmount: d.krwAmount || 0,
-                        krwVat: d.krwVat || 0,
-                        extraOutType: d.extraOutType || null
-                    })));
+                    order.details.forEach(d => {
+                        allDetails.push({
+                            ...d,
+                            partyName: order.partyName
+                        });
+                    });
                 }
             });
-
-            hot.loadData(allDetails);
+            renderTable(allDetails);
         },
         error: function(err) {
             console.error("검색 에러:", err);
@@ -369,142 +711,155 @@ function searchOrders() {
     });
 }
 
-	// ✅ 페이지 진입 시 자동 조회 실행
-// 	$(document).ready(function() {
-// 	    searchOrders();
-// 	});
-	
-  	function openPopup2(row) {
- 	   // 예: 첫 번째 셀 값 가져오기
- 	   // var rowId = row.cells[0].innerText;
- 	
- 	   // 팝업 크기 설정
- 	   var popupWidth = 900;
- 	   var popupHeight = 600;
- 	
- 	   // 화면 중앙 좌표 계산
- 	   var left = (screen.width - popupWidth) / 2;
- 	   var top = (screen.height - popupHeight) / 2;
- 	
- 	   // 팝업창 열기
- 	   window.open(
- 	     "contact_popup",
- 	     "popupWindow",
- 	     "width=" + popupWidth +
- 	     ",height=" + popupHeight +
- 	     ",left=" + left +
- 	     ",top=" + top +
- 	     ",scrollbars=yes,resizable=yes"
- 	   );
- 	}
-  	
-	function setSelectedRow2(data) {
- 		
-  	    var result1 = $("#table2").DataTable().rows().data().toArray();
-  	    var data = {item_Id: data.item_id, item_Name: '', spec: '', safety_Stock_Qty: '', storage_Location: ''};
-  	    
-  	    for (var i = 0; i < result1.length; i++) {
-  	    	if (result1[i].item_Id != null) {
-  	    		result1.splice(i, 0, data);
-  	    		break;
-  	    	}
-  	    }
-  
-  		// 기존 DataTable 초기화
-        if ($.fn.DataTable.isDataTable('#table2')) {
-            $('#table2').DataTable().clear().destroy();
+
+//✅ 付加税自動計算関数 / 부가세 자동 계산 함수
+function calcVat(checkbox) {
+    var tr = $(checkbox).closest("tr");
+
+    var amountText = tr.find("td:eq(7)").text().replace(/,/g, "");
+    var amount = parseFloat(amountText) || 0;
+
+    var isChecked = $(checkbox).is(":checked");
+
+    var vat = isChecked ? Math.round(amount * 0.1) : 0;
+
+    tr.find("td:eq(8)").text(vat.toLocaleString());
+
+    updateTotals();
+}
+
+
+//✅ 入庫完了チェック時、今日の日付を自動入力 / 입고완료 체크 시 오늘 날짜 자동 입력
+function handleInboundComplete(checkbox) {
+    var tr = $(checkbox).closest("tr");
+    var today = new Date();
+    var formatted = today.toISOString().split('T')[0]; 
+
+    if ($(checkbox).is(":checked")) {
+        tr.find("td:eq(12)").text(formatted);
+    } else {
+        // 체크 해제 시 납기일 비움
+        tr.find("td:eq(12)").text("");
+    }
+}
+//✅ Ctrlキーで複数行選択+自動合計 / Ctrl 키로 다중 선택 + 자동 합계 계산
+(function() {
+    const tbody = document.querySelector("#result-tbody");
+    if (!tbody) return;
+
+    let selectedRows = new Set();
+
+    tbody.addEventListener("click", function(e) {
+        const tr = e.target.closest("tr");
+        if (!tr) return;
+
+        if (e.ctrlKey) {
+            if (selectedRows.has(tr)) {
+                tr.classList.remove("tr-selected");
+                selectedRows.delete(tr);
+            } else {
+                tr.classList.add("tr-selected");
+                selectedRows.add(tr);
+            }
+        } else {
+            selectedRows.forEach(r => r.classList.remove("tr-selected"));
+            selectedRows.clear();
+            tr.classList.add("tr-selected");
+            selectedRows.add(tr);
         }
-  		
 
-        $("#table2").DataTable({
-            lengthChange: false, // 표시건수기능
-            searching: false,    // 검색 기능
-            ordering: false,     // 정렬 기능
-            info: false,         // 정보 표시
-            paging: false,       // 페이징기능
-            data: result1,
-            columns: [
-                { data: "item_Id" },
-                { data: "item_Name" },
-                { data: "spec" },
-                { data: "safety_Stock_Qty" },
-                { data: "storage_Location" }
-            ]
+        updateTotals(); 
+    });
+
+    // ✅ 合計計算関数 / 합계 계산 함수
+    function updateTotals() {
+        let totalAmountUSD = 0;
+        let totalVatUSD = 0;
+        let exchangeRate = parseFloat($("[name=exchangeRate]").val()) || 1;
+        let discountRate = parseFloat($("[name=discountRate]").val()) || 0;
+
+        selectedRows.forEach(tr => {
+            const $tr = $(tr);
+            const amount = parseFloat($tr.find("td:eq(7)").text().replace(/,/g, "")) || 0;
+            const vat = parseFloat($tr.find("td:eq(8)").text().replace(/,/g, "")) || 0;
+            totalAmountUSD += amount;
+            totalVatUSD += vat;
         });
- 	}
-	
-	function openInboundPopup() {
-		window.open(
-    		"/popup/inbound_popup",
-	        "inboundPopup",
-	        "width=1000,height=600,scrollbars=yes,resizable=yes"
-	    );
-	}
-	
-	// 부모창 (수주입력.jsp)
-	function inbound_RowData(data) {
-	    console.log("팝업에서 받은 데이터:", data);
-	
-	 // [0] 수주번호, [1] buId(코드값), [2] 납기일, [3] Local구분,
-	 // [4] 거래처명, [5] 담당자, [6] 수주구분, [7] 입고상태,
-	 // [8] 수주일, [9] 거래처번호, [10] 부서
 
-	    $("#orderId").val(data[0]);        // 수주번호
-	    $("#buId").val(data[1]);         
-	    $("[name=inboundDate]").val(data[2]);
-	    $("[name=createdAt]").val(data[8]);
-	    $("[name=partyName]").val(data[4]);
-	    $("[name=contactName]").val(data[5]);
-	    $("[name=inboundType]").val(data[6]);
-	    $("[name=inboundComplete]").val(data[7]);
-	    $("[name=localFlag]").val(data[3]);
-	    $("[name=partyId]").val(data[9]);   // 거래처번호
-	    $("[name=department]").val(data[10]); // 부서
+        totalAmountUSD = totalAmountUSD * (1 - discountRate / 100);
+        totalVatUSD = totalVatUSD * (1 - discountRate / 100);
 
-// 	    console.log("loadOrder 호출 인자:", data[1], data[0]);
-	    loadOrder(data[1], data[0]);   // buId(코드값), orderId 전달
-	}
+        const totalAmountKRW = Math.round(totalAmountUSD * exchangeRate);
+        const totalVatKRW = Math.round(totalVatUSD * exchangeRate);
+        const totalGrandKRW = totalAmountKRW + totalVatKRW;
 
-	function loadOrder(buId, orderId) {
-		
-		var formData = {
-	    	buId: buId,
-	        orderId: orderId
-      	}
-		
-      	$.ajax({
-         	url: '/order/in_detail_list',
-	        data: formData,
-	        type: 'GET',
-	        dataType: 'json',
-	        success: function(result) {
+        $("[name=salesTotal]").val(totalAmountKRW.toLocaleString());
+        $("[name=vatTotal]").val(totalVatKRW.toLocaleString());
+        $("[name=grandTotal]").val(totalGrandKRW.toLocaleString());
+    }
+ 
 
-//         		console.log(result);
-        		
-//         		hot.loadData(result || []);
-// 	        },
+    $("[name=exchangeRate], #currencyCode, [name=discountRate]").on("input change", function() {
+        updateTotals();
+    });
+})();
+//✅ 単価適用処理 / 단가적용 처리
+function applyUnitPrice() {
+    const selected = $(".tr-selected");
+    if (selected.length === 0) {
+        alert("단가적용할 항목을 선택해주세요.");
+        return;
+    }
 
-	            console.log("단건 조회 결과:", result);
+    selected.each(function() {
+        const tr = $(this);
 
-	            if (result && result.length > 0) {
-	                // 👉 조회된 디테일을 그리드에 로드
-	                hot.loadData(result);
-	            } else {
-	                alert("조회된 데이터가 없습니다.");
-	                hot.loadData([]); // 빈 테이블 초기화
-	            }
-	        },
-	        error: function(err) {
-	            console.error("단건 조회 에러:", err);
-	            alert("단건 조회 실패: " + err.statusText);
-	        }
-      	});
-	        	
-	}
+        const salesTotalText = $("[name=salesTotal]").val().replace(/,/g, "");
+        const salesTotal = parseFloat(salesTotalText) || 0;
 
+        const vatTotalText = $("[name=vatTotal]").val().replace(/,/g, "");
+        const vatTotal = parseFloat(vatTotalText) || 0;
 
+        tr.find("td:eq(9)").text(salesTotal.toLocaleString());
+        tr.find("td:eq(10)").text(vatTotal.toLocaleString());
+    });
+
+}
+//✅ 取引先ポップアップを開く / 거래처 팝업 열기
+function openPartyPopup() {
+    window.open(
+        "/popup/party_popup",       
+        "partyPopup",              
+        "width=1000,height=600,scrollbars=yes,resizable=yes"
+    );
+}
+
+//✅ 取引先データを受け取る / 거래처 팝업에서 데이터 전달받기
+function party_RowData(data) {
+    console.log("거래처 팝업에서 받은 데이터:", data);
+
+    $("[name=partyId]").val(data[2]);     
+    $("[name=partyName]").val(data[3]);   
+}
+//✅ 担当者ポップアップを開く / 담당자 팝업 열기
+function openContactPopup() {
+    window.open(
+        "/popup/contact_popup",    
+        "contactPopup",            
+        "width=1000,height=600,scrollbars=yes,resizable=yes"
+    );
+}
+
+//✅ 担当者データを受け取る / 담당자 팝업에서 데이터 전달받기
+function contact_RowData(data) {
+    console.log("담당자 팝업에서 받은 데이터:", data);
+
+    // 👉 データ配列の順番に基づき設定 / 전달 순서에 맞게 값 채워넣기
+    // column1: 社員番号 / 사원번호
+    // column2: 社員名 / 사원명
+    // column3: 部署 / 부서
+    $("[name=contactId]").val(data[0]);    // ✅ 担当者ID（検索用）/ 담당자 ID (검색용)
+    $("[name=contactName]").val(data[1]);  // 担当者名 / 담당자 이름
+    $("[name=department]").val(data[2]);   // 部署名 / 부서명
+}
 </script>
-
-
-</body>
-</html>
