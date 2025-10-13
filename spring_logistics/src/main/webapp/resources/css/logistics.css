@@ -52,8 +52,8 @@ a:hover {
 
 /* 홈 바 */
 .home-bar {
-    width: 60px;
-    min-width: 60px;
+    width: 45px;
+    min-width: 45px;
     background: #2a3452;
     display: flex;
     flex-direction: column;
@@ -86,8 +86,8 @@ a:hover {
    사이드바
 -------------------------------------- */
 .sidebar {
-    width: 220px;
-    min-width: 220px;
+    width: 265px;
+    min-width: 265px;
     background: #f7f9fd;
     display: flex;
     flex-direction: column;
@@ -121,17 +121,22 @@ a:hover {
 	padding: 1rem; 
 	overflow-y: auto; 
 }
-.menu-item { margin-bottom: 1rem; }
+
+.menu-item {
+	margin-bottom: 20px;
+}
+
 .menu-item > .title {
     font-weight: bold;
     color: #2d3f6b;
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    cursor: pointer;
+    cursor: default;
     position: relative;
     padding-left: 30px;
     line-height: 1.5;
+    font-size: 14px;
 }
 .menu-item > .title::before {
     content: "";
@@ -160,18 +165,20 @@ a:hover {
     transition: opacity 0.2s ease;
 }
 .menu-item > .title:hover::before { border-color: #3966d9; }
-.menu-item > .title:hover::after { opacity: 0.4; }
-.menu-item > .title.active::after { opacity: 1; }
+/* .menu-item > .title:hover::after { opacity: 0.4; } */
+/* .menu-item > .title.active::after { opacity: 1; } */
 
-.submenu { margin: 0.5rem 0 0.5rem 1.5rem; font-size: 0.9rem; }
+.submenu { 
+	margin: 0 0 0 1rem; 
+	font-size: 0.8rem; 
+}
 .submenu div {
-    margin-bottom: 0.6rem;
     display: flex;
     align-items: center;
     cursor: pointer;
     position: relative;
     color: #444;
-    padding: 0.5rem 0 0.5rem 16px;
+    padding: 0.35rem 0 0.35rem 16px;
     line-height: 1.4;
 }
 .submenu div::before {
@@ -183,12 +190,16 @@ a:hover {
     width: 7px;
     height: 7px;
     border-radius: 50%;
-    background-color: #3966d9;
-    opacity: 0;
+    background-color: rgba(0, 0, 0, 0.2);
+    opacity: 1;
     transition: opacity 0.2s ease;
 }
+
 .submenu div:hover::before,
-.submenu div.active::before { opacity: 1; }
+.submenu div.active::before { 
+	background-color: #3966d9;
+	opacity: 1; 
+}
 
 /* --------------------------------------
    메인 영역
