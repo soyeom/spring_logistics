@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.logistics.mapper.WarehouseMapper">
+
+	<!-- 창고구분별 재고 플래그 조회 -->
+	<select id="getWarehouseList"
+		resultType="org.logistics.domain.Warehouse">
+		SELECT
+		warehouse_internal_code AS warehouseInternalCode,
+		asset_stock_flag AS assetStockFlag,
+		available_stock_flag AS availableStockFlag,
+		actual_stock_flag AS actualStockFlag
+		FROM warehouse_master
+		ORDER BY warehouse_internal_code
+	</select>
+
+	<update id="updateWarehouseFlags">
+		UPDATE warehouse_master
+		SET asset_stock_flag = #{assetStockFlag},
+		available_stock_flag = #{availableStockFlag},
+		actual_stock_flag = #{actualStockFlag}
+		WHERE warehouse_internal_code = #{warehouseInternalCode}
+	</update>
+
+</mapper>

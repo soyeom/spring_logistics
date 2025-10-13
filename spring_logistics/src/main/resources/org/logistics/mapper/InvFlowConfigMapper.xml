@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace = "org.logistics.mapper.InvFlowConfigMapper">
+	
+	<select id = "getList" resultType = "org.logistics.domain.InvFlowConfigVO">
+		select a.bu_id, a.bu_name, a.warehouse_master_id, a.warehouse_internal_code
+		     , b.warehouse_id, b.warehouse_name 
+		     , b.site_department            
+		     , b.outsourcing_party_id       
+		     , b.consignment_party_id       
+		     , b.manager_party_id           
+		     , b.bu_dependent_flag          
+		     , b.allow_stock_shortage       
+		     , b.manager_control_flag
+		     , case when (select count(*) from warehouse_contact where bu_id = b.bu_id and warehouse_id = b.warehouse_id and warehouse_master_id = b.warehouse_master_id) > 0 then 'Y' else 'N' end manager_regist_yn    
+		     , b.address                    
+		     , b.exclude_from_available     
+		     , b.available_control_flag     
+		     , b.use_yn                     
+		from (
+		    select a.bu_id, a.bu_name, b.warehouse_master_id, b.warehouse_internal_code
+		    from business_unit a, warehouse_master b
+		    where a.bu_id = b.bu_id
+		) a, warehouse_detail b
+		where a.bu_id = b.bu_id
+		and a.warehouse_master_id = b.warehouse_master_id
+	</select>
+	
+	<select id = "getList2" resultType = "org.logistics.domain.InvFlowConfigVO">
+		select a.bu_id, a.bu_name, a.warehouse_master_id, a.warehouse_internal_code
+		     , b.warehouse_id, b.warehouse_name 
+		     , b.site_department            
+		     , b.outsourcing_party_id       
+		     , b.consignment_party_id       
+		     , b.manager_party_id           
+		     , b.bu_dependent_flag          
+		     , b.allow_stock_shortage       
+		     , b.manager_control_flag
+		     , case when (select count(*) from warehouse_contact where bu_id = b.bu_id and warehouse_id = b.warehouse_id and warehouse_master_id = b.warehouse_master_id) > 0 then 'Y' else 'N' end manager_regist_yn   
+		     , b.address                    
+		     , b.exclude_from_available     
+		     , b.available_control_flag     
+		     , b.use_yn                     
+		from (
+		    select a.bu_id, a.bu_name, b.warehouse_master_id, b.warehouse_internal_code
+		    from business_unit a, warehouse_master b
+		    where a.bu_id = b.bu_id
+		    and a.bu_id like '%' || #{bu_Id} || '%'
+			and b.warehouse_master_Id like '%' || #{wareHouse_Master_Id} || '%'
+		) a, warehouse_detail b
+		where a.bu_id = b.bu_id
+		and a.warehouse_master_id = b.warehouse_master_id
+	</select>
+	
+	<select id = "getWareHouseItemList" resultType = "org.logistics.domain.WareHouseItemListVO">
+		
+		select a.bu_Id, a.warehouse_Master_Id, a.wareHouse_Id
+		     , b.item_Id, b.item_name, b.spec, b.safety_Stock_Qty
+		     , a.warehouse_name as storage_Location 
+		from (
+		    select a.*, b.item_id
+		    from warehouse_detail a, warehouse_item b
+		    where a.bu_id = b.bu_id
+		    and a.warehouse_id = b.warehouse_id
+		) a, item_master b
+		where a.bu_id = b.bu_id
+		and a.item_id = b.item_id
+		and a.bu_Id = #{bu_Id}
+		and a.warehouse_id = #{wareHouse_Id}
+			
+	</select>
+	
+	<select id = "getWareHouseContactList" resultType = "org.logistics.domain.WareHouseContactListVO">
+		
+        select a.bu_id, a.contact_id, b.contact_name, b.department
+		from warehouse_contact a, contact b
+		where a.bu_id = b.bu_id
+		and a.contact_id = b.contact_id
+		and a.bu_Id = #{bu_Id} 
+        and a.warehouse_id = #{wareHouse_Id}
+	
+	</select>
+	
+	<update id = "save" parameterType="org.logistics.domain.InvFlowConfigVO">
+		update warehouse_detail
+		set allow_stock_shortage = #{allow_Stock_Shortage}
+  		  , manager_control_flag = #{manager_Control_Flag}
+		  , exclude_from_available = #{exclude_From_Available}
+		  , available_control_flag = #{available_Control_Flag}
+		  , use_yn = #{use_Yn}
+		where bu_id = #{bu_Id} 
+		and warehouse_master_id = #{wareHouse_Master_Id}
+		and warehouse_id = #{wareHouse_Id}
+	</update>
+	
+    <delete id="delete_Detail1">
+        
+        DELETE FROM warehouse_item
+        WHERE bu_id = #{bu_Id}
+        AND warehouse_master_id = #{wareHouse_Master_Id}
+        AND warehouse_id = #{wareHouse_Id}
+    
+    </delete>
+    
+    <insert id="save_Detail1" parameterType="org.logistics.domain.WareHouseContactListVO">
+        INSERT INTO warehouse_item values (#{bu_Id}, #{wareHouse_Master_Id}, #{wareHouse_Id}, #{item_Id}, sysdate)
+    </insert>
+	
+    <delete id="delete_Detail2">
+        DELETE FROM warehouse_contact
+        WHERE bu_id = #{bu_Id}
+        AND warehouse_master_id = #{wareHouse_Master_Id}
+        AND warehouse_id = #{wareHouse_Id}
+    </delete>
+    
+    <insert id="save_Detail2" parameterType="org.logistics.domain.WareHouseItemListVO">
+        INSERT INTO warehouse_contact values (#{bu_Id}, #{contact_Id}, #{wareHouse_Id}, #{wareHouse_Master_Id}, sysdate)
+    </insert>
+
+	<select id = "getOutBoundMaster" resultType = "org.logistics.domain.OutBoundMasterVO">
+		select a.bu_id, b.bu_name, a.out_id
+		from out_master a, business_unit b
+		where a.bu_id = b.bu_id
+	</select>
+	
+	<select id = "getOutBoundDetail1" resultType = "org.logistics.domain.OutBoundMasterVO">
+		select out_id, bu_id, to_char(out_date, 'yyyy-MM-dd') as out_Date, local_flag
+		     , party_id, (select party_name from party where bu_id = a.bu_id and party_id = a.party_Id) as party_Name
+		     , contact_id, (select contact_name from contact where bu_id = a.bu_id and contact_id = a.contact_id) as contact_Name
+		     , (select department from contact where bu_id = a.bu_id and contact_id = a.contact_id) as department
+		     , out_type, consignment_gubun, out_complete, created_at
+		from out_master a
+		where bu_id = #{bu_Id}
+		and out_id = #{out_Id}
+	</select>
+	
+	<select id = "getOutBoundDetail2" resultType = "org.logistics.domain.OutBoundMasterVO">
+		select a.item_id, b.item_name, b.spec
+		     , a.party_id, (select party_name from party where party_id = a.party_id) as party_name
+		     , a.qty, b.sales_unit
+		     , a.unit_price
+		     , a.surtax_yn
+		     , case when surtax_yn = 'N' then a.qty * a.unit_price else round(a.qty * a.unit_price * 100 / 110, 0) end as sales_price
+		     , case when surtax_yn = 'N' then a.qty * a.unit_price / 10 else round(a.qty * a.unit_price * 10 / 110, 0) end as surtax_Price
+		     , case when surtax_yn = 'N' then (a.qty * a.unit_price) + (a.qty * a.unit_price / 10) else round(a.qty * a.unit_price * 100 / 110, 0) + round(a.qty * a.unit_price * 10 / 110, 0) end as sales_Price_Sum
+		     , b.base_unit, b.storage_location, (select warehouse_name from warehouse_detail where bu_Id = b.bu_Id and warehouse_id = b.storage_location) as warehouse_Name
+		     , a.special_note, a.lot_no, a.other_out_code
+		     , a.is_charge_supply, b.asset_class, a.asset_proc_type
+		     , '0' as current_Qty 
+		from out_detail a, item_master b
+		where a.bu_id = b.bu_id
+		and a.item_id = b.item_id
+		and a.bu_id = #{bu_Id}
+		and a.out_id = #{out_Id}
+	</select>
+	
+	<select id = "getOutId" resultType = "org.logistics.domain.OutBoundMasterVO">
+		(select nvl(max(out_id), 0) + 1 as out_Id from out_master where bu_id = #{bu_Id})
+	</select>
+	
+	<select id = "business_UnitList" resultType = "org.logistics.domain.CommonVO">
+		select bu_id as value, bu_name as text from business_unit
+	</select>
+	
+	<select id = "wareHouse_MasterList" resultType = "org.logistics.domain.CommonVO">
+		select warehouse_master_id as value, warehouse_internal_code as text from warehouse_master
+	</select>
+	
+	<select id = "popupItemList" resultType = "org.logistics.domain.PopupItemVO">
+		select item_Id, bu_Id, item_Name, spec, safety_Stock_Qty, storage_Location, asset_Class, asset_Name, big_Category, mid_Category, small_Category
+		     , base_Unit, sales_Unit, lot_Control_Flag, manufacturer, currency, english_Name, importance_Level
+		from item_master
+	</select>
+	
+	<select id="new_Out_Id" resultType="string">
+    	select max(out_id) + 1 as out_id
+    	from out_master
+		where bu_Id = #{bu_Id}
+	</select>
+	
+	<insert id = "newOutBoundMasterSave" >
+	
+		insert into out_master (out_id, bu_id, out_date, local_flag, party_Id, contact_id, out_type, consignment_gubun, created_at)
+		values (#{long_Out_Id}, #{long_Bu_Id}, TO_DATE(#{out_Date}, 'YYYY-MM-DD'), #{local_Flag}, #{long_Party_Id}, #{long_Contact_Id}, #{out_Type}, #{consignment_Gubun}, sysdate)
+	
+	</insert>
+	
+	<update id = "updateOutBoundMasterSave" parameterType="org.logistics.domain.OutBoundMasterVO">
+		update out_master
+		set local_flag = #{local_Flag}
+		  , contact_Id = #{contact_Id}
+		  , party_Id = #{party_Id}
+		  , out_type = #{out_Type}
+		  , consignment_gubun = #{consignment_Gubun}
+		where bu_Id = #{long_Bu_Id}
+		and out_Id = #{long_Out_Id}
+	</update>
+	
+	<delete id="outBound_Delete_Detail">
+        
+        DELETE FROM out_detail
+        WHERE bu_id = #{bu_Id}
+        AND out_Id = #{out_Id}
+    
+    </delete>
+    
+    <insert id = "outBound_Save_Detail" >
+	
+		insert into out_detail (
+			bu_Id, out_Id, item_Id, party_Id, warehouse_Id, qty
+		  , unit_price, surtax_yn
+		) values (
+			#{bu_Id}, #{out_Id}, #{item_Id}, #{item_Id}, #{wareHouse_Id}, #{qty}
+		  , #{unit_Price}, #{surtax_Yn}
+		)
+	
+	</insert>
+	
+</mapper>

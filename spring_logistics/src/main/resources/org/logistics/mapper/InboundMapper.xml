@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- InboundMapper.xml -->
+<mapper namespace="org.logistics.mapper.InboundMapper">
+
+	<select id="selectByItemId" parameterType="map"
+		resultType="org.logistics.domain.InboundVO">
+		SELECT d.inbound_detail_id AS inboundDetailId,
+		d.item_id AS itemId,
+		m.inbound_type AS inboundType,
+		m.inbound_date AS inboundDate,
+		d.qty AS inboundQty,
+		d.note AS note
+		FROM inbound_detail d
+		JOIN inbound_master m ON d.inbound_id = m.inbound_id
+		WHERE d.item_id = #{itemId}
+		<if test="warehouseId != null">
+			AND d.warehouse_id = #{warehouseId}
+		</if>
+		ORDER BY m.inbound_date DESC
+	</select>
+
+</mapper>
+
+  
