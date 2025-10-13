@@ -12,4 +12,5 @@ public class InboundVO {
 	private Integer inboundDetailId;
 	private Date inboundDate;
 	private String note;
+	private String inboundComplete;
 }

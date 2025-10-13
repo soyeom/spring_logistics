@@ -1,7 +1,7 @@
-<<<<<<< HEAD
+=\=\=\=\=\=\=
+<<<<<<<=HEAD
+>>>>>>>=refs/remotes/origin/jinhyung
 eclipse.preferences.version=1
+encoding//src/main/webapp/WEB-INF/views/StockAnalysis-form.jsp=UTF-8
 encoding//src/main/webapp/WEB-INF/views/home.jsp=UTF-8
-=======
-eclipse.preferences.version=1
 encoding//src/main/webapp/WEB-INF/views/txnCategory/tabList.jsp=UTF-8
->>>>>>> refs/remotes/origin/jinhyung

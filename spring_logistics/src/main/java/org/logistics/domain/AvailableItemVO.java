@@ -15,6 +15,7 @@ public class AvailableItemVO {
 	private int itemId;
 	private String baseUnit;
 	private Integer safetyQty;
+	private Integer availableQty;
 	
     private Integer requestQty;    
     private Integer orderQty;       

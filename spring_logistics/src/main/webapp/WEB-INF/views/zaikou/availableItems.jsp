@@ -10,7 +10,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>가용재고조회</title>
+<title>可用在庫照会</title>
 <link rel="stylesheet" href="/resources/css/logistics.css"
 	type="text/css">
 <link rel="stylesheet"
@@ -22,14 +22,12 @@
 </head>
 <body>
 	<div class="layout">
-		<!-- 홈 아이콘 세로 바 -->
 		<div class="home-bar">
 			<span> <a href="/"><img
 					src="https://cdn-icons-png.flaticon.com/512/7598/7598650.png"
 					alt="홈화면" class="home-icon"></a>
 			</span>
 		</div>
-		<!-- 사이드바 -->
 		<aside class="sidebar">
 			<div class="sidebar-header">
 				<div class="profile">
@@ -110,151 +108,150 @@
 				</div>
 			</nav>
 		</aside>
-		<!-- ✅ 메인 -->
+
 		<div class="main">
 			<div class="main-header">
 				<div>
 					<span class="btn btn-secondary btn-icon toggle-sidebar">≡</span>
 				</div>
 				<div>
-					<h1>가용재고조회</h1>
+					<h1>可用在庫照会</h1>
 				</div>
 				<div>
-					<button class="btn btn-secondary" onclick="search()">조회</button>
+					<button class="btn btn-secondary" onclick="searchAvailable()">照会</button>
 				</div>
 			</div>
-			<!-- ✅ 조회 조건 -->
+
+			<!-- 검색기능(検索機能） -->
 			<div class="filters">
 				<div class="filters-main">
-					<div class="title">조회 조건</div>
+					<div class="title">検索条件</div>
 					<div class="line"></div>
 				</div>
 				<div class="filters-row">
-					<!-- 사업단위 -->
+					<!-- 事業単位 -->
 					<div class="filters-count">
-						<div class="filters-text">사업단위</div>
+						<div class="filters-text">事業単位</div>
 						<div class="filters-value">
 							<select id="buId" name="buId">
-								<option value="">-- 선택 --</option>
+								<option value=""></option>
 								<c:forEach items="${buList}" var="bu">
 									<option value="${bu.buId}">${bu.buName}</option>
 								</c:forEach>
 							</select>
 						</div>
 					</div>
-					<!-- 창고명 -->
+					<!-- 倉庫名 -->
 					<div class="filters-count">
-						<div class="filters-text">창고명</div>
+						<div class="filters-text">倉庫名</div>
 						<div class="filters-value d-flex align-items-center">
-							<!-- 🔑 직접 입력 가능 -->
-							<input type="text" id="warehouseName" name="warehouseName"
-								placeholder="창고명을 입력하세요">
-							<!-- 🔍 팝업 버튼 -->
+							<!-- 直接入力可能 -->
+							<input type="text" id="warehouseName" name="warehouseName">
+							<!-- 参照ボタン -->
 							<img
 								src="https://cdn-icons-png.flaticon.com/512/16799/16799970.png"
 								alt="search" class="search-icon" onclick="openWarehousePopup()">
 						</div>
 					</div>
-					<!-- 자산구분 -->
+					<!-- 資産区分 -->
 					<div class="filters-count">
-						<div class="filters-text">자산분류</div>
+						<div class="filters-text">資産区分</div>
 						<div class="filters-value">
 							<select id="assetClass" name="assetClass">
-								<option value="">-- 선택 --</option>
+								<option value=""></option>
 								<c:forEach items="${assetClassList}" var="asset">
 									<option value="${asset.assetClass}">${asset.assetClass}</option>
 								</c:forEach>
 							</select>
 						</div>
 					</div>
-					<!-- 대분류 -->
+					<!-- 品目大分類 -->
 					<div class="filters-count">
-						<div class="filters-text">품목대분류</div>
+						<div class="filters-text">品目大分類</div>
 						<div class="filters-value d-flex align-items-center">
-							<!-- 🔑 직접 입력 가능 -->
-							<input type="text" id="bigCategory" name="bigCategory"
-								placeholder="대분류 유형을 입력하세요"> <img
+							<!-- 直接入力可能 -->
+							<input type="text" id="bigCategory" name="bigCategory"> <img
 								src="https://cdn-icons-png.flaticon.com/512/16799/16799970.png"
 								alt="search" class="search-icon"
 								onclick="openBigCategoryPopup()">
 						</div>
 					</div>
-					<!-- 중분류 -->
+					<!-- 品目中分類 -->
 					<div class="filters-count">
-						<div class="filters-text">품목중분류</div>
+						<div class="filters-text">品目中分類</div>
 						<div class="filters-value d-flex align-items-center">
-							<!-- 🔑 직접 입력 가능 -->
-							<input type="text" id="midCategory" name="midCategory"
-								placeholder="중분류 유형을 입력하세요"> <img
+							<!-- 直接入力可能 -->
+							<input type="text" id="midCategory" name="midCategory"> <img
 								src="https://cdn-icons-png.flaticon.com/512/16799/16799970.png"
 								alt="search" class="search-icon"
 								onclick="openMidCategoryPopup()">
-							<!-- 🔍 팝업 버튼 -->
+
 						</div>
 					</div>
-					<!-- 소분류 -->
+					<!-- 品目小分類 -->
 					<div class="filters-count">
-						<div class="filters-text">품목소분류</div>
+						<div class="filters-text">品目小分類</div>
 						<div class="filters-value d-flex align-items-center">
-							<!-- 🔑 직접 입력 가능 -->
-							<input type="text" id="smallCategory" name="smallCategory"
-								placeholder="소분류 유형을 입력하세요"> <img
+							<!-- 直接入力可能 -->
+							<input type="text" id="smallCategory" name="smallCategory">
+							<img
 								src="https://cdn-icons-png.flaticon.com/512/16799/16799970.png"
 								alt="search" class="search-icon"
 								onclick="openSmallCategoryPopup()">
 						</div>
 					</div>
-					<!-- 품명 -->
+					<!-- 品名 -->
 					<div class="filters-count">
-						<div class="filters-text">품명</div>
+						<div class="filters-text">品名</div>
 						<div class="filters-value d-flex align-items-center">
-							<!-- 🔑 직접 입력 가능 -->
-							<input type="text" id="itemName" name="itemName"
-								placeholder="품명을 입력하세요"> <img
+							<!-- 直接入力可能 -->
+							<input type="text" id="itemName" name="itemName" placeholder="">
+							<img
 								src="https://cdn-icons-png.flaticon.com/512/16799/16799970.png"
 								alt="search" class="search-icon" onclick="openItemNamePopup()">
 						</div>
 					</div>
-					<!-- 품번 (직접 입력) -->
+					<!-- 品番 (直接入力) -->
 					<div class="filters-count">
-						<div class="filters-text">품번</div>
+						<div class="filters-text">品番</div>
 						<div class="filters-value">
-							<input type="text" id="itemId" name="itemId"
-								placeholder="품번을 입력하세요">
+							<input type="text" id="itemId" name="itemId">
 						</div>
 					</div>
 				</div>
 			</div>
-			<!-- ✅ 결과 테이블 -->
+
 			<div class="table-container" style="height: 300px;">
 				<table class="table-single-select">
 					<thead>
 						<tr>
-							<th style="width: 150px">창고</th>
-							<th style="width: 150px">창고코드</th>
-							<th style="width: 150px">품목자산분류</th>
-							<th style="width: 150px">품명</th>
-							<th style="width: 150px">규격</th>
-							<th style="width: 150px">품번</th>
-							<th style="width: 150px">단위</th>
-							<th style="width: 150px">입고예정</th>
-							<th style="width: 150px">출고예정</th>
-							<th style="width: 150px">안전재고</th>
-							<th style="width: 150px">생산의뢰</th>
-							<th style="width: 150px">구매발주</th>
-							<th style="width: 150px">적송요청</th>
-							<th style="width: 150px">기타입고요청</th>
-							<th style="width: 150px">입고예정계</th>
-							<th style="width: 150px">수주</th>
-							<th style="width: 150px">적송요청</th>
-							<th style="width: 150px">위탁출고요청</th>
-							<th style="width: 150px">기타출고요청</th>
-							<th style="width: 150px">출고요청계</th>
+							<th style="width: 150px">倉庫</th>
+							<th style="width: 150px">倉庫コード</th>
+							<th style="width: 150px">品目資産分類</th>
+							<th style="width: 150px">品名</th>
+							<th style="width: 150px">規格</th>
+							<th style="width: 150px">品番</th>
+							<th style="width: 150px">単位</th>
+							<th style="width: 150px">安全在庫</th>
+							<th style="width: 150px">有効在庫</th>
+							<th style="width: 150px">入庫予定</th>
+							<th style="width: 150px">出庫予定</th>
+							<th style="width: 150px">生産依頼</th>
+							<th style="width: 150px">購買発注</th>
+							<th style="width: 150px">積送依頼</th>
+							<th style="width: 150px">その他入庫依頼</th>
+							<th style="width: 150px">入庫予定計</th>
+							<th style="width: 150px">受注</th>
+							<th style="width: 150px">積送依頼</th>
+							<th style="width: 150px">委託出庫依頼</th>
+							<th style="width: 150px">その他出庫依頼</th>
+							<th style="width: 150px">出庫依頼計</th>
+
 						</tr>
 					</thead>
 					<tbody id="result-tbody">
 						<c:forEach var="item" items="${items}">
-							<tr>
+							<tr onclick="row_Click(this)">
 								<td class="text-center">${item.warehouseName}</td>
 								<td class="text-center">${item.warehouseId}</td>
 								<td class="text-center">${item.assetClass}</td>
@@ -262,9 +259,10 @@
 								<td class="text-center">${item.spec}</td>
 								<td class="text-center">${item.itemId}</td>
 								<td class="text-center">${item.baseUnit}</td>
+								<td class="text-center">${item.safetyQty}</td>
+								<td class="text-center">${item.availableQty}</td>
 								<td class="text-center">${item.expectedQty}</td>
 								<td class="text-center">${item.expectedOutQty}</td>
-								<td class="text-center">${item.safetyQty}</td>
 								<td class="text-center">${item.requestQty}</td>
 								<td class="text-center">${item.orderQty}</td>
 								<td class="text-center">${item.transferQty}</td>
@@ -282,13 +280,13 @@
 				</table>
 			</div>
 
-			<!-- ✅ 하단 상세 영역 -->
+			<!-- 詳細エリア -->
 			<div style="display: flex; gap: 5px;">
-				<!-- 입고예정 -->
+				<!-- 入庫予定 -->
 				<div style="display: grid; gap: 5px; flex: 1;">
 					<div class="filters">
 						<div class="filters-main">
-							<div class="title">입고예정</div>
+							<div class="title">入庫予定</div>
 							<div class="line"></div>
 						</div>
 					</div>
@@ -296,22 +294,23 @@
 						<table class="table-single-select" style="width: 100%">
 							<thead>
 								<tr>
-									<th>입고예정일자</th>
-									<th>구분</th>
-									<th>입고예정수량</th>
-									<th>입고ID</th>
-									<th>특이사항</th>
+									<th>入庫予定日</th>
+									<th>区分</th>
+									<th>入庫予定数量</th>
+									<th>入庫ID</th>
+									<th>特記事項</th>
+
 								</tr>
 							</thead>
 							<tbody id="inbound-tbody"></tbody>
 						</table>
 					</div>
 				</div>
-				<!-- 출고예정 -->
+				<!-- 出庫予定 -->
 				<div style="display: grid; gap: 5px; flex: 1;">
 					<div class="filters">
 						<div class="filters-main">
-							<div class="title">출고예정</div>
+							<div class="title">出庫予定</div>
 							<div class="line"></div>
 						</div>
 					</div>
@@ -319,11 +318,12 @@
 						<table class="table-single-select" style="width: 100%">
 							<thead>
 								<tr>
-									<th>출고예정일자</th>
-									<th>구분</th>
-									<th>출고예정수량</th>
-									<th>출고ID</th>
-									<th>특이사항</th>
+									<th>出庫予定日</th>
+									<th>区分</th>
+									<th>出庫予定数量</th>
+									<th>出庫ID</th>
+									<th>特記事項</th>
+
 								</tr>
 							</thead>
 							<tbody id="outbound-tbody"></tbody>
@@ -334,11 +334,32 @@
 		</div>
 	</div>
 
-	<!-- ✅ 스크립트 -->
+
 	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
 	<script>
-		// Ajax 조회
-		function search() {
+		(function() {
+			const tbody = document.querySelector('#result-tbody');
+			if (!tbody)
+				return;
+
+			let selectedRow = null;
+			tbody.addEventListener('click', function(e) {
+				const tr = e.target.closest('tr');
+				if (!tr)
+					return;
+
+				if (selectedRow)
+					selectedRow.classList.remove('tr-selected');
+				tr.classList.add('tr-selected');
+				selectedRow = tr;
+			});
+		})();
+
+		// =============================
+		// 가용재고조회 (可用在庫照会)
+		// =============================
+		function searchAvailable() {
 			var formData = {
 				buId : document.getElementById("buId").value,
 				warehouseName : document.getElementById("warehouseName").value,
@@ -351,7 +372,7 @@
 			};
 
 			$.ajax({
-				url : '/availableItems/list',
+				url : '/warehouse/availableList',
 				data : formData,
 				type : 'GET',
 				dataType : 'json',
@@ -361,86 +382,88 @@
 
 					result.forEach(function(item) {
 						const tr = document.createElement("tr");
-						tr.innerHTML = "<td class='text-center'>"
-								+ (item.warehouseName || '') + "</td>"
-								+ "<td class='text-center'>"
-								+ (item.warehouseId || '') + "</td>"
-								+ "<td class='text-center'>"
-								+ (item.assetClass || '') + "</td>"
-								+ "<td class='text-center'>"
-								+ (item.itemName || '') + "</td>"
-								+ "<td class='text-center'>"
-								+ (item.spec || '') + "</td>"
-								+ "<td class='text-center'>"
-								+ (item.itemId || '') + "</td>"
-								+ "<td class='text-center'>"
-								+ (item.baseUnit || '') + "</td>"
-								+ "<td class='text-center'>"
-								+ (item.expectedQty || '') + "</td>"
-								+ "<td class='text-center'>"
-								+ (item.expectedOutQty || '') + "</td>"
-								+ "<td class='text-center'>"
-								+ (item.safetyQty || '') + "</td>"
-								+ "<td class='text-center'>"
-								+ (item.requestQty || '') + "</td>"
-								+ "<td class='text-center'>"
-								+ (item.orderQty || '') + "</td>"
-								+ "<td class='text-center'>"
-								+ (item.transferQty || '') + "</td>"
-								+ "<td class='text-center'>"
-								+ (item.inboundQty || '') + "</td>"
-								+ "<td class='text-center'>"
-								+ (item.expectedQty || '') + "</td>"
-								+ "<td class='text-center'>"
-								+ (item.receivedQty || '') + "</td>"
-								+ "<td class='text-center'>"
-								+ (item.deliveryQty || '') + "</td>"
-								+ "<td class='text-center'>"
-								+ (item.shipmentQty || '') + "</td>"
-								+ "<td class='text-center'>"
-								+ (item.otherQty || '') + "</td>"
-								+ "<td class='text-center'>"
-								+ (item.expectedOutQty || '') + "</td>";
+						tr.innerHTML = '<td class="text-center">'
+								+ (item.warehouseName || '') + '</td>'
+								+ '<td class="text-center">'
+								+ (item.warehouseId || '') + '</td>'
+								+ '<td class="text-center">'
+								+ (item.assetClass || '') + '</td>'
+								+ '<td class="text-center">'
+								+ (item.itemName || '') + '</td>'
+								+ '<td class="text-center">'
+								+ (item.spec || '') + '</td>'
+								+ '<td class="text-center">'
+								+ (item.itemId || '') + '</td>'
+								+ '<td class="text-center">'
+								+ (item.baseUnit || '') + '</td>'
+								+ '<td class="text-center">'
+								+ (item.safetyQty || '') + '</td>'
+								+ '<td class="text-center">'
+								+ (item.availableQty || '') + '</td>'
+								+ '<td class="text-center">'
+								+ (item.expectedQty || '') + '</td>'
+								+ '<td class="text-center">'
+								+ (item.expectedOutQty || '') + '</td>'
+								+ '<td class="text-center">'
+								+ (item.requestQty || '') + '</td>'
+								+ '<td class="text-center">'
+								+ (item.orderQty || '') + '</td>'
+								+ '<td class="text-center">'
+								+ (item.transferQty || '') + '</td>'
+								+ '<td class="text-center">'
+								+ (item.inboundQty || '') + '</td>'
+								+ '<td class="text-center">'
+								+ (item.expectedQty || '') + '</td>'
+								+ '<td class="text-center">'
+								+ (item.receivedQty || '') + '</td>'
+								+ '<td class="text-center">'
+								+ (item.deliveryQty || '') + '</td>'
+								+ '<td class="text-center">'
+								+ (item.shipmentQty || '') + '</td>'
+								+ '<td class="text-center">'
+								+ (item.otherQty || '') + '</td>'
+								+ '<td class="text-center">'
+								+ (item.expectedOutQty || '') + '</td>';
 
+						tr.onclick = function() {
+							row_Click(this);
+						}
 						tbody.appendChild(tr);
 					});
+
+					document.getElementById("inbound-tbody").innerHTML = "";
+					document.getElementById("outbound-tbody").innerHTML = "";
+				},
+				error : function(xhr, status, error) {
+					console.error("エラーが発生しました。", error);
 				}
 			});
 		}
 
-		function openWarehousePopup() {
-			window.open("/popup/warehousePopup", "warehouseSearchPopup",
-					"width=600,height=500,scrollbars=yes,resizable=yes");
-		}
-		function openBigCategoryPopup() {
-			window.open("/popup/category_popup_big", "bigCategorySearchPopup",
-					"width=600,height=500,scrollbars=yes,resizable=yes");
-		}
-		function openMidCategoryPopup() {
-			window.open("/popup/category_popup_mid", "midCategorySearchPopup",
-					"width=600,height=500,scrollbars=yes,resizable=yes");
-		}
-		function openSmallCategoryPopup() {
-			window.open("/popup/category_popup_small",
-					"smallCategorySearchPopup",
-					"width=600,height=500,scrollbars=yes,resizable=yes");
-		}
-		function openItemNamePopup() {
-			window.open("/popup/item_name_popup", "itemNameSearchPopup",
-					"width=600,height=500,scrollbars=yes,resizable=yes");
-		}
+		// =============================
+		// 행 클릭시 상세조회 (行クリック → 詳細照会)
+		// =============================
+		function row_Click(row) {
 
-		// ✅ 행 더블클릭 시 상세 조회
-		$("#result-tbody").on("dblclick", "tr", function() {
-			const itemId = $(this).find("td").eq(5).text().trim(); // 품번
-			const warehouseId = $(this).find("td").eq(1).text().trim(); // 창고코드
-			if (itemId && warehouseId) {
+			console.log(row);
+
+			const data = Array.from(row.cells).map(function(td) {
+				const hidden = td.querySelector('input[type=hidden]');
+				return hidden ? hidden.value : td.textContent.trim();
+			});
+
+			const warehouseId = data[1]; // hidden에 넣은 warehouseId (hiddenに入れたwarehouseId)
+			const itemId = data[5]; // 품번 (6번째 열)　＝品番（6列目）
+
+			if (warehouseId && itemId) {
 				loadInbound(itemId, warehouseId);
 				loadOutbound(itemId, warehouseId);
 			}
-		});
+		}
 
-		// ✅ 입고예정 조회 (item_Search 방식)
+		// =============================
+		// 입고예정조회 (入庫予定照会)
+		// =============================
 		function loadInbound(itemId, warehouseId) {
 			$.ajax({
 				url : "/inbound/list",
@@ -452,17 +475,11 @@
 				dataType : "json",
 				success : function(result) {
 					const tbody = document.getElementById("inbound-tbody");
-					tbody.innerHTML = ""; // 기존 내용 초기화
-
-					// 항상 3개의 빈 로우 확보
-					const totalRows = result.length + 3;
-
-					// 결과 데이터 표시
+					tbody.innerHTML = "";
 					result.forEach(function(row) {
 						const dateStr = row.inboundDate ? new Date(
 								row.inboundDate).toISOString().slice(0, 10)
 								: '';
-
 						const tr = document.createElement("tr");
 						tr.innerHTML = '<td class="text-center">' + dateStr
 								+ '</td>' + '<td class="text-center">'
@@ -473,26 +490,16 @@
 								+ (row.inboundDetailId || '') + '</td>'
 								+ '<td class="text-center">' + (row.note || '')
 								+ '</td>';
-
 						tbody.appendChild(tr);
 					});
-
-					// 빈 로우 채우기
-					const emptyRows = totalRows - result.length;
-					for (let i = 0; i < emptyRows; i++) {
-						const tr = document.createElement("tr");
-						tr.innerHTML = '<td class="text-center">&nbsp;</td>'
-								.repeat(5);
-						tbody.appendChild(tr);
-					}
-				},
-				error : function() {
-					alert("입고예정 데이터를 불러오는데 실패했습니다.");
 				}
+
 			});
 		}
 
-		// ✅ 출고예정 조회 (item_Search 방식)
+		// =============================
+		// 출고예정조회(出庫予定照会)
+		// =============================
 		function loadOutbound(itemId, warehouseId) {
 			$.ajax({
 				url : "/outbound/list",
@@ -504,15 +511,12 @@
 				dataType : "json",
 				success : function(result) {
 					const tbody = document.getElementById("outbound-tbody");
-					tbody.innerHTML = ""; // 기존 내용 초기화
-
-					const totalRows = result.length + 3;
+					tbody.innerHTML = "";
 
 					result.forEach(function(row) {
 						const dateStr = row.outboundDate ? new Date(
 								row.outboundDate).toISOString().slice(0, 10)
 								: '';
-
 						const tr = document.createElement("tr");
 						tr.innerHTML = '<td class="text-center">' + dateStr
 								+ '</td>' + '<td class="text-center">'
@@ -523,23 +527,96 @@
 								+ (row.outboundDetailId || '') + '</td>'
 								+ '<td class="text-center">' + (row.note || '')
 								+ '</td>';
-
 						tbody.appendChild(tr);
 					});
 
-					const emptyRows = totalRows - result.length;
-					for (let i = 0; i < emptyRows; i++) {
-						const tr = document.createElement("tr");
-						tr.innerHTML = '<td class="text-center">&nbsp;</td>'
-								.repeat(5);
-						tbody.appendChild(tr);
-					}
-				},
-				error : function() {
-					alert("출고예정 데이터를 불러오는데 실패했습니다.");
 				}
 			});
 		}
+
+		// =============================
+		// 팝업 (ポップアップ)
+		// =============================
+		function openPopup(url) {
+			var popupWidth = 900, popupHeight = 600;
+			var left = (screen.width - popupWidth) / 2;
+			var top = (screen.height - popupHeight) / 2;
+
+			window.open(url, "popupWindow", "width=" + popupWidth + ",height="
+					+ popupHeight + ",left=" + left + ",top=" + top
+					+ ",scrollbars=yes,resizable=yes");
+		}
+
+		function openWarehousePopup() {
+			openPopup("/popup/warehouse_popup");
+		}
+		function openBigCategoryPopup() {
+			openPopup("/popup/category_popup_big");
+		}
+		function openMidCategoryPopup() {
+			openPopup("/popup/category_popup_mid");
+		}
+		function openSmallCategoryPopup() {
+			openPopup("/popup/category_popup_small");
+		}
+		function openItemNamePopup() {
+			openPopup("/popup/item_name_popup");
+		}
+
+		//팝업에서 선택된 행 데이터가 부모창으로 넘어올 때 호출되는 콜백
+		//ポップアップで選択した行データが親画面へ渡される際のコールバック
+		function item_RowData(data) {
+			let targetId = "bigCategory"; 
+
+			// 데이터 배열 길이에 따라 어떤 입력칸에 넣을지 판단
+		    // 配列の長さによって、どの入力欄に値を入れるかを判定
+			if (data.length === 7) {
+				targetId = "itemName";
+			} else if (data.length === 2) {
+				targetId = "bigCategory";
+			} else if (data.length === 3) {
+				targetId = "midCategory";
+			} else if (data.length === 4) {
+				//창고 데이터인지 판단 (두 번째 값이 코드나 숫자 형태면)
+		        //倉庫データかどうかを判定（2番目の値がコードまたは数字の場合)
+				if (/^[A-Za-z]*\d+$/.test(data[1])) {
+					targetId = "warehouseName";
+				} else {
+					targetId = "smallCategory";
+				}
+			} else if (data.length === 5) {
+				targetId = "warehouseName";
+			}
+
+			//실제 입력할 텍스트 값 초기화
+		    //実際に入力するテキスト値を初期化
+			let textValue = "";
+
+			if (targetId === "itemName") {
+				textValue = data[2];
+			} else if (targetId === "warehouseName") {
+				textValue = data[0]; 
+			} else if (targetId === "smallCategory") {
+				textValue = data[3] || data[0];
+			} else if (targetId === "midCategory") {
+				textValue = data[2];
+			} else {
+				textValue = data[1] || data[0];
+			}
+
+			const inputEl = document.getElementById(targetId);
+			if (inputEl) {
+				inputEl.value = textValue;
+			}
+
+			// 자동 조회 실행
+			searchAvailable();
+		}
 	</script>
+</body>
+</html>
+
+
+
 </body>
 </html>

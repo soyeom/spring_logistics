@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
+import org.logistics.domain.InboundVO;
 import org.logistics.domain.OutboundVO;
 import org.logistics.service.OutboundService;
 
@@ -14,19 +14,10 @@ import org.logistics.service.OutboundService;
 public class OutboundController {
 
     @Autowired
-    private OutboundService outboundService;
+    private OutboundService service;
 
     @GetMapping("/list")
-    public List<OutboundVO> list(@RequestParam("itemId") int itemId,
-                                 @RequestParam(value="warehouseId", required=false) Integer warehouseId) {
-        Map<String, Object> params = new HashMap<>();
-        params.put("itemId", itemId);
-        if (warehouseId != null) {
-            params.put("warehouseId", warehouseId);
-        }
-
-        List<OutboundVO> list = outboundService.getByItemId(params);
-
-        return list;
+    public List<OutboundVO> list(@RequestParam Map<String, Object> params) {
+        return service.selectByItemId(params);
     }
 }

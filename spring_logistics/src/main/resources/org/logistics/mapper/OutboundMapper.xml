@@ -9,6 +9,7 @@
     <select id="selectByItemId" parameterType="map" resultType="org.logistics.domain.OutboundVO">
         SELECT d.out_id        AS outboundDetailId,
                d.item_id       AS itemId,
+               m.out_complete AS outboundComplete,
                m.out_type      AS outboundType,
                m.out_date      AS outboundDate,
                d.qty           AS outboundQty,

@@ -1,199 +1,183 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
- "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="org.logistics.mapper.PopupMapper">
-
-    <select id="warehouse_List" resultType="org.logistics.domain.WareHouseVO">
-        SELECT 
-            wd.warehouse_id AS warehouseId,
-            wd.warehouse_name AS warehouseName,
-            bu.bu_name AS buName,
-            wm.warehouse_internal_code AS warehouseInternalCode,
-            bu.bu_id AS buId,
-            wm.warehouse_master_id AS warehouseMasterId
-        FROM warehouse_detail wd
-        JOIN business_unit bu
-            ON wd.bu_id = bu.bu_id
-        JOIN warehouse_master wm
-            ON wd.warehouse_master_id = wm.warehouse_master_id
-           AND wd.bu_id = wm.bu_id
-        <where>
-            <if test="gubun == '10'">
-                CAST(wd.warehouse_id AS varchar(50)) LIKE '%' || #{text} || '%'
-            </if>
-            <if test="gubun == '20'">
-                wd.warehouse_name LIKE '%' || #{text} || '%'
-            </if>
-        </where>
-    </select>
-
-    <select id="contact_List" resultType="org.logistics.domain.PopupVO">
-        SELECT 
-            contact_id AS column1,
-            contact_name AS column2,
-            department AS column3,
-            phone AS column4,
-            mobile AS column5,
-            email AS column6
-        FROM contact
-        <where>
-            <if test="gubun == '10'">
-                contact_id LIKE '%' || #{text} || '%'
-            </if>
-            <if test="gubun == '20'">
-                contact_name LIKE '%' || #{text} || '%'
-            </if>
-        </where>
-    </select>
-
-    <select id="itemSmallcategory_List" resultType="org.logistics.domain.PopupVO">
-        SELECT 
-            im.small_category AS column1,  
-            im.mid_category   AS column2,  
-            im.big_category   AS column3  
-        FROM item_master im
-        <where>
-            <if test="gubun == '10'">
-                im.small_category LIKE '%' || #{text} || '%'
-            </if>
-            <if test="gubun == '20'">
-                im.mid_category LIKE '%' || #{text} || '%'
-            </if>
-            <if test="gubun == '30'">
-                im.big_category LIKE '%' || #{text} || '%'
-            </if>
-        </where>
-        GROUP BY im.small_category, im.mid_category, im.big_category
-        ORDER BY im.big_category, im.mid_category, im.small_category
-    </select>
-
-
-    <select id = "item_List" resultType = "org.logistics.domain.PopupVO">
-		SELECT item_Id as column1
-		     , item_name as column2
-		     , spec as column3
-		     , asset_class as column4
-		     , small_category as column5
-		     , base_unit as column6 
-		     , sales_unit as column7 
-		     , english_name as column8
-		     , safety_stock_qty as column9
-		     , (SELECT warehouse_name FROM warehouse_detail WHERE bu_id = a.bu_id AND warehouse_id = a.storage_location) as column10
-		FROM item_master a
-		
+	<select id="warehouse_List" resultType="org.logistics.domain.WareHouseVO">
+		SELECT
+			wd.warehouse_id AS warehouseId,
+			wd.warehouse_name AS warehouseName,
+			bu.bu_name AS buName,
+			wm.warehouse_internal_code AS warehouseInternalCode,
+			bu.bu_id AS buId,
+			wm.warehouse_master_id AS warehouseMasterId
+		FROM warehouse_detail wd
+		JOIN business_unit bu
+			ON wd.bu_id = bu.bu_id
+		JOIN warehouse_master wm
+			ON wd.warehouse_master_id = wm.warehouse_master_id
+			AND wd.bu_id = wm.bu_id
 		<where>
-	         <if test = "gubun == 10">
-	             item_Id LIKE '%' || #{text} || '%'
-	         </if>
-	         <if test = "gubun == 20">
-	         	item_name LIKE '%' || #{text} || '%'
-	         </if>
-     	</where>
-		
+			<if test="gubun == '10'">
+				CAST(wd.warehouse_id AS varchar(50)) LIKE '%' || #{text} || '%'
+			</if>
+			<if test="gubun == '20'">
+				wd.warehouse_name LIKE '%' || #{text} || '%'
+			</if>
+		</where>
 	</select>
-	
-	<select id = "out_Id_List" resultType = "org.logistics.domain.PopupVO">
-	
+
+	<select id="contact_List" resultType="org.logistics.domain.PopupVO">
+		SELECT
+			contact_id AS column1,
+			contact_name AS column2,
+			department AS column3,
+			phone AS column4,
+			mobile AS column5,
+			email AS column6
+		FROM contact
+		<where>
+			<if test="gubun == '10'">
+				contact_id LIKE '%' || #{text} || '%'
+			</if>
+			<if test="gubun == '20'">
+				contact_name LIKE '%' || #{text} || '%'
+			</if>
+		</where>
+	</select>
+
+	<select id="itemSmallcategory_List" resultType="org.logistics.domain.PopupVO">
+		SELECT
+			im.small_category AS column1,
+			im.mid_category AS column2,
+			im.big_category AS column3
+		FROM item_master im
+		<where>
+			<if test="gubun == '10'">
+				im.small_category LIKE '%' || #{text} || '%'
+			</if>
+			<if test="gubun == '20'">
+				im.mid_category LIKE '%' || #{text} || '%'
+			</if>
+			<if test="gubun == '30'">
+				im.big_category LIKE '%' || #{text} || '%'
+			</if>
+		</where>
+		GROUP BY im.small_category, im.mid_category, im.big_category
+		ORDER BY im.big_category, im.mid_category, im.small_category
+	</select>
+
+	<select id="item_List" resultType="org.logistics.domain.PopupVO">
+		SELECT item_Id as column1
+			, item_name as column2
+			, spec as column3
+			, asset_class as column4
+			, small_category as column5
+			, base_unit as column6
+			, sales_unit as column7
+			, english_name as column8
+			, safety_stock_qty as column9
+			, (SELECT warehouse_name FROM warehouse_detail WHERE bu_id = a.bu_id AND warehouse_id = a.storage_location) as column10
+		FROM item_master a
+		<where>
+			<if test="gubun == 10">
+				item_Id LIKE '%' || #{text} || '%'
+			</if>
+			<if test="gubun == 20">
+				item_name LIKE '%' || #{text} || '%'
+			</if>
+		</where>
+	</select>
+
+	<select id="out_Id_List" resultType="org.logistics.domain.PopupVO">
 		SELECT out_id as column1
-			 , bu_id as column2
-			 , (SELECT bu_Name FROM business_unit WHERE bu_id = a.bu_Id) as column15
-			 , TO_CHAR(out_date, 'yyyy-MM-dd') as column3
-		     , local_flag as column4
-		     , case when local_flag = '10' then '내수' when local_flag = '20' then 'Local(후LC)' when local_flag = '30' then 'Local(선LC)' end as column5
-		     , party_id as column6
-		     , (SELECT party_name FROM party WHERE bu_id = a.bu_id AND party_id = a.party_id) as column7
-		     , contact_id as column8
-		     , (SELECT contact_name FROM contact WHERE bu_id = a.bu_Id AND contact_id = a.contact_id) as column9
-		     , (SELECT department FROM contact WHERE bu_id = a.bu_Id AND contact_id = a.contact_id) as column10
-		     , out_type as column11
-		     , case when out_type = '10' then '수주' when out_type = '20' then '적송요청' when out_type = '30' then '위탁출고요청' when out_type = '40' then '기타출고요청' end as column12
-		     , consignment_gubun as column13
-		     , case when consignment_gubun = '10' then '일반' when consignment_gubun = '20' then '위탁' when consignment_gubun = '30' then '판매후보관' end as column14
-		     , out_complete, created_at
+			, bu_id as column2
+			, (SELECT bu_Name FROM business_unit WHERE bu_id = a.bu_Id) as column15
+			, TO_CHAR(out_date, 'yyyy-MM-dd') as column3
+			, local_flag as column4
+			, case when local_flag = '10' then '내수' when local_flag = '20' then 'Local(후LC)' when local_flag = '30' then 'Local(선LC)' end as column5
+			, party_id as column6
+			, (SELECT party_name FROM party WHERE bu_id = a.bu_id AND party_id = a.party_id) as column7
+			, contact_id as column8
+			, (SELECT contact_name FROM contact WHERE bu_id = a.bu_Id AND contact_id = a.contact_id) as column9
+			, (SELECT department FROM contact WHERE bu_id = a.bu_Id AND contact_id = a.contact_id) as column10
+			, out_type as column11
+			, case when out_type = '10' then '수주' when out_type = '20' then '적송요청' when out_type = '30' then '위탁출고요청' when out_type = '40' then '기타출고요청' end as column12
+			, consignment_gubun as column13
+			, case when consignment_gubun = '10' then '일반' when consignment_gubun = '20' then '위탁' when consignment_gubun = '30' then '판매후보관' end as column14
+			, out_complete, created_at
 		FROM out_master a
 		<where>
-	        <if test = "gubun == 10">
-	            bu_Id LIKE '%' || #{text} || '%'
-	        </if>
-	        <if test = "gubun == 20">
-	        	out_Id LIKE '%' || #{text} || '%'
-	        </if>
-     	</where>
-	
+			<if test="gubun == 10">
+				bu_Id LIKE '%' || #{text} || '%'
+			</if>
+			<if test="gubun == 20">
+				out_Id LIKE '%' || #{text} || '%'
+			</if>
+		</where>
 	</select>
-	
-	<select id = "party_List" resultType = "org.logistics.domain.PopupVO">
-	
-		SELECT bu_Id as column1      
-	         , (SELECT bu_Name FROM business_unit WHERE bu_id = a.bu_Id) as column2
-	     	 , party_Id as column3      
-		     , party_Name as column4    
-		     , party_type as column5    
-		     , case when party_type = '10' then '납품' when party_type = '20' then '영업' when party_type = '30' then '거래처' when party_type = '40' then '공급바' end as column6
-		     , business_registration_no as column7
-		     , trade_name as column8    
-		     , short_name as column9    
-		     , address as column10      
-		     , phone as column11        
-		     , email as column12        
-		FROM party a
 
+	<select id="party_List" resultType="org.logistics.domain.PopupVO">
+		SELECT bu_Id as column1
+			, (SELECT bu_Name FROM business_unit WHERE bu_id = a.bu_Id) as column2
+			, party_Id as column3
+			, party_Name as column4
+			, party_type as column5
+			, case when party_type = '10' then '납품' when party_type = '20' then '영업' when party_type = '30' then '거래처' when party_type = '40' then '공급바' end as column6
+			, business_registration_no as column7
+			, trade_name as column8
+			, short_name as column9
+			, address as column10
+			, phone as column11
+			, email as column12
+		FROM party a
 		<where>
-         	<if test = "gubun == 10">
-	            bu_Id LIKE '%' || #{text} || '%'
-	        </if>
-	        <if test = "gubun == 20">
-	        	party_name LIKE '%' || #{text} || '%'
-	        </if>
-	        <if test = "gubun == 30">
-	        	party_Id LIKE '%' || #{text} || '%'
-	        </if>
-     	</where>
+			<if test="gubun == 10">
+				bu_Id LIKE '%' || #{text} || '%'
+			</if>
+			<if test="gubun == 20">
+				party_name LIKE '%' || #{text} || '%'
+			</if>
+			<if test="gubun == 30">
+				party_Id LIKE '%' || #{text} || '%'
+			</if>
+		</where>
 	</select>
-	
-	
-	<select id = "category_List_Big" resultType = "org.logistics.domain.PopupVO">
-	
+
+	<select id="category_List_Big" resultType="org.logistics.domain.PopupVO">
 		SELECT DISTINCT big_category as column2
 		FROM item_master
 		<where>
-	         <if test = "gubun == 10">
-	             big_category LIKE '%' || #{text} || '%'
-	         </if>
-     	</where>
-	
+			<if test="gubun == 10">
+				big_category LIKE '%' || #{text} || '%'
+			</if>
+		</where>
 	</select>
-	
-	<select id = "category_List_Mid" resultType = "org.logistics.domain.PopupVO">
-	
+
+	<select id="category_List_Mid" resultType="org.logistics.domain.PopupVO">
 		SELECT DISTINCT big_category as column2
-		     , mid_category as column3
+			, mid_category as column3
 		FROM item_master
 		<where>
-	         <if test = "gubun == 10">
-	             mid_category LIKE '%' || #{text} || '%'
-	         </if>
-     	</where>
-	
+			<if test="gubun == 10">
+				mid_category LIKE '%' || #{text} || '%'
+			</if>
+		</where>
 	</select>
-	
-	<select id = "category_List_Small" resultType = "org.logistics.domain.PopupVO">
-	
+
+	<select id="category_List_Small" resultType="org.logistics.domain.PopupVO">
 		SELECT DISTINCT big_category as column2
-		     , mid_category as column3
-		     , small_category as column4
+			, mid_category as column3
+			, small_category as column4
 		FROM item_master
 		<where>
-	         <if test = "gubun == 10">
-	             small_category LIKE '%' || #{text} || '%'
-	         </if>
-     	</where>
-	
+			<if test="gubun == 10">
+				small_category LIKE '%' || #{text} || '%'
+			</if>
+		</where>
 	</select>
-	
-	<select id = "itemname_List" resultType = "org.logistics.domain.PopupVO">
-	
+
+	<select id="itemname_List" resultType="org.logistics.domain.PopupVO">
 		SELECT item_id as column1
 			, spec as column2
 			, item_name as column3
@@ -202,94 +186,103 @@
 			, base_unit as column6
 			, english_name as column7
 		FROM item_master
-		
 		<where>
-			<if test = "gubun == 10">
+			<if test="gubun == 10">
 				item_name LIKE '%' || #{text} || '%'
 			</if>
-			<if test = "gubun == 20">
+			<if test="gubun == 20">
 				item_id LIKE '%' || #{text} || '%'
 			</if>
-			<if test = "gubun == 30">
+			<if test="gubun == 30">
 				spec LIKE '%' || #{text} || '%'
 			</if>
-			<if test = "gubun == 40">
+			<if test="gubun == 40">
 				english_name LIKE '%' || #{text} || '%'
 			</if>
 		</where>
-	
 	</select>
-    
-    <select id="warehousecode_List" resultType="org.logistics.domain.PopupVO">
-        SELECT DISTINCT warehouse_internal_code AS column1
-              , warehouse_internal_code         AS column2
-        FROM warehouse_master
-        <where>
-            <if test="gubun == '10'">
-                warehouse_internal_code LIKE '%' || #{text} || '%'
-            </if>
-        </where>
-    </select>
-    
-    <select id="warehousename_List" resultType="org.logistics.domain.PopupVO">
-        SELECT DISTINCT w.warehouse_id      AS column1
-              , w.warehouse_name          AS column2
-              , w.bu_id                   AS column3
-        FROM warehouse_detail w
-        <where>
-            <if test="gubun == '10'">
-                w.warehouse_name LIKE '%' || #{text} || '%'
-            </if>
-        </where>
-  </select>
-	
-	
-	 <select id="inboundMaster_List" resultType="org.logistics.domain.PopupVO">
-    SELECT ib.inbound_id         AS column1,
-           bu.bu_name            AS column2,
-           TO_CHAR(ib.inbound_date, 'YYYY-MM-DD') AS column3,
-           ib.local_flag         AS column4,
-           p.party_name          AS column5,
-           c.contact_name        AS column6,
-           ib.inbound_type       AS column7,
-           ib.inbound_complete AS column8,
-           TO_CHAR(ib.created_at, 'YYYY-MM-DD') AS column9,
-           p.party_id            AS column10,    -- 거래처번호
-           c.department          AS column11,    -- 부서
-           bu.bu_id              AS column12
-    FROM inbound_master ib
-    JOIN business_unit bu ON ib.bu_id = bu.bu_id
-    JOIN party p           ON ib.party_id = p.party_id
-    JOIN contact c         ON ib.contact_id = c.contact_id 
-    <where>
-        <if test="gubun == '10'">
-            ib.inbound_id LIKE '%' || #{text} || '%'
-        </if>
-        <if test="gubun == '20'">
-            bu.bu_name LIKE '%' || #{text} || '%'
-        </if>
-        <if test="gubun == '30'">
-            TO_CHAR(ib.inbound_date, 'YYYY-MM-DD') LIKE '%' || #{text} || '%'
-        </if>
-        <if test="gubun == '40'">
-            ib.local_flag LIKE '%' || #{text} || '%'
-        </if>
-        <if test="gubun == '50'">
-            p.party_name LIKE '%' || #{text} || '%'
-        </if>
-        <if test="gubun == '60'">
-            c.contact_name LIKE '%' || #{text} || '%'
-        </if>
-        <if test="gubun == '70'">
-            ib.inbound_type LIKE '%' || #{text} || '%'
-        </if>
-        <if test="gubun == '80'">
-            ib.inbound_complete LIKE '%' || #{text} || '%'
-        </if>
-        <if test="gubun == '90'">
-            TO_CHAR(ib.created_at, 'YYYY-MM-DD') LIKE '%' || #{text} || '%'
-        </if>
-    </where>
-</select>
+
+	<select id="warehousecode_List" resultType="org.logistics.domain.PopupVO">
+		SELECT DISTINCT warehouse_internal_code AS column1
+			, warehouse_internal_code AS column2
+		FROM warehouse_master
+		<where>
+			<if test="gubun == '10'">
+				warehouse_internal_code LIKE '%' || #{text} || '%'
+			</if>
+		</where>
+	</select>
+
+	<select id="warehousename_List" resultType="org.logistics.domain.PopupVO">
+		SELECT
+			wd.warehouse_name AS column1,
+			wd.warehouse_id AS column2,
+			bu.bu_name AS column3,
+			wm.warehouse_internal_code AS column4,
+			bu.bu_id AS column5,
+			wm.warehouse_master_id AS column6
+		FROM warehouse_detail wd
+		JOIN business_unit bu
+			ON wd.bu_id = bu.bu_id
+		JOIN warehouse_master wm
+			ON wd.warehouse_master_id = wm.warehouse_master_id
+			AND wd.bu_id = wm.bu_id
+		<where>
+			<if test="gubun == '10'">
+				wd.warehouse_id LIKE '%' || #{text} || '%'
+			</if>
+			<if test="gubun == '20'">
+				wd.warehouse_name LIKE '%' || #{text} || '%'
+			</if>
+		</where>
+	</select>
+
+	<select id="inboundMaster_List" resultType="org.logistics.domain.PopupVO">
+		SELECT ib.inbound_id AS column1,
+			bu.bu_name AS column2,
+			TO_CHAR(ib.inbound_date, 'YYYY-MM-DD') AS column3,
+			ib.local_flag AS column4,
+			p.party_name AS column5,
+			c.contact_name AS column6,
+			ib.inbound_type AS column7,
+			ib.inbound_complete AS column8,
+			TO_CHAR(ib.created_at, 'YYYY-MM-DD') AS column9,
+			p.party_id AS column10, -- 거래처번호
+			c.department AS column11, -- 부서
+			bu.bu_id AS column12
+		FROM inbound_master ib
+		JOIN business_unit bu ON ib.bu_id = bu.bu_id
+		JOIN party p ON ib.party_id = p.party_id
+		JOIN contact c ON ib.contact_id = c.contact_id
+		<where>
+			<if test="gubun == '10'">
+				ib.inbound_id LIKE '%' || #{text} || '%'
+			</if>
+			<if test="gubun == '20'">
+				bu.bu_name LIKE '%' || #{text} || '%'
+			</if>
+			<if test="gubun == '30'">
+				TO_CHAR(ib.inbound_date, 'YYYY-MM-DD') LIKE '%' || #{text} || '%'
+			</if>
+			<if test="gubun == '40'">
+				ib.local_flag LIKE '%' || #{text} || '%'
+			</if>
+			<if test="gubun == '50'">
+				p.party_name LIKE '%' || #{text} || '%'
+			</if>
+			<if test="gubun == '60'">
+				c.contact_name LIKE '%' || #{text} || '%'
+			</if>
+			<if test="gubun == '70'">
+				ib.inbound_type LIKE '%' || #{text} || '%'
+			</if>
+			<if test="gubun == '80'">
+				ib.inbound_complete LIKE '%' || #{text} || '%'
+			</if>
+			<if test="gubun == '90'">
+				TO_CHAR(ib.created_at, 'YYYY-MM-DD') LIKE '%' || #{text} || '%'
+			</if>
+		</where>
+	</select>
 
 </mapper>

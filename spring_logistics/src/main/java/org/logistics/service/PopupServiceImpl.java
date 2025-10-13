@@ -26,11 +26,6 @@ public class PopupServiceImpl implements PopupService {
 	}
 
 	@Override
-	public List<PopupVO> warehouse_List(String gubun, String text) {
-		return popupMapper.warehouse_List(gubun, text);
-	}
-
-	@Override
 	public List<PopupVO> itemSmallcategory_List(String gubun, String text) {
 		return popupMapper.itemSmallcategory_List(gubun, text);
 	}
@@ -71,8 +66,10 @@ public class PopupServiceImpl implements PopupService {
 	}
 	
 	@Override
-	public List<PopupVO> warehousename_List(String gubun, String text) {
-		return popupMapper.warehousename_List(gubun, text);
+	public List<PopupVO> warehouse_List(String gubun, String text) {
+		
+		return popupMapper.warehouse_List(gubun, text);
+
 	}
 
 	@Override
