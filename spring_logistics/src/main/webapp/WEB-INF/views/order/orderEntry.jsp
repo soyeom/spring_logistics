@@ -289,9 +289,9 @@
 						<div class="filters-value">
 							<input type="text" name="department" placeholder="部署を選択">
 							<!-- 부서 선택 -->
-							<img
-								src="https://cdn-icons-png.flaticon.com/512/16799/16799970.png"
-								alt="search" class="search-icon" onclick="">
+<!-- 							<img -->
+<!-- 								src="https://cdn-icons-png.flaticon.com/512/16799/16799970.png" -->
+<!-- 								alt="search" class="search-icon" onclick=""> -->
 						</div>
 					</div>
 
@@ -319,9 +319,9 @@
 						<div class="filters-value">
 							<input type="text" name="partyId" placeholder="取引先番号">
 							<!-- 거래처 번호 -->
-							<img
-								src="https://cdn-icons-png.flaticon.com/512/16799/16799970.png"
-								alt="search" class="search-icon" onclick="">
+<!-- 							<img -->
+<!-- 								src="https://cdn-icons-png.flaticon.com/512/16799/16799970.png" -->
+<!-- 								alt="search" class="search-icon" onclick=""> -->
 						</div>
 					</div>
 				</div>
@@ -586,18 +586,18 @@
 										.append("<td>" + (row.itemId || '')
 												+ "</td>");
 								tr.append("<td>" + (row.spec || '') + "</td>");
-
-
+								}
 		}
 	</script>
 
 <script>
 //✅ ポップアップを開く / 팝업 열기
 function openInboundPopup() {
-    window.open(
+
+	window.open(
         "/popup/inbound_popup",
         "inboundPopup",
-        "width=1000,height=600,scrollbars=yes,resizable=yes"
+        "width=900,height=600,scrollbars=yes,resizable=yes"
     );
 }
 
