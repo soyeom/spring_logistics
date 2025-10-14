@@ -13,7 +13,7 @@
 
 	<!-- ================== 🧩 OrderDTO 매핑 ================== -->
 	<!-- ✅ マスタ(受注情報)の結果マッピング / 수주 마스터 정보 매핑 -->
-	<resultMap id="OrderResultMap" type="org.logistics.model.OrderDTO">
+	<resultMap id="OrderResultMap" type="org.logistics.domain.OrderDTO">
 		<id property="orderId" column="inbound_id" />
 		<result property="buId" column="bu_id" />
 		<result property="inboundDate" column="inbound_date" />
@@ -32,7 +32,7 @@
 
 	<!-- ================== 🧩 OrderDetailDTO 매핑 ================== -->
 	<!-- ✅ 明細(受注明細)の結果マッピング / 수주 상세정보 매핑 -->
-	<resultMap id="OrderDetailResultMap" type="org.logistics.model.OrderDetailDTO">
+	<resultMap id="OrderDetailResultMap" type="org.logistics.domain.OrderDetailDTO">
 		<id property="inboundDetailId" column="inbound_detail_id" />
 		<result property="inboundId" column="inbound_id" />
 		<result property="buId" column="bu_id" />
@@ -54,7 +54,7 @@
 
 	<!-- ================== 📝 마스터 등록 ================== -->
 	<!-- ✅ マスタ登録SQL / 수주 마스터 신규 등록 -->
-	<insert id="insertOrder" parameterType="org.logistics.model.OrderDTO">
+	<insert id="insertOrder" parameterType="org.logistics.domain.OrderDTO">
 		INSERT INTO inbound_master (
 			inbound_id, bu_id, inbound_date, local_flag,
 			party_id, contact_id, inbound_type,
@@ -83,7 +83,7 @@
 
 	<!-- ================== ✏️ 마스터 수정 ================== -->
 	<!-- ✅ マスタ更新SQL / 수주 마스터 수정 -->
-	<update id="updateOrder" parameterType="org.logistics.model.OrderDTO">
+	<update id="updateOrder" parameterType="org.logistics.domain.OrderDTO">
 		UPDATE inbound_master
 		SET inbound_date = TO_DATE(#{inboundDate}, 'YYYY-MM-DD'),
 		    local_flag = #{localFlag},
@@ -107,7 +107,7 @@
 
 	<!-- ================== 🧾 디테일 등록 ================== -->
 	<!-- ✅ 明細登録SQL / 수주 상세 신규 등록 -->
-	<insert id="insertOrderDetail" parameterType="org.logistics.model.OrderDetailDTO">
+	<insert id="insertOrderDetail" parameterType="org.logistics.domain.OrderDetailDTO">
 		INSERT INTO inbound_detail (
 			inbound_detail_id, bu_id, inbound_id, item_id, qty,
 			surtax_yn, unit_price, amount, note, warehouse_id
@@ -228,7 +228,7 @@
 
 	<!-- ================== ⚙️ 공통 마스터 조회 ================== -->
 	<!-- ✅ 共通マスタ参照SQL / 공통 코드 조회 -->
-	<select id="getBusinessUnitList" resultType="org.logistics.model.BusinessUnitVO">
+	<select id="getBusinessUnitList" resultType="org.logistics.domain.BusinessUnitVO">
 		SELECT bu_id AS buId, bu_name AS buName
 		FROM business_unit
 	</select>
@@ -256,7 +256,7 @@
 
 	<!-- ================== 📑 수주 디테일 확장 조회 ================== -->
 	<!-- ✅ inbound_detail + item_master + party JOIN / 수주 상세 + 품목정보 + 거래처정보 -->
-	<select id="getOrderList" resultType="org.logistics.model.OrderDetailDTO">
+	<select id="getOrderList" resultType="org.logistics.domain.OrderDetailDTO">
 		SELECT 
 			a.inbound_detail_id AS inboundDetailId,
 			a.inbound_id        AS inboundId,

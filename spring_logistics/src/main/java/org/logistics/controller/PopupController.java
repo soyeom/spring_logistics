@@ -73,6 +73,20 @@ public class PopupController {
 	public List<PopupVO> out_Id_list(@RequestParam(required = false) String gubun, @RequestParam(required = false) String text) {
 		return popupService.out_Id_List(gubun, text);
 	}
+	
+	// 담당자
+	@GetMapping("/currency_popup")
+	public void currency_Popup(Model model, @RequestParam(required = false) String gubun,
+			@RequestParam(required = false) String text) {
+		model.addAttribute("list", popupService.currency_List(gubun, text)); // 마스터 조회
+	}
+
+	@GetMapping("/currency_list")
+	@ResponseBody
+	public List<PopupVO> currency_list(@RequestParam(required = false) String gubun,
+			@RequestParam(required = false) String text) {
+		return popupService.currency_List(gubun, text);
+	}
 
 	// 품목 대
 	@GetMapping("/category_popup_big")

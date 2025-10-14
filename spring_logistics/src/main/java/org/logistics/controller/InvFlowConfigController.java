@@ -130,30 +130,80 @@ public class InvFlowConfigController {
 		
 		return invFlowConfigService.getOutBoundDetail2(bu_Id, out_Id);
 	}
-	
-//	@GetMapping("/outbound_detail2")
-//	@ResponseBody
-//	public List<OutBoundMasterVO> outBoundDetailSearch2(@RequestParam("bu_Id") String bu_Id, @RequestParam("out_Id") String out_Id) {
-//
-//		// return invFlowConfigService.getOutBoundDetail2(bu_Id, out_Id);
-//	}
-	
+
 	@PostMapping("/outbound_save")
 	@ResponseBody
 	public String ountBound_Save(@ModelAttribute OutBoundMasterVO obm) {
-		invFlowConfigService.outBoundMasterSave(obm);
+		
+		String out_Id = obm.getOut_Id();
+		String new_Out_Id = "";
+		
+		if ("자동생성".equals(out_Id)) {
+			new_Out_Id = invFlowConfigService.new_Out_Id(obm.getBu_Id());
+			
+			Long newOutId = Long.valueOf(new_Out_Id); 
+			obm.setLong_Out_Id(newOutId);
+			
+			Long newBuId = Long.valueOf(obm.getBu_Id());
+			obm.setLong_Bu_Id(newBuId);
+			
+			Long newPartyId = Long.valueOf(obm.getParty_Id());
+			obm.setLong_Party_Id(newPartyId);
+			
+			Long newContactId = Long.valueOf(obm.getContact_Id());
+			obm.setLong_Contact_Id(newContactId);
+			
+			invFlowConfigService.newOutBoundMasterSave(obm);
+		} else {
+			new_Out_Id = obm.getOut_Id();
+			Long newOutId = Long.valueOf(obm.getOut_Id()); 
+			obm.setLong_Out_Id(newOutId);
+			
+			Long newBuId = Long.valueOf(obm.getBu_Id());
+			obm.setLong_Bu_Id(newBuId);
+			
+			Long newPartyId = Long.valueOf(obm.getParty_Id());
+			obm.setLong_Party_Id(newPartyId);
+			
+			Long newContactId = Long.valueOf(obm.getContact_Id());
+			obm.setLong_Contact_Id(newContactId);
+			
+			invFlowConfigService.updateOutBoundMasterSave(obm);
+		}
+		
+		return new_Out_Id;
+	}
+	
+	@PostMapping("outbound_save_detail")
+	@ResponseBody
+	public String outBound_Save_Detail1(@RequestBody List<List<String>> allData) {
+		
+		if (allData != null && !allData.isEmpty()) {
+	        // 첫 번째 row
+	        List<String> firstRow = allData.get(0);
+
+	        String bu_Id = firstRow.get(1);
+	        String Out_Id = firstRow.get(2);
+
+	        // 조건 삭제
+	        invFlowConfigService.outBound_Delete_Detail(bu_Id, Out_Id);
+	    }
+		
+		for (List<String> row: allData) {
+			OutBoundMasterVO vo = new OutBoundMasterVO();
+			
+			vo.setParty_Id(row.get(0));
+			vo.setBu_Id(row.get(1));
+			vo.setOut_Id(row.get(2));
+			vo.setItem_Id(row.get(3));
+			vo.setWareHouse_Id(row.get(18));
+			vo.setQty(row.get(8));
+			vo.setUnit_Price(row.get(10));
+			vo.setSurtax_Yn(row.get(11));
+			
+			invFlowConfigService.outBound_Save_Detail(vo);
+		}
 		
 		return "success";
 	}
-	
-	
-	// 공통팝업
-	// 아이템목록 조회
-	@GetMapping("/popup_Item")
-	@ResponseBody
-	public List<PopupItemVO> popup_Item() {
-		return invFlowConfigService.popupItemList();
-	}
-	
-	
 }

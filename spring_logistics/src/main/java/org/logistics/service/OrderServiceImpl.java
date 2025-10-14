@@ -2,10 +2,10 @@ package org.logistics.service;
 
 import java.util.List;
 
+import org.logistics.domain.BusinessUnitVO;
+import org.logistics.domain.OrderDTO;
+import org.logistics.domain.OrderDetailDTO;
 import org.logistics.mapper.OrderMapper;
-import org.logistics.model.BusinessUnitVO;
-import org.logistics.model.OrderDTO;
-import org.logistics.model.OrderDetailDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

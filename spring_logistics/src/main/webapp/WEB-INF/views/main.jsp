@@ -29,7 +29,7 @@
                 <span class="card__number">2</span>
                 <h2 class="card__title">실재고/자산재고 관리</h2>
             </article>
-            <article class="card card--teal" tabindex="0" role="button" aria-label="재고 출하통제">
+            <article class="card card--teal" tabindex="0" role="button" aria-label="재고 출하통제" onclick="location.href='/txnCategory/list'">
                 <span class="card__number">3</span>
                 <h2 class="card__title">기타입출고 구분 설정</h2>
             </article>
