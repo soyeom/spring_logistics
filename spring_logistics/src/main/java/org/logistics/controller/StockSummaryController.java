@@ -2,7 +2,7 @@ package org.logistics.controller;
 
 import java.util.List;
 
-import org.logistics.domain.PopupItemVO;
+import org.logistics.domain.CommonVO;
 import org.logistics.domain.SearchCriteriaDto;
 import org.logistics.domain.StockLedgerResultDto;
 import org.logistics.domain.StockSummaryResultDto;
@@ -10,6 +10,7 @@ import org.logistics.service.StockSummaryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,7 +26,16 @@ public class StockSummaryController {
 
     // 在庫受払集計ページの表示
     @GetMapping("/summary")
-    public String showStockSummaryPage() {
+    public String showStockSummaryPage(Model model) {
+    	
+    	List<CommonVO> itemAssetClassList = stockSummaryService.getItemAssetClassList();
+    	List<CommonVO> businessBuNameList = stockSummaryService.getBusinessBuNameList();
+    	List<CommonVO> itemStatusList = stockSummaryService.getItemStatusList();
+    	
+    	model.addAttribute("itemAssetClassList", itemAssetClassList);
+    	model.addAttribute("businessBuNameList", businessBuNameList);
+    	model.addAttribute("itemStatusList", itemStatusList);
+    	
         return "stock/stockSummary";
     }
 
@@ -43,7 +53,18 @@ public class StockSummaryController {
     
     // 在庫元帳ページの表示
     @GetMapping("/ledger")
-    public String showStockLedgerPage() {
+    public String showStockLedgerPage(
+    	@RequestParam(value = "itemId", required = false) String itemId,
+    	@RequestParam(value = "itemName", required = false) String itemName,
+    	Model model) {
+    	
+    	List<CommonVO> businessBuNameList = stockSummaryService.getBusinessBuNameList();
+    	
+    	model.addAttribute("businessBuNameList", businessBuNameList);
+    	
+    	model.addAttribute("initialItemId", itemId);
+    	model.addAttribute("initialItemName", itemName);
+    		
         return "stock/stockLedger";
     }
     

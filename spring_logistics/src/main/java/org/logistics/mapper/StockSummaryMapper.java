@@ -1,9 +1,8 @@
 package org.logistics.mapper;
 
-import java.math.BigDecimal;
 import java.util.List;
 
-import org.apache.ibatis.annotations.Param;
+import org.logistics.domain.CommonVO;
 import org.logistics.domain.SearchCriteriaDto;
 import org.logistics.domain.StockLedgerResultDto;
 import org.logistics.domain.StockSummaryResultDto;
@@ -25,4 +24,14 @@ public interface StockSummaryMapper {
     
     // 繰越在庫 照会クエリ
     List<StockSummaryResultDto> selectCarriedOverStock(SearchCriteriaDto criteria);
+    
+    // 品目資産分類リストを照会するメソッドを追加
+    /**
+     * 品目資産分類のコードリストを照会します。
+     * @return 品目資産分類リスト (例: PopupItemVO リスト)
+     */
+    List<CommonVO> selectItemAssetClassList();
+    List<CommonVO> selectBusinessBuNameList();
+    List<CommonVO> selectItemStatusList();
+    List<CommonVO> selectUnitStandardList();
 }

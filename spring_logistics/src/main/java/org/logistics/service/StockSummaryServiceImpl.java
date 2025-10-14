@@ -1,7 +1,9 @@
 package org.logistics.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import org.logistics.domain.CommonVO;
 import org.logistics.domain.SearchCriteriaDto;
 import org.logistics.domain.StockLedgerResultDto;
 import org.logistics.domain.StockSummaryResultDto;
@@ -28,6 +30,22 @@ public class StockSummaryServiceImpl implements StockSummaryService {
     @Override
     public List<StockLedgerResultDto> getStockLedgerList(SearchCriteriaDto criteria) {
         return stockSummaryMapper.selectStockLedgerList(criteria);
+    }
+    
+    // 品目資産分類リストを取得
+    @Override
+    public List<CommonVO> getItemAssetClassList() {
+        return stockSummaryMapper.selectItemAssetClassList(); 
+    }
+    
+    @Override
+    public List<CommonVO> getBusinessBuNameList() {
+    	return stockSummaryMapper.selectBusinessBuNameList(); 
+    }
+    
+    @Override
+    public List<CommonVO> getItemStatusList() {
+    	return stockSummaryMapper.selectItemStatusList(); 
     }
     
 }

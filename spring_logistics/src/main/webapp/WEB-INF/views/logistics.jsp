@@ -57,7 +57,7 @@
         <div class="menu-item">
             <div class="title">사업단위별 수불 집계 조회</div>
             <div class="submenu">
-                <div><a href="#">사업단위별 수불 집계 조회하기</a></div>
+                <div><a href="/stock/summary">사업단위별 수불 집계 조회하기</a></div>
             </div>
         </div>
         <div class="menu-item">

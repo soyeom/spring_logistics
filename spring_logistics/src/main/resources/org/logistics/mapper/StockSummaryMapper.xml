@@ -2,6 +2,37 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.logistics.mapper.StockSummaryMapper">
 
+	<resultMap id="commonVoResultMap" type="org.logistics.domain.CommonVO">
+	    <result column="CODE_VALUE" property="value"/>
+	    <result column="CODE_TEXT" property="text"/>
+	</resultMap>
+	
+	<select id="selectBusinessBuNameList" resultMap="commonVoResultMap">
+	    SELECT
+	        bu_name AS CODE_VALUE,
+	        bu_name AS CODE_TEXT
+	    FROM business_unit
+	    ORDER BY bu_name
+	</select>
+	
+	<select id="selectItemAssetClassList" resultMap="commonVoResultMap">
+	    SELECT DISTINCT
+	        asset_class AS CODE_VALUE,
+	        asset_class AS CODE_TEXT
+	    FROM item_master
+	    WHERE asset_class IS NOT NULL
+	    ORDER BY asset_class
+	</select>
+	
+	<select id="selectItemStatusList" resultMap="commonVoResultMap">
+	    SELECT DISTINCT
+	        item_status AS CODE_VALUE,
+	        item_status AS CODE_TEXT
+	    FROM item_master
+	    WHERE item_status IS NOT NULL
+	    ORDER BY item_status
+	</select>
+
 	<!-- メイン照会クエリ -->
 	<resultMap id="stockSummaryResultMap" type="org.logistics.domain.StockSummaryResultDto">
     	<result column="ITEM_ID" property="itemId"/> <!-- 品番 -->

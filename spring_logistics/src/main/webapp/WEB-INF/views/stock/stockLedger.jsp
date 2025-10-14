@@ -1,5 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8" isELIgnored="true"%>
+    pageEncoding="UTF-8"%>
     
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
@@ -16,70 +16,14 @@
 </head>
 <body>
     <div class="layout">
-    	<!-- 홈 아이콘 세로 바 -->
-	    <div class="home-bar">
-	        <span>
-	            <a href="/"><img src="https://cdn-icons-png.flaticon.com/512/7598/7598650.png" alt="홈화면" class="home-icon"></a>
-	        </span>
-	    </div>
-	    <!-- 사이드바 -->
-	    <aside class="sidebar">
-	        <div class="sidebar-header">
-	            <div class="profile">
-	                <img src="https://cdn-icons-png.flaticon.com/512/7598/7598657.png" alt="프로필">
-	                <p>山田様、こんにちは 👋</p>
-	                <div class="auth-btns">
-	                    <button class="btn btn-secondary">ログイン</button>
-	                    <button class="btn btn-secondary">会員登録</button>
-	                </div>
-	            </div>
-	        </div>
-	        <nav class="menu">
-	            <div class="menu-item">
-	                <div class="title"><a href="#">入庫および出庫</a></div>
-	                <div class="submenu">
-	                    <div><a href="#">入庫履歴</a></div>
-	                    <div><a href="#">出庫履歴</a></div>
-	                </div>
-	            </div>
-	            <div class="menu-item">
-	                <div class="title"><a href="#">在庫出荷管理</a></div>
-	                <div class="submenu">
-	                    <div><a href="#">出荷計画</a></div>
-	                    <div><a href="#">出荷履歴</a></div>
-	                </div>
-	            </div>
-	            <div class="menu-item">
-	                <div class="title"><a href="#">在庫管理</a></div>
-	                <div class="submenu">
-	                    <div><a href="#">在庫状況</a></div>
-	                    <div><a href="#">在庫移動</a></div>
-	                    <div><a href="#">在庫照会</a></div>
-	                </div>
-	            </div>
-	            <div class="menu-item">
-	                <div class="title"><a href="#">事業部門別 在庫受払集計</a></div>
-	                <div class="submenu">
-	                    <div><a href="#">事業所別 集計</a></div>
-	                    <div><a href="#">月別 推移</a></div>
-	                </div>
-	            </div>
-	            <div class="menu-item">
-	                <div class="title"><a href="#">在庫変動推移分析</a></div>
-	                <div class="submenu">
-	                    <div><a href="#">グラフ表示/a></div>
-	                </div>
-	            </div>
-	        </nav>
-    	</aside>
-    	
+    	<%@ include file="/WEB-INF/views/logistics.jsp" %>
     	<div class="main">
     		<div class="main-header">
 		        <div><span class="btn btn-secondary btn-icon toggle-sidebar">≡</span></div>
 	            <div><h1>事業部門別 在庫元帳照会</h1></div>
 	            
 	            <div>
-		            <button type="button" class="btn btn-secondary">照会</button>
+		            <button type="button" class="btn btn-secondary" id="searchBtn">照会</button>
 		            <button type="button" class="btn btn-secondary" id="resetBtn">初期化</button>
 				</div>
 	        </div>
@@ -96,8 +40,9 @@
 		            		<div class="filters-value">
 		            			<select id="businessBuName" name="businessBuName">
 									<option value=""></option>
-								    <option value="본사">本社</option>
-								    <option value="부산지사">釜山支社</option>
+								    <c:forEach items="${businessBuNameList}" var="item">
+						                <option value="${item.value}">${item.text}</option>
+						            </c:forEach>
 								</select>
 		            		</div>
 	            		</div>
@@ -138,9 +83,9 @@
 	            			<div class="filters-value">
 	            				<select id="unitStandard" name="unitStandard">
 									<option value=""></option>
-								    <option value="KG">KG</option>
-								    <option value="EA">EA</option>
-								    <option value="SET">SET</option>
+								    <option value="基準単位">基準単位</option>
+			            			<option value="受払単位">受払単位</option>
+			            			<option value="換算単位">換算単位</option>
 								</select>
 	            			</div>
 	            		</div>
@@ -241,7 +186,7 @@
         		itemIdElement.value = itemId;
         	}
         	
-        	console.log(`[コールバック] 品名適用完了: ${itemName}, 品番適用完了: ${itemId}`);
+        	console.log(`[コールバック] 品名適用完了: \${itemName}, 品番適用完了: \${itemId}`);
         	
         	// データ処理後 currentCategoryType 初期化。
         	currentCategoryType = '';
@@ -252,6 +197,26 @@
         // ==========================================================
         // ドキュメントがロードされたら実行
         $(document).ready(function() {
+        	
+        	function getQueryParameter(name) {
+        		// URLSearchParamsを使用
+        		const urlParams = new URLSearchParams(window.location.search);
+        		return urlParams.get(name);
+        	}
+        	
+        	const passedItemId = getQueryParameter('itemId');
+        	const passedItemName = getQueryParameter('itemName');
+        	
+        	if (passedItemId) {
+        		// 品番に値を設定
+        		$('#itemId').val(passedItemId);
+        	}
+        	
+        	if (passedItemName) {
+        		// 品名に値を設定
+        		$('#itemName').val(passedItemName);
+        	}
+        	
             const $searchForm = $('#searchForm');
             const $resultTableBody = $('#resultTableBody');
             const $noDataMessage = $('#noDataMessage');
@@ -264,10 +229,13 @@
             
             // 初期化ボタン クリックイベント
             $('#resetBtn').on('click', function() {
-            	$searchForm[0].reset(); // 폼의 모든 필드를 기본값으로 리셋
+            	event.preventDefault();
+            	$('#searchForm')[0].reset();
             	
-            	$('#itemName').val('');
-            	$('#itemId').val('');
+            	const currentUrl = window.location.href;
+            	const cleanUrl = currentUrl.split('?')[0];
+            	
+            	window.location.href = cleanUrl;
             });
             
          	// ==========================================================
@@ -305,21 +273,21 @@
                                 
                                 const row = `
                                     <tr>
-                                        <td>${formattedDate}</td>
-                                        <td>${item.type || ''}</td>
-                                        <td>${item.inOutboundType || ''}</td>
-                                        <td>${item.inOutboundCategory || ''}</td>
-                                        <td>${item.unit || ''}</td>
-                                        <td>${item.inboundQty !== null ? item.inboundQty : ''}</td>
-                                        <td>${item.outboundQty !== null ? item.outboundQty : ''}</td>
-                                        <td>${item.stockQty !== null ? item.stockQty : ''}</td>
-                                        <td>${item.managementId || ''}</td>
-                                        <td>${item.buName || ''}</td>
-                                        <td>${item.inboundWarehouse || ''}</td>
-                                        <td>${item.outboundWarehouse || ''}</td>
-                                        <td>${item.customer || ''}</td>
-                                        <td>${item.processingDepartment || ''}</td>
-                                        <td>${item.processor || ''}</td>
+                                        <td>\${formattedDate}</td>
+                                        <td>\${item.type || ''}</td>
+                                        <td>\${item.inOutboundType || ''}</td>
+                                        <td>\${item.inOutboundCategory || ''}</td>
+                                        <td>\${item.unit || ''}</td>
+                                        <td>\${item.inboundQty !== null ? item.inboundQty : ''}</td>
+                                        <td>\${item.outboundQty !== null ? item.outboundQty : ''}</td>
+                                        <td>\${item.stockQty !== null ? item.stockQty : ''}</td>
+                                        <td>\${item.managementId || ''}</td>
+                                        <td>\${item.buName || ''}</td>
+                                        <td>\${item.inboundWarehouse || ''}</td>
+                                        <td>\${item.outboundWarehouse || ''}</td>
+                                        <td>\${item.customer || ''}</td>
+                                        <td>\${item.processingDepartment || ''}</td>
+                                        <td>\${item.processor || ''}</td>
                                     </tr>
                                 `;
                                 $resultTableBody.append(row);

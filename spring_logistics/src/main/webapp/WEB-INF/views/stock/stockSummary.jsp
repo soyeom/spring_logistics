@@ -1,5 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8" isELIgnored="true"%>
+    pageEncoding="UTF-8"%>
     
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
@@ -16,63 +16,7 @@
 </head>
 <body>
     <div class="layout">
-    	<!-- ホームアイコン縦バー -->
-	    <div class="home-bar">
-	        <span>
-	            <a href="/"><img src="https://cdn-icons-png.flaticon.com/512/7598/7598650.png" alt="홈화면" class="home-icon"></a>
-	        </span>
-	    </div>
-	    <!-- サイドバー -->
-	    <aside class="sidebar">
-	        <div class="sidebar-header">
-	            <div class="profile">
-	                <img src="https://cdn-icons-png.flaticon.com/512/7598/7598657.png" alt="프로필">
-	                <p>山田様、こんにちは 👋</p>
-	                <div class="auth-btns">
-	                    <button class="btn btn-secondary">ログイン</button>
-	                    <button class="btn btn-secondary">会員登録</button>
-	                </div>
-	            </div>
-	        </div>
-	        <nav class="menu">
-	            <div class="menu-item">
-	                <div class="title"><a href="#">入庫および出庫</a></div>
-	                <div class="submenu">
-	                    <div><a href="#">入庫履歴</a></div>
-	                    <div><a href="#">出庫履歴</a></div>
-	                </div>
-	            </div>
-	            <div class="menu-item">
-	                <div class="title"><a href="#">在庫出荷統制</a></div>
-	                <div class="submenu">
-	                    <div><a href="#">出荷計画</a></div>
-	                    <div><a href="#">出荷履歴</a></div>
-	                </div>
-	            </div>
-	            <div class="menu-item">
-	                <div class="title"><a href="#">在庫管理</a></div>
-	                <div class="submenu">
-	                    <div><a href="#">在庫現状</a></div>
-	                    <div><a href="#">在庫移動</a></div>
-	                    <div><a href="#">在庫照会</a></div>
-	                </div>
-	            </div>
-	            <div class="menu-item">
-	                <div class="title"><a href="#">事業単位別 受払集計</a></div>
-	                <div class="submenu">
-	                    <div><a href="#">事業所別 集計</a></div>
-	                    <div><a href="#">月別推移</a></div>
-	                </div>
-	            </div>
-	            <div class="menu-item">
-	                <div class="title"><a href="#">在庫変動推移分析</a></div>
-	                <div class="submenu">
-	                    <div><a href="#">グラフ表示</a></div>
-	                </div>
-	            </div>
-	        </nav>
-    	</aside>
-    	
+    	<%@ include file="/WEB-INF/views/logistics.jsp" %>
     	<div class="main">
     		<div class="main-header">
 		        <div><span class="btn btn-secondary btn-icon toggle-sidebar">≡</span></div>
@@ -96,8 +40,9 @@
 		            		<div class="filters-value">
 		            			<select id="businessBuName" name="businessBuName">
 									<option value=""></option>
-								    <option value="본사">本社</option>
-								    <option value="부산지사">釜山支社</option>
+								    <c:forEach items="${businessBuNameList}" var="item">
+						                <option value="${item.value}">${item.text}</option>
+						            </c:forEach>
 								</select>
 		            		</div>
 	            		</div>
@@ -122,15 +67,12 @@
 	            		<div class="filters-count">
 		            		<div class="filters-text">品目資産分類</div>
 		            		<div class="filters-value">
-		            			<select id="itemAssetClass" name="itemAssatClass">
+		            			<select id="itemAssetClass" name="itemAssetClass">
 		            				<option value=""></option>
-		            				<option value="자산">資産</option>
-		            				<option value="반제품">半製品</option>
-		            				<option value="상품">商品</option>
-		            				<option value="원자재">原材料</option>
-		            				<option value="부자재">副資材</option>
-		            				<option value="재공품">仕掛品</option>
-		            				<option value="저장품">貯蔵品</option>
+		            				
+		            				<c:forEach items="${itemAssetClassList}" var="item">
+                						<option value="${item.value}">${item.text}</option>
+            						</c:forEach>
 		            			</select>
 		            		</div>
 	            		</div>
@@ -186,11 +128,9 @@
 	            				<div class="filters-value">
 	            					<select id="itemStatus" name="itemStatus">
 			            				<option value=""></option>
-			            				<option value="임시">仮</option>
-			            				<option value="사용">使用</option>
-			            				<option value="생산중지">生産停止</option>
-			            				<option value="거래중지">取引停止</option>
-			            				<option value="폐기">廃棄</option>
+			            				<c:forEach items="${itemStatusList}" var="item">
+							                <option value="${item.value}">${item.text}</option>
+							            </c:forEach>
 		            				</select>
 	            				</div>
 	            			</div>
@@ -199,9 +139,9 @@
 	            				<div class="filters-value">
 	            					<select id="unitStandard" name="unitStandard">
 			            				<option value=""></option>
-			            				<option value="기준단위">基準単位</option>
-			            				<option value="수불단위">受払単位</option>
-			            				<option value="환산단위">換算単位</option>
+			            				<option value="基準単位">基準単位</option>
+			            				<option value="受払単位">受払単位</option>
+			            				<option value="換算単位">換算単位</option>
 		            				</select>
 	            				</div>
 	            			</div>
@@ -328,7 +268,7 @@
     	// データ処理後 currentCategoryType を初期化
     	currentCategoryType = '';
     	
-    	console.log(`[コールバック] ${targetElementId} フィールドに名称適用完了: ${categoryName}`);
+    	console.log(`[コールバック] \${targetElementId} フィールドに名称適用完了: \${categoryName}`);
     }
     
     // ==========================================================
@@ -411,29 +351,29 @@
                         $.each(response, function(index, item) {
                             if (item) {
                                 const row = `
-                                    <tr>
-                                        <td class="sticky-col">${item.itemId}</td> // 品番
-                                        <td>${item.itemAssetClass}</td> // 品目資産分類
-                                        <td>${item.itemBigCategory}</td> // 品目大分類
-                                        <td>${item.itemMidCategory}</td> // 品目中分類
-                                        <td>${item.itemName}</td> // 品名
-                                        <td>${item.inboundQty}</td> // 入庫数量
-                                        <td>${item.itemUnit}</td> // 単位
-                                        <td>${item.itemStatus}</td> // 品目ステータス
-                                        <td>${item.stockQty}</td> // 在庫数量
-                                        <td>${item.carriedOverQty}</td> // 繰越数量
-                                        <td>${item.outboundQty}</td> // 出庫数量
-                                        <td>${item.productionInbound}</td> // 入庫（生産入庫）
-                                        <td>${item.outsourcingInbound}</td> // 入庫（外注入庫）
-                                        <td>${item.purchaseInbound}</td> // 入庫（購買入庫）
-                                        <td>${item.importInbound}</td> // 入庫（輸入入庫）
-                                        <td>${item.deliverySlipOutbound}</td> // 出庫（取引明細書）
-                                        <td>${item.otherOutbound}</td> // 出庫（その他出庫）
-                                        <td>${item.salesConsignmentOutbound}</td> // 出庫（販売保管品出庫）
-                                        <td>${item.workPerformanceOutbound}</td> // 出庫（作業実績）
-                                        <td>${item.outsourcingOutbound}</td> // 出庫（外注入庫）
+                                    <tr data-item-id="\${item.itemId}" data-item-name="\${item.itemName}">
+                                        <td>\${item.itemId}</td> // 品番
+                                        <td>\${item.itemAssetClass}</td> // 品目資産分類
+                                        <td>\${item.itemBigCategory}</td> // 品目大分類
+                                        <td>\${item.itemMidCategory}</td> // 品目中分類
+                                        <td>\${item.itemName}</td> // 品名
+                                        <td>\${item.inboundQty}</td> // 入庫数量
+                                        <td>\${item.itemUnit}</td> // 単位
+                                        <td>\${item.itemStatus}</td> // 品目ステータス
+                                        <td>\${item.stockQty}</td> // 在庫数量
+                                        <td>\${item.carriedOverQty}</td> // 繰越数量
+                                        <td>\${item.outboundQty}</td> // 出庫数量
+                                        <td>\${item.productionInbound}</td> // 入庫（生産入庫）
+                                        <td>\${item.outsourcingInbound}</td> // 入庫（外注入庫）
+                                        <td>\${item.purchaseInbound}</td> // 入庫（購買入庫）
+                                        <td>\${item.importInbound}</td> // 入庫（輸入入庫）
+                                        <td>\${item.deliverySlipOutbound}</td> // 出庫（取引明細書）
+                                        <td>\${item.otherOutbound}</td> // 出庫（その他出庫）
+                                        <td>\${item.salesConsignmentOutbound}</td> // 出庫（販売保管品出庫）
+                                        <td>\${item.workPerformanceOutbound}</td> // 出庫（作業実績）
+                                        <td>\${item.outsourcingOutbound}</td> // 出庫（外注入庫）
                                     </tr>
-                                `;
+ 								`;
                                 $tbody.append(row);
                             }
                         });
@@ -447,6 +387,24 @@
                 }
             });
         }
+ 
+ 		$('#stockSummaryTableBody').on('dblclick', 'tr', function() {
+ 			const $row = $(this);
+ 			
+ 			const itemId = $row.data('itemId');
+ 			const itemName = $row.data('itemName');
+ 			
+ 			if (itemId) {
+ 				console.log(`Double-clicked Item ID: \${itemId}`);
+ 				
+ 				const redirectUrl = `/stock/ledger?itemId=\${encodeURIComponent(itemId)}&itemName=\${encodeURIComponent(itemName)}`;
+ 				
+ 				window.location.href = redirectUrl;
+ 			} else {
+ 				console.error('Item ID not found on the double-clicked row.');
+ 			}
+ 		})
+ 
     });
 </script>
 </body>
