@@ -49,7 +49,6 @@ public class StockAnalysisServiceImpl implements StockAnalysisService {
         if (items == null || items.isEmpty()) return resultList;
 
         // 2) 分析期間の計算
-        // 🚩 수정: DTO에 periodMonths, periodCount가 없으므로 인자 없이 호출하고 함수 내부에서 고정값을 사용합니다.
         List<PeriodRange> periods = calculatePeriods(currentMonth);
 
         // 3) 品目ごとに期間別分析値を計算し、結果を組み立てる
@@ -69,18 +68,17 @@ public class StockAnalysisServiceImpl implements StockAnalysisService {
             // 期間別分析値を設定
             for (PeriodRange p : periods) {
                 
-                // 기간별 데이터를 가져오기 위한 DTO를 준비
+                // 期間別データを取得するためのDTOを準備
                 StockAnalysisRequestDTO periodDTO = new StockAnalysisRequestDTO();
                 
-                // buId, warehouseId, itemId는 Long/Integer 타입입니다. (DTO 수정이 전제)
-                periodDTO.setBuId(requestDTO.getBuId());       
+                periodDTO.setBuId(requestDTO.getBuId());      
                 periodDTO.setWarehouseId(requestDTO.getWarehouseId());
                 periodDTO.setItemSmallCategory(requestDTO.getItemSmallCategory());
                 periodDTO.setItemId(item.getItemId());
                 
-                // Mapper를 호출하여 기간별 분석값을 가져옵니다.
+                // Mapperを呼び出して期間別分析値を取得
                 Double value = stockAnalysisMapper.getPeriodValue(
-                    periodDTO, 
+                    periodDTO,  
                     p.getStartParam(),  
                     p.getEndParam(),    
                     analysisItem        
@@ -98,18 +96,16 @@ public class StockAnalysisServiceImpl implements StockAnalysisService {
     
     /**
      * 分析期間を計算する
-     * 基準月(currentMonth)から過去に遡って、3ヶ月 단위의 기간을 4개 생성합니다.
+     * 基準月(currentMonth)から過去に遡って、3ヶ月単位の期間を4つ生成します。
      * @param currentMonth 基準年月 (YYYY-MM)
      * @return 期間情報のリスト
      */
-    // 🚩 수정: 인자 없이 currentMonth만 받도록 원상 복구합니다.
     private List<PeriodRange> calculatePeriods(String currentMonth) {
         List<PeriodRange> result = new ArrayList<>();
         String[] ym = currentMonth.split("-");
         int year = Integer.parseInt(ym[0]);
         int month = Integer.parseInt(ym[1]);
 
-        // 🚩 수정: DTO가 없으므로, 기본값 3과 4를 하드코딩합니다.
         final int periodSize = 3; // 期間のサイズ（3ヶ月）
         final int count = 4;      // 生成する期間の数（4つ）
 
@@ -122,7 +118,7 @@ public class StockAnalysisServiceImpl implements StockAnalysisService {
                 endYear--;
             }
 
-            // 期間の開始月を計算 (終了月から periodSize - 1 을 引く)
+            // 期間の開始月を計算 (終了月から periodSize - 1 を引く)
             int startMonth = endMonth - (periodSize - 1);
             int startYear = endYear;
             while (startMonth <= 0) { // 年を跨ぐ場合の処理
@@ -133,7 +129,7 @@ public class StockAnalysisServiceImpl implements StockAnalysisService {
             // 結果キーとパラメータ文字列を生成
             String endKey = String.format("%04d-%02d", endYear, endMonth);      // 表示用キー (YYYY-MM)
             String startParam = String.format("%04d%02d", startYear, startMonth); // DB検索用開始年月 (YYYYMM)
-            String endParam = String.format("%04d%02d", endYear, endMonth);       // DB検索用終了年月 (YYYYMM)
+            String endParam = String.format("%04d%02d", endYear, endMonth);        // DB検索用終了年月 (YYYYMM)
 
             result.add(new PeriodRange(endKey, startParam, endParam));
         }
@@ -141,11 +137,11 @@ public class StockAnalysisServiceImpl implements StockAnalysisService {
         return result;
     }
 
-    // 期間情報を保持する内部クラス
+    /** 期間情報を保持する内部クラス */
     private static class PeriodRange {
         private final String endKey;    // 結果マップのキーとして使用 (YYYY-MM)
         private final String startParam; // 検索パラメータ用 開始年月 (YYYYMM)
-        private final String endParam;   // 検索パラメータ用 終了年月 (YYYYMM)
+        private final String endParam;    // 検索パラメータ用 終了年月 (YYYYMM)
 
         public PeriodRange(String endKey, String startParam, String endParam) {
             this.endKey = endKey;

@@ -204,9 +204,9 @@
 	<select id="warehouse_List" resultType="org.logistics.domain.PopupVO">
 		SELECT
 		wd.warehouse_name AS column1, -- 창고명
-		TO_CHAR(wm.warehouse_master_id) AS column2, -- 창고코드 (TO_CHAR 적용)
+		TO_CHAR(wm.warehouse_master_id) AS column2, -- 창고코드
 		bu.bu_name AS column3, -- 사업단위
-		TO_CHAR(wm.warehouse_internal_code) AS column4 -- 창고구분 (TO_CHAR 적용)
+		TO_CHAR(wm.warehouse_internal_code) AS column4 -- 창고구분
 		FROM warehouse_detail wd
 		JOIN business_unit bu
 		ON wd.bu_id = bu.bu_id
@@ -214,12 +214,29 @@
 		ON wd.warehouse_master_id = wm.warehouse_master_id
 		AND wd.bu_id = wm.bu_id
 		<where>
-			<if test="gubun == '10'">
-				wd.warehouse_id LIKE '%' || #{text} || '%'
-			</if>
-			<if test="gubun == '20'">
-				wd.warehouse_name LIKE '%' || #{text} || '%'
-			</if>
+				<if test="gubun != null and text != null and text != ''">
+						AND (
+								<if test="gubun == '10' or gubun == '0'">
+										wd.warehouse_name LIKE '%' || #{text} || '%'
+								</if>
+								<if test="gubun == '20' or gubun == '0'">
+											<if test="gubun == '0'">
+														OR </if>
+											<if test="gubun == '20'">
+														wm.warehouse_master_id = #{text}
+											</if>
+											<if test="gubun == '0'">
+														TO_CHAR(wm.warehouse_master_id) LIKE '%' || #{text} || '%'
+											</if>								
+								</if>
+								
+								<if test="gubun == '30' or gubun == '0'">
+											<if test="gubun == '0'">
+											OR</if>
+											bu.bu_name LIKE '%' || #{text} || '%'
+											</if>
+						)
+				</if>
 		</where>
 	</select>
 
