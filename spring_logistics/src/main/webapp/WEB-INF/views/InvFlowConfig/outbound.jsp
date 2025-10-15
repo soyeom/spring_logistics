@@ -17,74 +17,22 @@
 </head>
 <body>
 	<div class = "layout">
-		<div class="home-bar">
-	        <span>
-	            <a href="/"><img src="https://cdn-icons-png.flaticon.com/512/7598/7598650.png" alt="홈화면" class="home-icon"></a>
-	        </span>
-	    </div>
-	    <aside class="sidebar">
-	        <div class="sidebar-header">
-	            <div class="profile">
-	                <img src="https://cdn-icons-png.flaticon.com/512/7598/7598657.png" alt="프로필">
-	                <p>홍길동님, 안녕하세요 👋</p>
-	                <div class="auth-btns">
-	                    <button class="btn btn-secondary">로그인</button>
-	                    <button class="btn btn-secondary">회원가입</button>
-	                </div>
-	            </div>
-	        </div>
-	        <nav class="menu">
-	            <div class="menu-item">
-	                <div class="title"><a href="#">입고 및 출고</a></div>
-	                <div class="submenu">
-	                    <div><a href="#">입고 내역</a></div>
-	                    <div><a href="#">출고 내역</a></div>
-	                </div>
-	            </div>
-	            <div class="menu-item">
-	                <div class="title"><a href="#">재고 출하통제</a></div>
-	                <div class="submenu">
-	                    <div><a href="#">출하 계획</a></div>
-	                    <div><a href="#">출하 내역</a></div>
-	                </div>
-	            </div>
-	            <div class="menu-item">
-	                <div class="title"><a href="#">재고 관리</a></div>
-	                <div class="submenu">
-	                    <div><a href="#">재고 현황</a></div>
-	                    <div><a href="#">재고 이동</a></div>
-	                    <div><a href="#">재고 조회</a></div>
-	                </div>
-	            </div>
-	            <div class="menu-item">
-	                <div class="title"><a href="#">사업단위별 수불집계</a></div>
-	                <div class="submenu">
-	                    <div><a href="#">사업장별 집계</a></div>
-	                    <div><a href="#">월별 추이</a></div>
-	                </div>
-	            </div>
-	            <div class="menu-item">
-	                <div class="title"><a href="#">재고 변동 추이 분석</a></div>
-	                <div class="submenu">
-	                    <div><a href="#">그래프 보기</a></div>
-	                </div>
-	            </div>
-	        </nav>
-    	</aside>
+		<%@ include file="/WEB-INF/views/logistics.jsp" %>
     	<div class = "main">
     		<div class = "main-header">
     			<div><span class="btn btn-secondary btn-icon toggle-sidebar">≡</span></div>
 	            <div><h1>거래명세서입력</h1></div>
 	            <div>
+	            	<button class="btn btn-secondary search-btn" id = "save" onclick = "new_out()">신규</button>
 					<button class="btn btn-secondary search-btn" id = "save" onclick = "save()">저장</button>
-					<button class="btn btn-secondary search-btn" id = "save" onclick = "delete()">삭제</button>
+					<button class="btn btn-secondary search-btn" id = "save" onclick = "outBound_delete()">삭제</button>
 				</div>
     		</div>
     		<div class = "filters">
     			<div class = "filters-main">
-    				<div class = "조회조건"></div>
-    				<div class = "line"></div>
-    			</div>
+        			<div class = "title">조회 조건</div>
+        			<div class = "line"></div>
+	        	</div>
     			<div class = "filters-row">
     				<div class = "filters-count">
 	            		<div class = "filters-text">사업단위</div>
@@ -106,7 +54,7 @@
             		<div class = "filters-count">
 	            		<div class = "filters-text">거래명세서번호</div>
 	            		<div class = "filters-value">
-	            			<input type = "text" id = "out_Id">
+	            			<input type = "text" id = "out_Id" readonly>
 	            			<img src="https://cdn-icons-png.flaticon.com/512/16799/16799970.png" alt="search" class="search-icon" onclick="out_Master_Popup()">
 	            		</div>
             		</div>
@@ -173,6 +121,63 @@
             		</div>
     			</div>
     		</div>
+    		<div class = "filters">
+    			<div class = "filters-main">
+        			<div class = "title">추가정보</div>
+        			<div class = "line"></div>
+	        	</div>
+    			<div class = "filters-row">
+    				<div class = "filters-count">
+	            		<div class = "filters-text">환율</div>
+	            		<div class = "filters-value">
+            				<input type = "text" id = "currency_Code" name = "currency_Code">
+	            			<img src="https://cdn-icons-png.flaticon.com/512/16799/16799970.png" alt="search" class="search-icon" onclick="currency_Popup()">
+	            		</div>
+            		</div>
+            		<div class = "filters-count">
+	            		<div class = "filters-text">판매가액계</div>
+	            		<div class = "filters-value">
+	            			 <input type="number" id="out_Daet" name="out_Date">
+	            		</div>
+            		</div>
+            		<div class = "filters-count">
+	            		<div class = "filters-text">부가세계</div>
+	            		<div class = "filters-value">
+	            			<input type="number" id="out_Daet" name="out_Date">
+            			</div>
+            		</div>
+            		<div class = "filters-count">
+	            		<div class = "filters-text">총액</div>
+	            		<div class = "filters-value">
+            				<input type="number" id="out_Daet" name="out_Date">
+            			</div>
+            		</div>
+            		<div class = "filters-count">
+	            		<div class = "filters-text">환율</div>
+	            		<div class = "filters-value">
+	            			<input type="number" id="exchange_Rate" name="exchange_Rate">
+	            		</div>
+            		</div>
+            		<div class = "filters-count">
+	            		<div class = "filters-text">판매가액계(원화)</div>
+	            		<div class = "filters-value">
+							<input type="number" id="out_Daet" name="out_Date">
+						</div>
+            		</div>
+            		<div class = "filters-count">
+	            		<div class = "filters-text">부가세계(원화)</div>
+	            		<div class = "filters-value">
+            				<input type="number" id="out_Daet" name="out_Date">
+            			</div>
+            		</div>
+            		<div class = "filters-count">
+	            		<div class = "filters-text">총액(원화)</div>
+	            		<div class = "filters-value">
+	            			<input type="number" id="out_Daet" name="out_Date">
+						</div>
+            		</div>
+    			</div>
+    		</div>
     		<div class = "table-container">
 				<table class="table-single-select">
 					<thead>
@@ -205,11 +210,193 @@
 		    </div>
     	</div>
 	</div>
+	<script type="text/javascript" src="../resources/js/logistics.js"></script>
 </body>
 </html>
 
 <script>
+
+	function new_out() {
+		document.getElementById("bu_Id").value = "";
+		document.getElementById("out_Daet").value = "";
+		document.getElementById("out_Id").value = "자동생성";
+		document.getElementById("local_Flag").value = "";
+		document.getElementById("party_Name").value = "";
+		document.getElementById("party_Id").value = "";
+		document.getElementById("contact_Name").value = "";
+		document.getElementById("department").value = "";
+		document.getElementById("out_Type").value = "";
+		document.getElementById("consignment_Gubun").value = "";
+		
+		const tbody = document.getElementById("result-tbody");
+	    tbody.innerHTML = ""; // 기존 내용 초기화
+	    
+	 	// 빈 로우 추가
+	    const emptyRows = 3;
+	    for (let i = 0; i < emptyRows; i++) {
+	        const tr = document.createElement("tr");
+	        tr.innerHTML = '<td class="text-center">&nbsp;</td>'.repeat(20); // 컬럼 수 만큼 빈 칸
+	        tr.ondblclick = function() {
+	       		open_Item();
+	        }
+	            
+	        tbody.appendChild(tr);
+	    }
+	}
 	
+	function save() {
+		
+	    var formData = {
+    		out_Id: document.getElementById("out_Id").value,
+            bu_Id: document.getElementById("bu_Id").value,
+            out_Date: document.getElementById("out_Daet").value,
+            local_Flag: document.getElementById("local_Flag").value,
+            party_Id: document.getElementById("party_Id").value,
+            contact_Id: document.getElementById("contact_Id").value,
+            out_Type: document.getElementById("out_Type").value,
+            consignment_Gubun: document.getElementById("consignment_Gubun").value
+	    }
+	    
+	    // AJAX 호출
+	    $.ajax({
+	        url: '/InvFlowConfig/outbound_save',           // Spring @PostMapping 매핑
+	        type: 'POST',
+	        data: formData,
+	        success: function(result) {
+	        	save_Detail1(result);
+	        },
+	        error: function(xhr, status, error) {
+	        	console.error("저장 실패:", error);
+	        }
+	    });
+	}
+	
+	function save_Detail1(out_Id) {
+		
+		var tbody = document.getElementById("result-tbody");
+
+		// tbody 안 모든 tr 순회
+	    var allData = Array.from(tbody.rows)
+	        .filter(function(tr) {
+	            var firstValue = tr.cells[0].textContent.trim();
+	            return firstValue !== null && firstValue !== "";
+	        })
+	        .map(function(tr) {
+	            // 기존 td 텍스트 수집
+	            var rowData = Array.from(tr.cells).map(function(td) {
+	            	// td 안에 checkbox가 있는지 확인
+	                var checkbox = td.querySelector('input[type="checkbox"]');
+	                if (checkbox) {
+	                    // 체크 여부를 Y/N으로 변환해서 반환
+	                    return checkbox.checked ? "Y" : "N";
+	                } else {
+	                    // 아니면 그냥 텍스트
+	                    return td.textContent.trim();
+	                }
+	            });
+	
+	            // bu_Id, wm_id, w_id를 앞에 추가
+	            rowData.unshift(out_Id);  // wm_id
+	            rowData.unshift(document.getElementById("bu_Id").value);  // bu_Id
+	            rowData.unshift(document.getElementById("party_Id").value);  // bu_Id
+	
+	            return rowData;
+	        });
+		
+		// AJAX 호출
+	    $.ajax({
+	        url: '/InvFlowConfig/outbound_save_detail',           // Spring @PostMapping 매핑
+	        type: 'POST',
+	        contentType: 'application/json', // JSON 전송
+	        data: JSON.stringify(allData),    // 2차원 배열 → JSON 문자열
+	        success: function(result) {
+	        	alert("저장되었습니다.");
+	        	
+	        	document.getElementById("out_Id").value = out_Id;
+	        	
+	        	var formData = {
+	        			bu_Id: document.getElementById("bu_Id").value,
+	        			out_Id: out_Id
+	        		}
+	        		
+	        		$.ajax({
+	        			url: '/InvFlowConfig/out_detail_list',
+	        			data: formData,
+	        			type: 'GET',
+	        			dataType: 'json',
+	        			success: function(result) {
+	        				
+	        				const tbody = document.getElementById("result-tbody");
+	        	            tbody.innerHTML = ""; // 기존 내용 초기화
+	        	            
+	        	            const totalRows = result.length + 3; // 테이블에 항상 3개의 빈 로우
+	        	            
+	        	         	// result 배열 반복
+	        	            result.forEach(function(board) {
+	        	            	const tr = document.createElement("tr");
+	        	
+	        	                tr.innerHTML = 
+	        	                    '<td class="text-center">' + (board.item_Id || '') + '</td>' +
+	        	                    '<td class="text-center">' + (board.item_Name || '') + '</td>' +
+	        	                    '<td class="text-center">' + (board.spec || '') + '</td>' +
+	        	                    '<td class="text-center">' + (board.party_Id || '') + '</td>' +
+	        	                    '<td class="text-center">' + (board.party_Name || '') + '</td>' +
+	        	                    '<td class="text-center"><span contenteditable="true">' + (board.qty || '') + '</span></td>' +
+	        	                    '<td class="text-center">' + (board.sales_Unit || '') + '</td>' +
+	        	                    '<td class="text-center"><span contenteditable="true">' + (board.unit_Price || '') + '</span></td>' +
+	        	                    '<td class="text-center"><input type="checkbox"' + (board.surtax_Yn === 'Y' ? ' checked' : '') + '></td>' +
+	        	                    '<td class="text-center">' + (board.sales_Price || '') + '</td>' +
+	        	                    '<td class="text-center">' + (board.surtax_Price || '') + '</td>' +
+	        	                    '<td class="text-center">' + (board.sales_Price_Sum || '') + '</td>' +
+	        	                    '<td class="text-center">' + (board.surtax_Price || '') + '</td>' +
+	        	                    '<td class="text-center">' + (board.unit_Price || '') + '</td>' +
+	        	                    '<td class="text-center"><input type="hidden" value="' + (board.storage_Location || '') + '" /><span>' + (board.wareHouse_Name || '') + '</span></td>' +
+	        	                    '<td class="text-center">' + (board.lot_No || '') + '</td>' +
+	        	                    '<td class="text-center">' + (board.other_Out_Code || '') + '</td>' +
+	        	                    '<td class="text-center"><input type="checkbox"' + (board.is_Charge_Supply === 'Y' ? ' checked' : '') + '></td>' +
+	        	                    '<td class="text-center">' + (board.asset_Class || '') + '</td>' +
+	        	                    '<td class="text-center">' + (board.asset_Proc_Type || '') + '</td>' +
+	        	                    '<td class="text-center">' + (board.current_Qty || '') + '</td>';
+	        	                    
+	                            tr.ondblclick = function() {
+	                            	open_Item();
+	                            }
+	        	                    
+	        	                tbody.appendChild(tr);
+	        	            });
+	        	            
+	        	         	// 빈 로우 추가
+	        	            const emptyRows = totalRows - result.length;
+	        	            for (let i = 0; i < emptyRows; i++) {
+	        	                const tr = document.createElement("tr");
+	        	                tr.innerHTML = '<td class="text-center">&nbsp;</td>'.repeat(20); // 컬럼 수 만큼 빈 칸
+	        	                tr.ondblclick = function() {
+	                           		open_Item();
+	                            }
+	        	                    
+	        	                tbody.appendChild(tr);
+	        	            }
+	        			}
+	        		});	
+	        },
+	        error: function(xhr, status, error) {
+	            console.error("저장 실패:", error);
+	        }
+	    });
+	}
+	
+	function outBound_delete() {
+		if (confirm('삭제하시겠습니까?')) {
+		    // 사용자가 예 클릭
+		    // 실제 삭제 로직 호출
+	    	console.log('삭제 진행');
+		    // 예: deleteItem(itemId);
+	  	} else {
+	    	// 사용자가 취소 클릭
+	    	console.log('삭제 취소');
+	  	}
+	}
+
 	function out_Master_Popup() {
 		
 		// 팝업 크기 설정
@@ -241,6 +428,7 @@
 		document.getElementById("party_Name").value = data[6];
 		document.getElementById("party_Id").value = data[7];
 		document.getElementById("contact_Name").value = data[8];
+		document.getElementById("contact_Id").value = data[9];
 		document.getElementById("department").value = data[10];
 		document.getElementById("out_Type").value = data[12];
 		document.getElementById("consignment_Gubun").value = data[14];
@@ -269,27 +457,28 @@
 	                tr.innerHTML = 
 	                    '<td class="text-center">' + (board.item_Id || '') + '</td>' +
 	                    '<td class="text-center">' + (board.item_Name || '') + '</td>' +
-	                    '<td class="text-center">' + (board.item_Name || '') + '</td>' +
-	                    '<td class="text-center">' + (board.item_Name || '') + '</td>' +
-	                    '<td class="text-center">' + (board.item_Name || '') + '</td>' +
-	                    '<td class="text-center">' + (board.item_Name || '') + '</td>' +
-	                    '<td class="text-center">' + (board.item_Name || '') + '</td>' +
-	                    '<td class="text-center">' + (board.item_Name || '') + '</td>' +
-	                    '<td class="text-center">' + (board.item_Name || '') + '</td>' +
-	                    '<td class="text-center">' + (board.item_Name || '') + '</td>' +
-	                    '<td class="text-center">' + (board.item_Name || '') + '</td>' +
-	                    '<td class="text-center">' + (board.item_Name || '') + '</td>' +
-	                    '<td class="text-center">' + (board.item_Name || '') + '</td>' +
-	                    '<td class="text-center">' + (board.item_Name || '') + '</td>' +
-	                    '<td class="text-center">' + (board.item_Name || '') + '</td>' +
-	                    '<td class="text-center">' + (board.item_Name || '') + '</td>' +
-	                    '<td class="text-center">' + (board.item_Name || '') + '</td>' +
-	                    '<td class="text-center">' + (board.item_Name || '') + '</td>' +
-	                    '<td class="text-center">' + (board.item_Name || '') + '</td>' +
-	                    '<td class="text-center">' + (board.item_Name || '') + '</td>';
+	                    '<td class="text-center">' + (board.spec || '') + '</td>' +
+	                    '<td class="text-center">' + (board.party_Id || '') + '</td>' +
+	                    '<td class="text-center">' + (board.party_Name || '') + '</td>' +
+	                    '<td class="text-center"><span contenteditable="true">' + (board.qty || '') + '</span></td>' +
+	                    '<td class="text-center">' + (board.sales_Unit || '') + '</td>' +
+	                    '<td class="text-center"><span contenteditable="true">' + (board.unit_Price || '') + '</span></td>' +
+	                    '<td class="text-center"><input type="checkbox"' + (board.surtax_Yn === 'Y' ? ' checked' : '') + '></td>' +
+	                    '<td class="text-center">' + (board.sales_Price || '') + '</td>' +
+	                    '<td class="text-center">' + (board.surtax_Price || '') + '</td>' +
+	                    '<td class="text-center">' + (board.sales_Price_Sum || '') + '</td>' +
+	                    '<td class="text-center">' + (board.surtax_Price || '') + '</td>' +
+	                    '<td class="text-center">' + (board.unit_Price || '') + '</td>' +
+	                    '<td class="text-center"><input type="hidden" value="' + (board.storage_Location || '') + '" /><span>' + (board.wareHouse_Name || '') + '</span></td>' +
+	                    '<td class="text-center">' + (board.lot_No || '') + '</td>' +
+	                    '<td class="text-center">' + (board.other_Out_Code || '') + '</td>' +
+	                    '<td class="text-center"><input type="checkbox"' + (board.is_Charge_Supply === 'Y' ? ' checked' : '') + '></td>' +
+	                    '<td class="text-center">' + (board.asset_Class || '') + '</td>' +
+	                    '<td class="text-center">' + (board.asset_Proc_Type || '') + '</td>' +
+	                    '<td class="text-center">' + (board.current_Qty || '') + '</td>';
 	                    
                     tr.ondblclick = function() {
-                    	// open_Item();
+                    	open_Item();
                     }
 	                    
 	                tbody.appendChild(tr);
@@ -333,9 +522,6 @@
 	}
 	
 	function party_RowData(data) {
-		
-		console.log(data);
-		
 		document.getElementById("party_Name").value = data[3];
 		document.getElementById("party_Id").value = data[2];
 	}
@@ -368,5 +554,131 @@
 		document.getElementById("department").value = data[2];
 	}
 	
+	function currency_Popup() {
+		
+		// 팝업 크기 설정
+ 	   	var popupWidth = 900;
+ 	   	var popupHeight = 600;
+ 	
+ 	   	// 화면 중앙 좌표 계산
+ 	   	var left = (screen.width - popupWidth) / 2;
+ 	   	var top = (screen.height - popupHeight) / 2;
+ 	
+ 	   	// 팝업창 열기
+		window.open(
+			"../popup/currency_popup",
+ 	     	"popupWindow",
+ 	     	"width=" + popupWidth +
+ 	     	",height=" + popupHeight +
+ 	     	",left=" + left +
+ 	     	",top=" + top +
+ 	     	",scrollbars=no,resizable=yes"
+ 	   	);
+	}
+	
+	function currency_RowData(data) {
+ 		document.getElementById("currency_Code").value = data[0];
+ 		document.getElementById("exchange_Rate").value = data[1];
+	}
+	
+	function open_Item() {
+	  	
+	    // 팝업 크기 설정
+	    var popupWidth = 900;
+	    var popupHeight = 600;
+	
+	    // 화면 중앙 좌표 계산
+	    var left = (screen.width - popupWidth) / 2;
+	    var top = (screen.height - popupHeight) / 2;
+	
+		// 팝업창 열기
+		window.open(
+			"../popup/item_popup",
+	     	"popupWindow",
+	     	"width=" + popupWidth +
+	     	",height=" + popupHeight +
+	     	",left=" + left +
+	     	",top=" + top +
+	     	",scrollbars=no,resizable=yes"
+	   );
+	}
+	
+	// 팝업에서 선택된 데이터를 받을 함수
+  	function item_RowData(data) {
+	    
+ 		var tbody = document.getElementById("result-tbody");
+ 		// 첫 번째 td 값이 비어있지 않은 tr만 필터링
+ 	    var filteredRows = Array.from(tbody.querySelectorAll("tr"))
+ 	        .filter(function(tr) {
+ 	            var firstValue = tr.cells[0].textContent.trim();
+ 	            return firstValue !== null && firstValue !== "";
+ 	        });
+
+ 	    // 각 tr의 td 값만 2차원 배열로 수집
+ 	    var allData = filteredRows.map(function(tr) {
+ 	        return Array.from(tr.cells).map(function(td) {
+ 	            return td.textContent.trim();
+ 	        });
+ 	    });
+ 	    
+ 	    for (var i = 0; i < allData.length; i++) {
+ 	    	if (allData[i][0] == data[0]) {
+ 	    		return;
+ 	    	}
+ 	    }
+ 
+		var newData = [data[0], data[1], data[2], '', '', '0', data[5], '0', 'N', '0', '0', '0', data[5], data[9], data[10], '', '', 'N', '', '', '0'];
+ 	   
+ 		// 중복이 없으면 추가
+ 	    allData.push(newData);
+ 		
+ 	   	tbody.innerHTML = ""; // 기존 내용 초기화
+       
+       	const totalRows = allData.length + 3; // 테이블에 항상 4개의 로우 유지
+       
+    	// result 배열 반복
+       	allData.forEach(function(board) {
+		const tr = document.createElement("tr");
+        	tr.innerHTML = 
+               '<td class="text-center">' + (board[0] || '') + '</td>' +
+               '<td class="text-center">' + (board[1] || '') + '</td>' +
+               '<td class="text-center">' + (board[2] || '') + '</td>' +
+               '<td class="text-center">' + (board[3] || '') + '</td>' +
+               '<td class="text-center">' + (board[4] || '') + '</td>' +
+               '<td class="text-center"><span contenteditable="true">' + (board[5] || '') + '</span></td>' +
+               '<td class="text-center">' + (board[6] || '') + '</td>' +
+               '<td class="text-center"><span contenteditable="true">' + (board[7] || '') + '</span></td>' +
+               '<td class="text-center"><input type="checkbox"' + (board[8] === 'Y' ? ' checked' : '') + '></td>' +
+               '<td class="text-center">' + (board[9] || '') + '</td>' +
+               '<td class="text-center">' + (board[10] || '') + '</td>' +
+               '<td class="text-center">' + (board[11] || '') + '</td>' +
+               '<td class="text-center">' + (board[12] || '') + '</td>' +
+               '<td class="text-center">' + (board[13] || '') + '</td>' +
+               '<td class="text-center"><input type="hidden" value="' + (board[15] || '') + '" /><span>' + (board[14] || '') + '</span></td>' +
+               '<td class="text-center">' + (board[16] || '') + '</td>' +
+               '<td class="text-center"><input type="checkbox"' + (board[17] === 'Y' ? ' checked' : '') + '></td>' +
+               '<td class="text-center">' + (board[18] || '') + '</td>' +
+               '<td class="text-center">' + (board[19] || '') + '</td>' +
+               '<td class="text-center">' + (board[20] || '') + '</td>';
+               
+            tr.ondblclick = function() {
+				open_Item(); // td 값 배열 전달
+           	}
+               
+           	tbody.appendChild(tr);
+       });
+       
+    	// 빈 로우 추가
+       const emptyRows = totalRows - allData.length;
+       for (let i = 0; i < emptyRows; i++) {
+           	const tr = document.createElement("tr");
+           	tr.innerHTML = 
+               '<td class="text-center">&nbsp;</td>'.repeat(20); // 컬럼 수 만큼 빈 칸
+			tr.ondblclick = function() {
+   				open_Item();
+   			}
+            tbody.appendChild(tr);
+       }
+	}
 	
 </script>

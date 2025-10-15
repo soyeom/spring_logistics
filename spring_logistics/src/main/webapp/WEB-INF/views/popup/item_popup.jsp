@@ -65,7 +65,7 @@
 				    			<td class = "text-center"><c:out value = "${board.column7}" /></td>
 				    			<td class = "text-center"><c:out value = "${board.column8}" /></td>
 				    			<td class = "text-center"><c:out value = "${board.column9}" /></td>
-				    			<td class = "text-center"><c:out value = "${board.column10}" /></td>
+				    			<td class = "text-center"><input type="hidden" value="${board.column11}" /><c:out value = "${board.column10}" /></td>
 					    	</tr>
 				    	</c:forEach>
 				    </tbody>
@@ -135,7 +135,7 @@
 	                    '<td class="text-center">' + (board.column7 || '') + '</td>' +
 	                    '<td class="text-center">' + (board.column8 || '') + '</td>' +
 	                    '<td class="text-center">' + (board.column9 || '') + '</td>' +
-	                    '<td class="text-center">' + (board.column10 || '') + '</td>';
+	                    '<td class="text-center"><input type="hidden" value="' + (board.column11 || '') + '" /><span>' + (board.column10 || '') + '</span></td>';
 	                   
 	                tbody.appendChild(tr);
 	            });
@@ -144,20 +144,34 @@
 	}
 	
 	function button_Click() {
-	    if (!selectedRow) {
+		
+		if (!selectedRow) {
 	        alert("선택된 행이 없습니다!");
 	        return;
 	    }
 
-	    // td 안의 텍스트를 배열로 수집
-	    const data = Array.from(selectedRow.querySelectorAll("td")).map(function(td) {
-		    return td.textContent.trim();
-		});
+	    const data = [];
+
+	    selectedRow.querySelectorAll("td").forEach(function(td) {
+	        // td 텍스트 (없으면 "")
+	        const text = td.textContent.trim() || "";
+	        data.push(text);
+
+	        // td 안의 hidden input 값들 (없으면 "")
+	        const hiddenInputs = td.querySelectorAll('input[type="hidden"]');
+	        if (hiddenInputs.length > 0) {
+	            hiddenInputs.forEach(function(input) {
+	                data.push(input.value || "");
+	            });
+	        }
+	    });
 	    
-	 	// 부모창 함수 호출 + 데이터 전달
-		window.opener.item_RowData(data);
-		// 팝업 닫기
-      	window.close();
+	    console.log(data);
+
+	    // 부모창 함수 호출 + 데이터 전달
+	    window.opener.item_RowData(data);
+	    // 팝업 닫기
+	    window.close();
 	}
 	
 </script>

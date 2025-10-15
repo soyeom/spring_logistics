@@ -29,11 +29,11 @@ document.querySelector(".toggle-sidebar").addEventListener("click", () => {
 });
 
 // 추가 조회조건 접기/펼치기
-document.querySelector(".toggle-filters").addEventListener("click", (e) => {
-    const extra = document.querySelector(".extra-filters");
-    extra.style.display = extra.style.display === "none" ? "block" : "none";
-    e.target.textContent = extra.style.display === "none" ? "추가 조건 ▾" : "추가 조건 ▴";
-});
+//document.querySelector(".toggle-filters").addEventListener("click", (e) => {
+//    const extra = document.querySelector(".extra-filters");
+//    extra.style.display = extra.style.display === "none" ? "block" : "none";
+//    e.target.textContent = extra.style.display === "none" ? "추가 조건 ▾" : "추가 조건 ▴";
+//});
 
 // 행 더블클릭 시 팝업 열기
 document.querySelectorAll(".popup-col").forEach(cell => {

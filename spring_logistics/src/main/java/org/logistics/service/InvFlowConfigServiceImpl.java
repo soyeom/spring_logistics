@@ -13,8 +13,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import lombok.Setter;
+import lombok.extern.log4j.Log4j;
 
 @Service
+@Log4j
 public class InvFlowConfigServiceImpl implements InvFlowConfigService {
 
 	
@@ -89,8 +91,14 @@ public class InvFlowConfigServiceImpl implements InvFlowConfigService {
 	
 	// 출고 마스터 저장
 	@Override
-	public void outBoundMasterSave(OutBoundMasterVO obm) {
-		invFlowConfigMapper.outBoundMasterSave(obm);
+	public void newOutBoundMasterSave(OutBoundMasterVO obm) {
+		invFlowConfigMapper.newOutBoundMasterSave(obm);
+	}
+	
+	// 출고 마스터 저장
+	@Override
+	public void updateOutBoundMasterSave(OutBoundMasterVO obm) {
+		invFlowConfigMapper.updateOutBoundMasterSave(obm);
 	}
 	
 	// 조회조건 - 사업단위 조회
@@ -110,5 +118,20 @@ public class InvFlowConfigServiceImpl implements InvFlowConfigService {
 	public List<PopupItemVO> popupItemList() {
 		// TODO Auto-generated method stub
 		return invFlowConfigMapper.popupItemList();
+	}
+
+	@Override
+	public String new_Out_Id(String bu_Id) {
+		return invFlowConfigMapper.new_Out_Id(bu_Id);
+	}
+
+	@Override
+	public void outBound_Delete_Detail(String bu_Id, String out_Id) {
+		invFlowConfigMapper.outBound_Delete_Detail(bu_Id, out_Id);
+	}
+
+	@Override
+	public void outBound_Save_Detail(OutBoundMasterVO vo) {
+		invFlowConfigMapper.outBound_Save_Detail(vo);
 	}
 }
