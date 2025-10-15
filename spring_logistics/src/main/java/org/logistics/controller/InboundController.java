@@ -16,6 +16,6 @@ public class InboundController {
 
     @GetMapping("/list")
     public List<InboundVO> list(@RequestParam Map<String, Object> params) {
-        return service.getByItemId(params);
+        return service.selectByItemId(params);
     }
 }

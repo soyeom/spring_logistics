@@ -63,7 +63,7 @@
         <div class="menu-item">
             <div class="title">재고 변동 추이 분석</div>
             <div class="submenu">
-            	<div><a href="#">재고 변동 추이 분석하기</a></div>
+            	<div><a href="/stock-analysis/form">재고 변동 추이 분석하기</a></div>
         	</div>
     	</div>
 	</nav>

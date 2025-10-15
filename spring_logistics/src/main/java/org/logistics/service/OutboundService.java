@@ -5,5 +5,5 @@ import java.util.Map;
 import org.logistics.domain.OutboundVO;
 
 public interface OutboundService {
-    List<OutboundVO> getByItemId(Map<String, Object> params);
+    List<OutboundVO> selectByItemId(Map<String, Object> params);
 }

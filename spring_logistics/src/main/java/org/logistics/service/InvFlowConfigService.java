@@ -37,4 +37,6 @@ public interface InvFlowConfigService {
 	public List<CommonVO> business_UnitList();
 	public List<CommonVO> wareHouse_MasterList();
 	public List<PopupItemVO> popupItemList();
+	
+	//창고
 }
