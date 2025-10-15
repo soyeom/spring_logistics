@@ -7,15 +7,19 @@ public class OutBoundMasterVO {
 
 	// 출고 사업단위
 	private String bu_Id;
+	private Long long_Bu_Id;
 	private String bu_Name;
 	private String out_Id;
+	private Long long_Out_Id;
 	
 	// 출고 마스터
 	private String out_Date;
 	private String local_Flag;
 	private String party_Id;
+	private Long long_Party_Id;
 	private String party_Name;
 	private String contact_Id;
+	private Long long_Contact_Id;
 	private String contact_Name;
 	private String department;
 	private String out_Type;
@@ -36,6 +40,7 @@ public class OutBoundMasterVO {
 	private String sales_Price_Sum;		// 판매금액계
 	private String base_Unit;			// 기준단위
 	private String storage_Location;	// 보관창고
+	private String wareHouse_Name;		// 창고
 	private String special_Note;		// 특이사항
 	private String is_Charge_Supply;	// 유상사급여부
 	private String asset_Class;			// 품목자산분류
@@ -46,4 +51,6 @@ public class OutBoundMasterVO {
 	private String created_At;			// 생성일
 	private String currency_Code;		// 통화단위
 	private String exChange_Rate;		// 환율
+	private String current_Qty;			// 현재고
+	
 }

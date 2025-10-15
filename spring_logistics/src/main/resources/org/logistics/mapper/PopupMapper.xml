@@ -16,6 +16,7 @@
 		     , english_name as column8
 		     , safety_stock_qty as column9
 		     , (select warehouse_name from warehouse_detail where bu_id = a.bu_id and warehouse_id = a.storage_location) as column10
+		     , storage_location as column11
 		from item_master a
 		
 		<where>
@@ -44,6 +45,20 @@
 	        </if>
 	        <if test = "gubun == 20">
 	        	contact_name like '%' ||  #{text} || '%'
+	        </if>
+    	</where>
+	
+	</select>
+	
+	<select id = "currency_List" resultType = "org.logistics.domain.PopupVO">
+	
+		select currency_code as column1
+			 , exchange_rate as column2
+		from currency_rate
+		where use_yn = 'Y'
+		<where>
+	        <if test = "gubun == 10">
+	            currency_code like '%' ||  #{text} || '%'
 	        </if>
     	</where>
 	
