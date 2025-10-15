@@ -1,0 +1,92 @@
+/* -------------------- 기본 -------------------- */
+body {
+    margin: 0;
+    background: #f9fafc;
+    font-family: "Malgun Gothic", "Apple SD Gothic Neo", sans-serif;
+    box-sizing: border-box;
+    -webkit-text-size-adjust: none;
+}
+
+/* -------------------- 팝업 -------------------- */
+.popup-wrapper {
+    width: 100%;
+    display: grid;
+}
+
+.popup-header {
+    background: #3966d9;
+    color: #fff;
+    font-size: 1.2rem;
+    font-weight: bold;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 50px;
+}
+
+.popup-search-bar {
+    background: #fff;
+    border-bottom: 1px solid #ddd;
+    display: flex;
+    gap: 5px;
+    align-items: center;
+    padding: 10px;
+}
+
+/* -------------------- 검색바 -------------------- */
+.search-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.search-bar select {
+  flex: 2;  /* 비율 1 */
+}
+
+.search-bar input {
+  flex: 8;  /* 비율 8 */
+}
+
+.search-bar button {
+  flex: 1;  /* 비율 1 */
+}
+
+.search-bar select,
+.search-bar input {
+    padding: 0.6rem 0.8rem;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    outline: none;
+}
+
+.search-bar select {
+    min-width: 120px;
+}
+
+.search-bar input {
+    flex: 1;
+}
+
+/* -------------------- 버튼 -------------------- */
+.btn-primary {
+    padding: 0.3rem 1.2rem;
+    border: none;
+    border-radius: 6px;
+    background: #3966d9;
+    color: #fff;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: background 0.2s ease;
+    width: 100%;
+}
+.btn-primary:hover {
+    background: #2d4fb3;
+}
+
+.popup-body {
+	background-color: #fff;
+	padding: 10px;
+	max-width: 900px;
+}

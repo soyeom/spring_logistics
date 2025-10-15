@@ -1,0 +1,321 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.logistics.mapper.StockSummaryMapper">
+
+	<resultMap id="commonVoResultMap" type="org.logistics.domain.CommonVO">
+	    <result column="CODE_VALUE" property="value"/>
+	    <result column="CODE_TEXT" property="text"/>
+	</resultMap>
+	
+	<select id="selectBusinessBuNameList" resultMap="commonVoResultMap">
+	    SELECT
+	        bu_name AS CODE_VALUE,
+	        bu_name AS CODE_TEXT
+	    FROM business_unit
+	    ORDER BY bu_name
+	</select>
+	
+	<select id="selectItemAssetClassList" resultMap="commonVoResultMap">
+	    SELECT DISTINCT
+	        asset_class AS CODE_VALUE,
+	        asset_class AS CODE_TEXT
+	    FROM item_master
+	    WHERE asset_class IS NOT NULL
+	    ORDER BY asset_class
+	</select>
+	
+	<select id="selectItemStatusList" resultMap="commonVoResultMap">
+	    SELECT DISTINCT
+	        item_status AS CODE_VALUE,
+	        item_status AS CODE_TEXT
+	    FROM item_master
+	    WHERE item_status IS NOT NULL
+	    ORDER BY item_status
+	</select>
+
+	<!-- メイン照会クエリ -->
+	<resultMap id="stockSummaryResultMap" type="org.logistics.domain.StockSummaryResultDto">
+    	<result column="ITEM_ID" property="itemId"/> <!-- 品番 -->
+    	<result column="ITEM_ASSET_CLASS" property="itemAssetClass"/> <!-- 品目資産分類 -->
+    	<result column="ITEM_BIG_CATEGORY" property="itemBigCategory"/> <!-- 品目大分類 -->
+    	<result column="ITEM_MID_CATEGORY" property="itemMidCategory"/> <!-- 品目中分類 -->
+    	<result column="ITEM_NAME" property="itemName"/> <!-- 品名 -->
+    	<result column="INBOUND_QTY" property="inboundQty"/> <!-- 総入庫数量 -->
+    	<result column="ITEM_UNIT" property="itemUnit"/> <!-- 単位 -->
+    	<result column="ITEM_STATUS" property="itemStatus"/> <!-- 品目状態 -->
+    	<result column="STOCK_QTY" property="stockQty"/> <!-- 在庫数量 -->
+    	<result column="CARRIED_OVER_QTY" property="carriedOverQty"/> <!-- 繰越数量 -->
+    	<result column="OUTBOUND_QTY" property="outboundQty"/> <!-- 総出庫数量 -->
+    	<result column="PRODUCTION_INBOUND" property="productionInbound"/> <!-- 入庫(生産入庫) -->
+    	<result column="OUTSOURCING_INBOUND" property="outsourcingInbound"/> <!-- 入庫(外注入庫) -->
+    	<result column="PURCHASE_INBOUND" property="purchaseInbound"/> <!-- 入庫(購入入庫) -->
+    	<result column="IMPORT_INBOUND" property="importInbound"/> <!-- 入庫(輸入入庫) -->
+    	<result column="DELIVERY_SLIP_OUTBOUND" property="deliverySlipOutbound"/> <!-- 出庫(取引明細書) -->
+    	<result column="OTHER_OUTBOUND" property="otherOutbound"/> <!-- 出庫(その他出庫) -->
+    	<result column="SALES_CONSIGNMENT_OUTBOUND" property="salesConsignmentOutbound"/> <!-- 出庫(販売委託品出庫) -->
+    	<result column="WORK_PERFORMANCE_OUTBOUND" property="workPerformanceOutbound"/> <!-- 出庫(作業実績) -->
+    	<result column="OUTSOURCING_OUTBOUND" property="outsourcingOutbound"/> <!-- 出庫(外注入庫) -->
+	</resultMap>	
+	<!-- resultMap タグを使用して、データベースカラム(column)と DTO のフィールド名(property)を正確に 1:1 でマッピング -->
+
+	<select id="selectStockSummaryList" parameterType="org.logistics.domain.SearchCriteriaDto" resultMap="stockSummaryResultMap">
+	    WITH CarriedOver AS (
+	        SELECT
+	            COALESCE(T1.item_id, T3.item_id) AS item_id,
+	            SUM(NVL(T1.qty, 0)) - SUM(NVL(T3.qty, 0)) AS carried_over_qty
+	        FROM
+	            inbound_detail T1
+	        LEFT JOIN
+	            inbound_master T2 ON T1.inbound_id = T2.inbound_id
+	        LEFT JOIN
+	            out_detail T3 ON T1.item_id = T3.item_id
+	        LEFT JOIN
+	            out_master T4 ON T3.out_id = T4.out_id
+	        WHERE 1=1
+	        <if test="searchPeriodStart != null">
+	            AND (T2.inbound_date &lt; #{searchPeriodStart, jdbcType=DATE} OR T4.out_date &lt; #{searchPeriodStart, jdbcType=DATE})
+	        </if>
+	        <if test="businessBuName != null and businessBuName != ''">
+	            AND T1.bu_id = (SELECT bu_id FROM business_unit WHERE bu_name = #{businessBuName})
+	        </if>
+	        GROUP BY
+	            COALESCE(T1.item_id, T3.item_id)
+	    ),
+	    PeriodInbound AS (
+	        SELECT
+	            T1.item_id,
+	            SUM(T1.qty) AS inbound_qty,
+	            SUM(CASE WHEN T2.inbound_type = '생산입고' THEN T1.qty ELSE 0 END) AS production_inbound,
+	            SUM(CASE WHEN T2.inbound_type = '외주입고' THEN T1.qty ELSE 0 END) AS outsourcing_inbound,
+	            SUM(CASE WHEN T2.inbound_type = '구매입고' THEN T1.qty ELSE 0 END) AS purchase_inbound,
+	            SUM(CASE WHEN T2.inbound_type = '수입입고' THEN T1.qty ELSE 0 END) AS import_inbound
+	        FROM inbound_detail T1
+	        JOIN inbound_master T2 ON T1.inbound_id = T2.inbound_id
+	        WHERE 1=1
+	        <if test="searchPeriodStart != null and searchPeriodEnd != null">
+	            AND T2.inbound_date BETWEEN #{searchPeriodStart, jdbcType=DATE} AND #{searchPeriodEnd, jdbcType=DATE}
+	        </if>
+	        <if test="businessBuName != null and businessBuName != ''">
+	            AND T1.bu_id = (SELECT bu_id FROM business_unit WHERE bu_name = #{businessBuName})
+	        </if>
+	        GROUP BY T1.item_id
+	    ),
+	    PeriodOutbound AS (
+	        SELECT
+	            T1.item_id,
+	            SUM(T1.qty) AS outbound_qty,
+	            SUM(CASE WHEN T2.out_type = '거래명세표' THEN T1.qty ELSE 0 END) AS delivery_slip_outbound,
+	            SUM(CASE WHEN T2.out_type = '기타출고' THEN T1.qty ELSE 0 END) AS other_outbound,
+	            SUM(CASE WHEN T2.out_type = '판매보관품출고' THEN T1.qty ELSE 0 END) AS sales_consignment_outbound,
+	            SUM(CASE WHEN T2.out_type = '작업실적' THEN T1.qty ELSE 0 END) AS work_performance_outbound,
+	            SUM(CASE WHEN T2.out_type = '외주입고' THEN T1.qty ELSE 0 END) AS outsourcing_outbound
+	        FROM out_detail T1
+	        JOIN out_master T2 ON T1.out_id = T2.out_id
+	        WHERE 1=1
+	        <if test="searchPeriodStart != null and searchPeriodEnd != null">
+	            AND T2.out_date BETWEEN #{searchPeriodStart, jdbcType=DATE} AND #{searchPeriodEnd, jdbcType=DATE}
+	        </if>
+	        <if test="businessBuName != null and businessBuName != ''">
+	            AND T1.bu_id = (SELECT bu_id FROM business_unit WHERE bu_name = #{businessBuName})
+	        </if>
+	        GROUP BY T1.item_id
+	    )
+	    SELECT
+	        IM.item_id AS ITEM_ID,
+	        IM.asset_class AS ITEM_ASSET_CLASS,
+	        IM.big_category AS ITEM_BIG_CATEGORY,
+	        IM.mid_category AS ITEM_MID_CATEGORY,
+	        IM.item_name AS ITEM_NAME,
+	        IM.base_unit AS ITEM_UNIT,
+	        IM.item_status AS ITEM_STATUS,
+	        COALESCE(PI.inbound_qty, 0) AS INBOUND_QTY,
+	        COALESCE(PO.outbound_qty, 0) AS OUTBOUND_QTY,
+	        (COALESCE(C.carried_over_qty, 0) + COALESCE(PI.inbound_qty, 0) - COALESCE(PO.outbound_qty, 0)) AS STOCK_QTY,
+	        COALESCE(C.carried_over_qty, 0) AS CARRIED_OVER_QTY,
+	        COALESCE(PI.production_inbound, 0) AS PRODUCTION_INBOUND,
+	        COALESCE(PI.outsourcing_inbound, 0) AS OUTSOURCING_INBOUND,
+	        COALESCE(PI.purchase_inbound, 0) AS PURCHASE_INBOUND,
+	        COALESCE(PI.import_inbound, 0) AS IMPORT_INBOUND,
+	        COALESCE(PO.delivery_slip_outbound, 0) AS DELIVERY_SLIP_OUTBOUND,
+	        COALESCE(PO.other_outbound, 0) AS OTHER_OUTBOUND,
+	        COALESCE(PO.sales_consignment_outbound, 0) AS SALES_CONSIGNMENT_OUTBOUND,
+	        COALESCE(PO.work_performance_outbound, 0) AS WORK_PERFORMANCE_OUTBOUND,
+	        COALESCE(PO.outsourcing_outbound, 0) AS OUTSOURCING_OUTBOUND
+	    FROM item_master IM
+	    LEFT JOIN PeriodInbound PI ON IM.item_id = PI.item_id
+	    LEFT JOIN PeriodOutbound PO ON IM.item_id = PO.item_id
+	    LEFT JOIN CarriedOver C ON IM.item_id = C.item_id
+	    WHERE 1=1
+	    <if test="businessBuName != null and businessBuName != ''">
+	        AND IM.bu_id = (SELECT bu_id FROM business_unit WHERE bu_name = #{businessBuName})
+	    </if>
+	    <if test="itemAssetClass != null and itemAssetClass != ''">
+	        AND IM.asset_class = #{itemAssetClass}
+	    </if>
+	    <if test="itemBigCategory != null and itemBigCategory != ''">
+	        AND IM.big_category = #{itemBigCategory}
+	    </if>
+	    <if test="itemMidCategory != null and itemMidCategory != ''">
+	        AND IM.mid_category = #{itemMidCategory}
+	    </if>
+	    <if test="itemSmallCategory != null and itemSmallCategory != ''">
+	        AND IM.small_category = #{itemSmallCategory}
+	    </if>
+	    <if test="itemName != null and itemName != ''">
+	        AND IM.item_name LIKE '%' || #{itemName} || '%'
+	    </if>
+	    <if test="itemId != null and itemId != ''">
+	        AND IM.item_id = #{itemId}
+	    </if>
+	    <if test="itemStatus != null and itemStatus != ''">
+	        AND IM.item_status = #{itemStatus}
+	    </if>
+	    <if test="includeZeroQty != true">
+	        AND (COALESCE(PI.inbound_qty, 0) > 0 OR COALESCE(PO.outbound_qty, 0) > 0 OR COALESCE(C.carried_over_qty, 0) > 0)
+	    </if>
+	    ORDER BY
+	        IM.item_name
+	</select>
+	
+	<!-- 事業単位別 在庫元帳照会クエリ -->
+	<resultMap id="stockLedgerResultMap" type="org.logistics.domain.StockLedgerResultDto">
+		<result column="TRANSACTION_DATE" property="transactionDate"/> <!-- 日付 -->
+		<result column="TYPE" property="type"/> <!-- 区分(繰越在庫など) -->
+		<result column="INOUTBOUND_TYPE" property="inOutboundType"/> <!-- 入出庫区分 -->
+		<result column="INOUT_CATEGORY" property="inOutboundCategory"/> <!-- 入出庫タイプ -->
+		<result column="UNIT" property="unit"/> <!-- 単位 -->
+		<result column="INBOUND_QTY" property="inboundQty"/> <!-- 入庫数量 -->
+		<result column="OUTBOUND_QTY" property="outboundQty"/> <!-- 出庫数量 -->
+		<result column="STOCK_QTY" property="stockQty"/> <!-- 在庫数量 -->
+		<result column="MANAGEMENT_ID" property="managementId"/> <!-- 管理番号 -->
+		<result column="BU_NAME" property="buName"/> <!-- 事業単位 -->
+		<result column="INBOUND_WAREHOUSE" property="inboundWarehouse"/> <!-- 入庫倉庫 -->
+		<result column="OUTBOUND_WAREHOUSE" property="outboundWarehouse"/> <!-- 出庫倉庫 -->
+		<result column="PARTY_NAME" property="partyName"/> <!-- 取引先 -->
+		<result column="DEPARTMENT" property="department"/> <!-- 処理部署 -->
+		<result column="CONTACT_NAME" property="contactName"/> <!-- 処理者 -->
+		<result column="TRANSACTION_TYPE" property="transactionType"/> <!-- 取引タイプ -->
+		<result column="TRANSACTION_ID" property="transactionId"/> <!-- 固有 ID -->
+	</resultMap>
+	
+	<select id="selectStockLedgerList" resultMap="stockLedgerResultMap" parameterType="org.logistics.domain.SearchCriteriaDto">
+	    WITH ALL_TRANSACTIONS AS
+	    (
+	        -- 入庫内訳
+	        SELECT
+	            T2.inbound_date AS transaction_date, -- 日付(取引発生日付)
+	            '입고' AS type, -- 区分
+	            T2.inbound_id AS management_id, -- 管理番号
+	            T2.inbound_type AS inoutbound_type, -- 入出庫区分
+	            T1.qty AS inbound_qty, -- 入庫数量
+	            0 AS outbound_qty, -- 出庫数量
+	            T1.bu_id,
+	            T1.item_id,
+	            T1.warehouse_id AS inbound_warehouse_id, -- 入庫倉庫
+	            NULL AS outbound_warehouse_id, -- 出庫倉庫
+	            T2.partner_id AS customer_party_id,
+	            T2.contact_id AS processor_contact_id
+	        FROM inbound_detail T1
+	        JOIN inbound_master T2 ON T1.inbound_id = T2.inbound_id
+	        
+	        UNION ALL
+	        
+	        -- 출고 내역
+	        SELECT
+	            T2.out_date AS transaction_date, -- 日付(取引発生日付)
+	            '출고' AS type, -- 区分
+	            T2.out_id AS management_id, -- 管理番号
+	            T2.out_type AS inoutbound_type, -- 入出庫区分
+	            0 AS inbound_qty, -- 入庫数量
+	            T1.qty AS outbound_qty, -- 出庫数量
+	            T1.bu_id,
+	            T1.item_id,
+	            NULL AS inbound_warehouse_id, -- 入庫倉庫
+	            T1.warehouse_id AS outbound_warehouse_id, -- 出庫倉庫
+	            T2.party_id AS customer_party_id,
+	            T2.contact_id AS processor_contact_id
+	        FROM out_detail T1
+	        JOIN out_master T2 ON T1.out_id = T2.out_id
+	    )
+	    SELECT
+	        T.transaction_date, -- 日付
+	        T.type, -- 区分
+	        T.inoutbound_type, -- 入出庫区分
+	        I.item_name, -- 品名
+	        I.base_unit AS unit, -- 単位
+	        T.inbound_qty, -- 入庫数量
+	        T.outbound_qty, -- 出庫数量
+	        SUM(T.inbound_qty - T.outbound_qty) OVER (ORDER BY T.transaction_date, T.management_id) AS stock_qty, -- 在庫数量
+	        T.management_id, -- 管理番号
+	        BU.bu_name, -- 事業単位
+	        WH_IN.warehouse_name AS inbound_warehouse, -- 入庫倉庫
+	        WH_OUT.warehouse_name AS outbound_warehouse, -- 出庫倉庫
+	        P.party_name, -- 取引先
+	        C.department, -- 処理部署
+	        C.contact_name -- 処理者
+	    FROM ALL_TRANSACTIONS T
+	    LEFT JOIN item_master I ON T.item_id = I.item_id AND T.bu_id = I.bu_id
+	    LEFT JOIN business_unit BU ON T.bu_id = BU.bu_id
+	    LEFT JOIN warehouse_detail WH_IN ON T.inbound_warehouse_id = WH_IN.warehouse_id AND T.bu_id = WH_IN.bu_id
+	    LEFT JOIN warehouse_detail WH_OUT ON T.outbound_warehouse_id = WH_OUT.warehouse_id AND T.bu_id = WH_OUT.bu_id
+	    LEFT JOIN party P ON T.customer_party_id = P.party_id AND T.bu_id = P.bu_id
+	    LEFT JOIN contact C ON T.processor_contact_id = C.contact_id AND T.bu_id = C.bu_id
+	    WHERE 1=1
+	    <if test="searchPeriodStart != null">
+	        AND T.transaction_date &gt;= #{searchPeriodStart, jdbcType=DATE}
+	    </if>
+	    <if test="searchPeriodEnd != null">
+	        AND T.transaction_date &lt;= #{searchPeriodEnd, jdbcType=DATE}
+	    </if>
+	    <if test="businessBuName != null and businessBuName != ''">
+	        AND BU.bu_name = #{businessBuName}
+	    </if>
+	    <if test="itemName != null and itemName != ''">
+	        AND I.item_name LIKE '%' || #{itemName} || '%'
+	    </if>
+	    <if test="itemId != null">
+	        AND T.item_id = #{itemId}
+	    </if>
+	    ORDER BY T.transaction_date, T.management_id
+	</select>
+
+    <select id="selectCarriedOverStock" resultMap="stockSummaryResultMap" parameterType="org.logistics.domain.SearchCriteriaDto">
+    	<!-- 繰越在庫 照会クエリ -->
+		WITH INBOUND_HISTORY AS (
+		    SELECT
+		        T1.bu_id,
+		        T1.item_id,
+		        SUM(T1.qty) AS total_inbound_qty
+		    FROM inbound_detail T1
+		    JOIN inbound_master T2 ON T1.inbound_id = T2.inbound_id
+		    WHERE T2.inbound_date &lt; #{searchPeriodStart}
+		    <if test="buName != null and buName != ''">
+		        AND T1.bu_id = (SELECT bu_id FROM business_unit WHERE bu_name = #{businessBuName})
+		    </if>
+		    GROUP BY T1.bu_id, T1.item_id
+		),
+		OUTBOUND_HISTORY AS (
+		    SELECT
+		        T1.bu_id,
+		        T1.item_id,
+		        SUM(T1.qty) AS total_outbound_qty
+		    FROM out_detail T1
+		    JOIN out_master T2 ON T1.out_id = T2.out_id
+		    WHERE T2.out_date &lt; #{searchPeriodStart}
+		    <if test="buName != null and buName != ''">
+		        AND T1.bu_id = (SELECT bu_id FROM business_unit WHERE bu_name = #{businessBuName})
+		    </if>
+		    GROUP BY T1.bu_id, T1.item_id
+		)
+		SELECT
+		    COALESCE(A.bu_id, B.bu_id) AS bu_id,
+		    COALESCE(A.item_id, B.item_id) AS item_Id,
+		    SUM(COALESCE(A.total_inbound_qty, 0) - COALESCE(B.total_outbound_qty, 0)) AS carried_over_qty
+		FROM INBOUND_HISTORY A
+		FULL OUTER JOIN OUTBOUND_HISTORY B
+		ON A.bu_id = B.bu_id AND A.item_id = B.item_id
+		GROUP BY COALESCE(A.bu_id, B.bu_id), COALESCE(A.item_id, B.item_id)
+		HAVING SUM(COALESCE(A.total_inbound_qty, 0) - COALESCE(B.total_outbound_qty, 0)) != 0
+	</select>
+    
+</mapper>
