@@ -25,7 +25,7 @@
                 <span class="card__number">1</span>
                 <h2 class="card__title">재고부족시 출하 통제</h2>
             </article>
-            <article class="card card--blue" tabindex="0" role="button" aria-label="재고 관리">
+            <article class="card card--blue" tabindex="0" role="button" aria-label="재고 관리" onclick="location.href='/warehouse/setting'">
                 <span class="card__number">2</span>
                 <h2 class="card__title">실재고/자산재고 관리</h2>
             </article>
