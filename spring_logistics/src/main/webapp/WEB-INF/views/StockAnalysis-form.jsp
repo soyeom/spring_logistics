@@ -397,6 +397,16 @@ $(document).ready(function() {
             periodCount: parseInt($("#periodCount").val())
         };
 
+        // 🚩 디버깅 코드 추가: 서버로 보내는 데이터 확인
+        console.log("--- Stock Analysis Request Data ---");
+        console.log("buId (사업부문 ID):", requestData.buId);
+        console.log("warehouseId (倉庫 ID):", requestData.warehouseId);
+        console.log("itemSmallCategory (品目小分類):", requestData.itemSmallCategory);
+        console.log("currentMonth (現在月):", requestData.currentMonth);
+        console.log("analysisItem (分析項目 Key):", requestData.analysisItem);
+        console.log("Full Request Data:", requestData);
+        console.log("-----------------------------------");
+
         // サーバーに分析データをリクエスト
         $.ajax({
             url : ctx + '/stock-analysis/analysis',
@@ -404,6 +414,9 @@ $(document).ready(function() {
             contentType : "application/json",
             data : JSON.stringify(requestData),
             success : function(data) {
+
+                // 🚩 디버깅 코드 추가: 서버 응답 데이터 길이 확인
+                console.log("Server Response (Data Length):", data.length); 
 
                 // 既存の DataTables を破棄
                 if ($.fn.DataTable.isDataTable('#analysisTable')) {
@@ -492,7 +505,7 @@ $(document).ready(function() {
 const open_Warehouse = function() {
     var left = (screen.width - POPUP_WIDTH) / 2;
     var top = (screen.height - POPUP_HEIGHT) / 2;
-    // 倉庫ポップアップを開く
+    // 倉庫ポップアップを開く (경로 수정: /popup/warehouse_popup -> /stock-analysis/warehouse_popup)
     window.open(ctx + '/popup/warehouse_popup', "warehouse_popup",
         "width=" + POPUP_WIDTH + ",height=" + POPUP_HEIGHT + ",left=" + left + ",top=" + top + ",scrollbars=yes,resizable=yes");
 }
@@ -501,8 +514,8 @@ const open_Warehouse = function() {
 const open_Isc = function() {
     var left = (screen.width - POPUP_WIDTH) / 2;
     var top = (screen.height - POPUP_HEIGHT) / 2;
-    // 品目小分類ポップアップを開く
-    window.open(ctx + '/popup/category_popup_small',
+    // 品目小分類ポップアップを開く (경로 수정: /popup/category_popup_small -> /stock-analysis/category_popup_small)
+    window.open(ctx + '/popup/category_popup_small', "category_popup_small",
         "width=" + POPUP_WIDTH + ",height=" + POPUP_HEIGHT + ",left=" + left + ",top=" + top + ",scrollbars=yes,resizable=yes");
 }
 
@@ -558,6 +571,5 @@ toggleButton.addEventListener('click', function() {
     sidebar.classList.toggle('hidden');
 });
 </script>
-
 </body>
 </html>

@@ -4,46 +4,6 @@
 
 <mapper namespace="org.logistics.mapper.PopupMapper">
 	
-	<select id="contact_List" resultType="org.logistics.domain.PopupVO">
-		SELECT
-			contact_id AS column1,
-			contact_name AS column2,
-			department AS column3,
-			phone AS column4,
-			mobile AS column5,
-			email AS column6
-		FROM contact
-		<where>
-			<if test="gubun == '10'">
-				contact_id LIKE '%' || #{text} || '%'
-			</if>
-			<if test="gubun == '20'">
-				contact_name LIKE '%' || #{text} || '%'
-			</if>
-		</where>
-	</select>
-
-	<select id="itemSmallcategory_List" resultType="org.logistics.domain.PopupVO">
-		SELECT
-			im.small_category AS column1,
-			im.mid_category AS column2,
-			im.big_category AS column3
-		FROM item_master im
-		<where>
-			<if test="gubun == '10'">
-				im.small_category LIKE '%' || #{text} || '%'
-			</if>
-			<if test="gubun == '20'">
-				im.mid_category LIKE '%' || #{text} || '%'
-			</if>
-			<if test="gubun == '30'">
-				im.big_category LIKE '%' || #{text} || '%'
-			</if>
-		</where>
-		GROUP BY im.small_category, im.mid_category, im.big_category
-		ORDER BY im.big_category, im.mid_category, im.small_category
-	</select>
-	
 	<select id="item_List" resultType="org.logistics.domain.PopupVO">
 		SELECT item_Id as column1
 		, item_name as column2
@@ -54,8 +14,8 @@
 		, sales_unit as column7
 		, english_name as column8
 		, safety_stock_qty as column9
-		, (SELECT warehouse_name FROM warehouse_detail WHERE bu_id = a.bu_id
-		AND warehouse_id = a.storage_location) as column10
+		, (SELECT warehouse_name FROM warehouse_detail WHERE bu_id = a.bu_id AND warehouse_id = a.storage_location) as column10
+		, storage_location as column11
 		FROM item_master a
 		<where>
 			<if test="gubun == 10">
@@ -66,7 +26,38 @@
 			</if>
 		</where>
 	</select>
-
+	
+	<select id="contact_List" resultType="org.logistics.domain.PopupVO">
+		SELECT
+			contact_id AS column1,
+			contact_name AS column2,
+			department AS column3,
+			phone AS column4,
+			mobile AS column5,
+			email AS column6
+		FROM contact
+		<where>
+			<if test="gubun == 10 or gubun == '10'">
+				contact_id LIKE '%' || #{text} || '%'
+			</if>
+			<if test="gubun == 20 or gubun == '20'">
+				contact_name LIKE '%' || #{text} || '%'
+			</if>
+		</where>
+	</select>
+	
+	<select id="currency_List" resultType="org.logistics.domain.PopupVO">
+		SELECT currency_code as column1
+			 , exchange_rate as column2
+		FROM currency_rate
+		WHERE use_yn = 'Y'
+		<where>
+	         <if test="gubun == 10">
+	             currency_code LIKE '%' || #{text} || '%'
+	         </if>
+	    </where>
+	</select>
+	
 	<select id="out_Id_List" resultType="org.logistics.domain.PopupVO">
 		SELECT out_id as column1
 		, bu_id as column2
@@ -102,7 +93,7 @@
 			</if>
 		</where>
 	</select>
-
+	
 	<select id="party_List" resultType="org.logistics.domain.PopupVO">
 		SELECT bu_Id as column1
 		, (SELECT bu_Name FROM business_unit WHERE bu_id = a.bu_Id) as column2
@@ -131,7 +122,7 @@
 			</if>
 		</where>
 	</select>
-
+	
 	<select id="category_List_Big" resultType="org.logistics.domain.PopupVO">
 		SELECT DISTINCT big_category as column2
 		FROM item_master
@@ -141,7 +132,7 @@
 			</if>
 		</where>
 	</select>
-
+	
 	<select id="category_List_Mid" resultType="org.logistics.domain.PopupVO">
 		SELECT DISTINCT big_category as column2
 		, mid_category as column3
@@ -152,7 +143,7 @@
 			</if>
 		</where>
 	</select>
-
+	
 	<select id="category_List_Small" resultType="org.logistics.domain.PopupVO">
 		SELECT DISTINCT big_category as column2
 		, mid_category as column3
@@ -164,7 +155,7 @@
 			</if>
 		</where>
 	</select>
-
+	
 	<select id="itemname_List" resultType="org.logistics.domain.PopupVO">
 		SELECT item_id as column1
 		, spec as column2
@@ -190,6 +181,27 @@
 		</where>
 	</select>
 
+	<select id="itemSmallcategory_List" resultType="org.logistics.domain.PopupVO">
+		SELECT
+			im.small_category AS column1,
+			im.mid_category AS column2,
+			im.big_category AS column3
+		FROM item_master im
+		<where>
+			<if test="gubun == '10'">
+				im.small_category LIKE '%' || #{text} || '%'
+			</if>
+			<if test="gubun == '20'">
+				im.mid_category LIKE '%' || #{text} || '%'
+			</if>
+			<if test="gubun == '30'">
+				im.big_category LIKE '%' || #{text} || '%'
+			</if>
+		</where>
+		GROUP BY im.small_category, im.mid_category, im.big_category
+		ORDER BY im.big_category, im.mid_category, im.small_category
+	</select>
+	
 	<select id="warehousecode_List" resultType="org.logistics.domain.PopupVO">
 		SELECT DISTINCT warehouse_internal_code AS column1
 		, warehouse_internal_code AS column2

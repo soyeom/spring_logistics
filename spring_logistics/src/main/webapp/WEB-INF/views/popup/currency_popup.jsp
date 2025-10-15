@@ -9,7 +9,7 @@
 <html>
 <head>
 	<meta charset="UTF-8">
-    <title>품목</title>
+    <title>거래명세서</title>
     <link rel="stylesheet" type="text/css" href="/resources/css/popup.css">
     <link rel="stylesheet" href="/resources/css/logistics.css" type="text/css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css" />
@@ -18,14 +18,13 @@
 <body style = "background-color: #fff;">
 	<div class="popup-wrapper">
 		<!-- 헤더 -->
-		<div class = "popup-header">상품 등록</div>	  
+		<div class = "popup-header">통화</div>	  
 	     <!-- 검색바 -->
 	     <div class = "popup-search-bar">
 	     	<div style = "flex: 2;">
      			<select id = "gubun">
 	            	<option value = "0">전체</option>
-	            	<option value = "10">품번</option>
-	            	<option value = "20">품명</option>
+	            	<option value = "10">통화</option>
 	        	</select>
 	     	</div>
 	     	<div style = "flex: 7;">
@@ -38,41 +37,24 @@
 	    <!-- 나머지 컨텐츠 -->
 	    <div class="popup-body">
        		<div class = "table-container" style = "height: 400px;">
-				<table class="table-single-select">
-					<thead>
+				<table class="table-single-select" style = "width: 100%">
+					<thead>					 		<!-- 화면에 보여야 하는 테이블 헤더 수정 -->
 						<tr>
-					    	<th style = "width: 100px">품번</th>
-					        <th style = "width: 100px">품명</th>
-					        <th style = "width: 100px">규격</th>
-					        <th style = "width: 100px">품목자산분류</th>
-					        <th style = "width: 100px">소분류</th>
-					        <th style = "width: 100px">단위</th>
-					        <th style = "width: 100px">기준단위</th>
-					        <th style = "width: 100px">영문명</th>
-					        <th style = "width: 100px">안전재고수량</th>
-					        <th style = "width: 100px">보관위치</th>
+					    	<th>통화</th>
+					        <th>기준액</th>
 				        </tr>
 				    </thead>
-				    <tbody id = "result-tbody">
+				    <tbody id = "result-tbody">		<!-- 화면에 보여야 하는 테이블 바디 수정 -->
 			    		<c:forEach items = "${list}" var = "board">
 					    	<tr>
-				    			<td class = "text-center"><c:out value = "${board.column1}" /></td>
-				    			<td class = "text-center"><c:out value = "${board.column2}" /></td>
-				    			<td class = "text-center"><c:out value = "${board.column3}" /></td>
-				    			<td class = "text-center"><c:out value = "${board.column4}" /></td>
-				    			<td class = "text-center"><c:out value = "${board.column5}" /></td>
-				    			<td class = "text-center"><c:out value = "${board.column6}" /></td>
-				    			<td class = "text-center"><c:out value = "${board.column7}" /></td>
-				    			<td class = "text-center"><c:out value = "${board.column8}" /></td>
-				    			<td class = "text-center"><c:out value = "${board.column9}" /></td>
-				    			<td class = "text-center"><input type="hidden" value="${board.column11}" /><c:out value = "${board.column10}" /></td>
-					    	</tr>
+								<td class = "text-center"><c:out value = "${board.column1}"/></td>
+								<td class = "text-center"><c:out value = "${board.column2}"/></td>
+							</tr>
 				    	</c:forEach>
 				    </tbody>
 				</table>
 		    </div>
 	    </div>
-	    
 	    <div class = "btn-primary" style = "width: 100px; text-align: center; padding: 0.5rem 1.2rem; font-size: 18px; margin: auto; margin-top: 10px;" onclick = "button_Click()">적용</div>
 	</div>
 </body>
@@ -113,30 +95,25 @@
 		}
 		
 		$.ajax({
-			url: '/popup/item_list',
+			url: '/popup/currency_list',			// '/popup/Controller에 불러올 getMapping 주소 입력'
 			data: formData,
 			type: 'GET',
 			dataType: 'json',
 			success: function(result) {
+				
+				// 기존 내용 초기화
 				const tbody = document.getElementById("result-tbody");
-	            tbody.innerHTML = ""; // 기존 내용 초기화
+	            tbody.innerHTML = ""; 
 	            
 	         	// result 배열 반복
 	            result.forEach(function(board) {
 	            	const tr = document.createElement("tr");
 	
+	            	// tbody 생성한 만큼 입력
 	                tr.innerHTML = 
-	                    '<td class="text-center">' + (board.column1 || '') + '</td>' +
-	                    '<td class="text-center">' + (board.column2 || '') + '</td>' +
-	                    '<td class="text-center">' + (board.column3 || '') + '</td>' +
-	                    '<td class="text-center">' + (board.column4 || '') + '</td>' +
-	                    '<td class="text-center">' + (board.column5 || '') + '</td>' +
-	                    '<td class="text-center">' + (board.column6 || '') + '</td>' +
-	                    '<td class="text-center">' + (board.column7 || '') + '</td>' +
-	                    '<td class="text-center">' + (board.column8 || '') + '</td>' +
-	                    '<td class="text-center">' + (board.column9 || '') + '</td>' +
-	                    '<td class="text-center"><input type="hidden" value="' + (board.column11 || '') + '" /><span>' + (board.column10 || '') + '</span></td>';
-	                   
+	                	'<td class="text-center">' + (board.column1 || '') + '</td>' +
+	                	'<td class="text-center">' + (board.column2 || '') + '</td>';
+	                    
 	                tbody.appendChild(tr);
 	            });
 			}			
@@ -145,7 +122,7 @@
 	
 	function button_Click() {
 		
-		if (!selectedRow) {
+	    if (!selectedRow) {
 	        alert("선택된 행이 없습니다!");
 	        return;
 	    }
@@ -153,11 +130,10 @@
 	    const data = [];
 
 	    selectedRow.querySelectorAll("td").forEach(function(td) {
-	        // td 텍스트 (없으면 "")
+	    	
 	        const text = td.textContent.trim() || "";
 	        data.push(text);
 
-	        // td 안의 hidden input 값들 (없으면 "")
 	        const hiddenInputs = td.querySelectorAll('input[type="hidden"]');
 	        if (hiddenInputs.length > 0) {
 	            hiddenInputs.forEach(function(input) {
@@ -165,12 +141,8 @@
 	            });
 	        }
 	    });
-	    
-	    console.log(data);
+	    window.opener.currency_RowData(data);
 
-	    // 부모창 함수 호출 + 데이터 전달
-	    window.opener.item_RowData(data);
-	    // 팝업 닫기
 	    window.close();
 	}
 	

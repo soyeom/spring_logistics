@@ -19,6 +19,7 @@ public interface PopupService {
 	// jinhyung 브랜치에서 추가된 팝업 조회 메서드 통합
 	public List<PopupVO> party_List(String gubun, String text);
 	public List<PopupVO> out_Id_List(String gubun, String text);
+	public List<PopupVO> currency_List(String gubun, String text);
 	public List<PopupVO> category_List_Big(String gubun, String text);
 	public List<PopupVO> category_List_Mid(String gubun, String text);
 	public List<PopupVO> category_List_Small(String gubun, String text);

@@ -1,7 +1,8 @@
 package org.logistics.service;
 
 import java.util.List;
-import org.logistics.model.OtherTxnCategory;
+
+import org.logistics.domain.OtherTxnCategory;
 
 public interface OtherTxnCategoryService {
 

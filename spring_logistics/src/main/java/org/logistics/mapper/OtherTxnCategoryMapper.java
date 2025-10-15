@@ -1,9 +1,10 @@
 package org.logistics.mapper;
 
 import java.util.List;
+
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
-import org.logistics.model.OtherTxnCategory;
+import org.logistics.domain.OtherTxnCategory;
 
 @Mapper
 public interface OtherTxnCategoryMapper {

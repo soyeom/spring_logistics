@@ -9,8 +9,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>수주 조회 / 受注照会</title>
-
+<title>受注照会</title> <!-- 수주조회 -->
 <!-- ✅ 스타일シート読込 / CSS 스타일 로드 -->
 <link rel="stylesheet" type="text/css" href="/resources/css/popup.css">
 <link rel="stylesheet" href="/resources/css/logistics.css" type="text/css">
@@ -25,34 +24,34 @@
 	<div class="popup-wrapper">
 
 		<!-- ================== ヘッダー / 헤더 ================== -->
-		<div class="popup-header">수주 조회 / 受注照会</div>
+		<div class="popup-header">受注照会</div> <!-- 수주 조회 -->
 
 		<!-- ================== 検索バー / 검색바 ================== -->
 		<div class="popup-search-bar">
 			<div style="flex: 2;">
 				<!-- 🔽 検索区分選択 / 검색 구분 선택 -->
 				<select id="gubun">
-					<option value="0">전체 / 全体</option>
-					<option value="10">수주번호 / 受注番号</option>
-					<option value="20">사업단위 / 事業部</option>
-					<option value="30">납기일 / 納期日</option>
-					<option value="40">Local구분 / 国内区分</option>
-					<option value="50">거래처 / 取引先</option>
-					<option value="60">담당자 / 担当者</option>
-					<option value="70">수주구분 / 受注区分</option>
-					<option value="80">입고상태 / 入庫状態</option>
-					<option value="90">수주일 / 受注日</option>
+					<option value="0">全体</option> <!-- 전체  -->
+					<option value="10">受注番号</option><!-- 수주번호  -->
+					<option value="20">事業部</option><!-- 사업단위  -->
+					<option value="30">納期日</option><!-- 납기일  -->
+					<option value="40">国内区分</option><!-- Local구분  -->
+					<option value="50">取引先</option><!-- 거래처  -->
+					<option value="60">担当者</option><!-- 담당자  -->
+					<option value="70">受注区分</option><!-- 수주구분  -->
+					<option value="80">入庫状態</option><!-- 입고상태  -->
+					<option value="90">受注日</option><!-- 수주일  -->
 				</select>
 			</div>
 
 			<!-- 🔍 検索入力 / 검색 입력 -->
 			<div style="flex: 7;">
-				<input type="text" id="text" placeholder="검색어를 입력하세요 / 検索語を入力してください" autocomplete="off">
+				<input type="text" id="text" placeholder="検索語を入力してください" autocomplete="off">
 			</div>
 
 			<!-- 🔎 検索ボタン / 검색 버튼 -->
 			<div style="flex: 1;">
-				<button class="btn-primary" onclick="search()">검색 / 検索</button>
+				<button class="btn-primary" onclick="search()">検索</button><!-- 검색  -->
 			</div>
 		</div>
 
@@ -62,15 +61,15 @@
 				<table class="table-single-select" style="width: 100%">
 					<thead>
 						<tr>
-							<th>수주번호 / 受注番号</th>
-							<th>사업단위 / 事業部</th>
-							<th>납기일 / 納期日</th>
-							<th>Local구분 / 国内区分</th>
-							<th>거래처 / 取引先</th>
-							<th>담당자 / 担当者</th>
-							<th>수주구분 / 受注区分</th>
-							<th>입고상태 / 入庫状態</th>
-							<th>수주일 / 受注日</th>
+							<th>受注番号</th><!-- 수주번호  -->
+							<th>事業部</th><!-- 사업단위  -->
+							<th>納期日</th><!-- 납기일  -->
+							<th>国内区分</th><!-- Local구분  -->
+							<th>取引先</th><!-- 거래처  -->
+							<th>担当者</th><!-- 담당자  -->
+							<th>受注区分</th><!-- 수주구분  -->
+							<th>入庫状態</th><!-- 입고상태  -->
+							<th>受注日</th><!-- 수주일  -->
 						</tr>
 					</thead>
 
@@ -104,7 +103,7 @@
 		<!-- ================== 適用ボタン / 적용 버튼 ================== -->
 		<div class="btn-primary"
 			style="width: 100px; text-align: center; padding: 0.5rem 1.2rem; font-size: 18px; margin: auto; margin-top: 10px;"
-			onclick="button_Click()">적용 / 適用</div>
+			onclick="button_Click()">適用</div><!-- 적용 -->
 	</div>
 </body>
 </html>
@@ -184,7 +183,7 @@
 	// ======================================================
 	function button_Click() {
 	    if (!selectedRow) {
-	        alert("선택된 행이 없습니다! / 選択された行がありません。");
+	        alert("選択された行がありません。");
 	        return;
 	    }
 

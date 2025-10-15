@@ -47,14 +47,14 @@ public class StockAnalysisController {
     }
 
     
-    @GetMapping("/warehouse-popup")
-    public String warehousePopup() {
-        return "warehouse-popup"; // warehouse-popup.jspに遷移
+    @GetMapping("/warehouse_popup")
+    public String warehouse_Popup() {
+        return "warehouse_popup"; // warehouse_popup.jspに遷移
     }
 
     
-    @GetMapping("/itemSmallcategory-popup")
-    public String itemSmallCategoryPopup() {
-        return "itemSmallcategory-popup"; // item-small-category-popup.jspに遷移
+    @GetMapping("/category_popup_small")
+    public String category_popup_small() {
+        return "category_popup_small"; // category_popup_small.jspに遷移
     }
 }
