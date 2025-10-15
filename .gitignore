@@ -29,3 +29,7 @@ target/
 
 # Eclipse classpath file
 .classpath
+
+# Eclipse build output (ignore compiled JSPs/classes)
+bin/
+spring_logistics/bin/
