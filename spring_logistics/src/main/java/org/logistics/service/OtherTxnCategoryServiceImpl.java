@@ -3,8 +3,8 @@ package org.logistics.service;
 import java.util.List;
 import java.util.UUID;
 
+import org.logistics.domain.OtherTxnCategory;
 import org.logistics.mapper.OtherTxnCategoryMapper;
-import org.logistics.model.OtherTxnCategory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

@@ -29,11 +29,11 @@
                 <span class="card__number">2</span>
                 <h2 class="card__title">실재고/자산재고 관리</h2>
             </article>
-            <article class="card card--teal" tabindex="0" role="button" aria-label="재고 출하통제">
+            <article class="card card--teal" tabindex="0" role="button" aria-label="재고 출하통제" onclick="location.href='/txnCategory/list'">
                 <span class="card__number">3</span>
                 <h2 class="card__title">기타입출고 구분 설정</h2>
             </article>
-            <article class="card card--green" tabindex="0" role="button" aria-label="사업단위별 수불집계">
+            <article class="card card--green" tabindex="0" role="button" aria-label="사업단위별 수불집계" onclick="location.href='/stock/summary'">
                 <span class="card__number">4</span>
                 <h2 class="card__title">사업단위별 수불 집계 조회</h2>
             </article>

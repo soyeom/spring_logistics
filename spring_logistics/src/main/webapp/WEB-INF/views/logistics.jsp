@@ -50,14 +50,14 @@
         <div class="menu-item">
             <div class="title">기타입출고 구분 설정</div>
             <div class="submenu">
-                <div><a href="#">기타입출고 항목과 계정과목 설정하기</a></div>
-                <div><a href="#">수주(주문) 입력하기</a></div>
+                <div><a href="/txnCategory/list">기타입출고 항목과 계정과목 설정하기</a></div>
+                <div><a href="/order/entry">수주(주문) 입력하기</a></div>
             </div>
         </div>
         <div class="menu-item">
             <div class="title">사업단위별 수불 집계 조회</div>
             <div class="submenu">
-                <div><a href="#">사업단위별 수불 집계 조회하기</a></div>
+                <div><a href="/stock/summary">사업단위별 수불 집계 조회하기</a></div>
             </div>
         </div>
         <div class="menu-item">

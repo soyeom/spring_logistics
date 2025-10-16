@@ -6,15 +6,17 @@
 <mapper namespace="org.logistics.mapper.OtherTxnCategoryMapper">
 
   <!-- ========================================================= -->
-  <!-- 🗂️ OtherTxnCategoryMapper.xml -->
-  <!-- その他入出庫区分管理 SQLマッピングファイル -->
-  <!-- (기타 입출고 구분 관리 SQL 매핑 파일) -->
+  <!-- 🗂️ OtherTxnCategoryMapper.xml                              -->
+  <!-- 기타 입출고 구분 관리 SQL 매핑 파일                        -->
+  <!-- その他入出庫区分管理 SQLマッピングファイル                 -->
   <!-- ========================================================= -->
 
 
   <!-- ================== 🔍 조회 ================== -->
   <!-- ✅ 区分一覧照会SQL / 구분 목록 조회 -->
-  <select id="getList" parameterType="string" resultType="org.logistics.model.OtherTxnCategory">
+  <!-- 거래유형(txn_type)에 따라 기타 입출고 구분 데이터를 조회 -->
+  <!-- 入出庫タイプ(txn_type)ごとの区分マスタ一覧を取得する -->
+  <select id="getList" parameterType="string" resultType="org.logistics.domain.OtherTxnCategory">
     SELECT
         TXN_CODE          AS txnCode,            -- トランザクションコード / 거래코드
         BU_ID             AS buId,               -- 事業部ID / 사업부ID
@@ -51,7 +53,9 @@
 
   <!-- ================== 📝 등록 ================== -->
   <!-- ✅ 区分マスタ新規登録SQL / 구분 마스터 신규 등록 -->
-  <insert id="insert" parameterType="org.logistics.model.OtherTxnCategory">
+  <!-- 신규 기타 입출고 구분 데이터를 추가 -->
+  <!-- 新しい入出庫区分マスタデータを登録する -->
+  <insert id="insert" parameterType="org.logistics.domain.OtherTxnCategory">
     INSERT INTO other_txn_category
     (
       txn_code, bu_id, txn_type, category_name, sort_order, use_yn,
@@ -63,43 +67,51 @@
     )
     VALUES
     (
-      #{txnCode}, #{buId}, #{txnType}, #{categoryName}, #{sortOrder}, #{useYn},
-      #{accountSubject}, #{costType}, #{isFinishedProduct}, #{isMaterial},
-      #{isSalesUse}, #{adjustOut}, #{adjustIn}, #{isVatTarget}, #{vatProcessType},
-      #{isAs}, #{isItemJournal}, #{isByproductIn}, #{isReturnIn},
-      #{isMove}, #{isTransfer}, #{isAsOut}, #{isAsReturn},
-      #{isFreeSupply}, #{isDispatchTarget}, #{description}, SYSDATE
+      #{txnCode}, #{buId}, #{txnType}, #{categoryName}, #{sortOrder}, #{useYn, jdbcType=VARCHAR},
+      #{accountSubject, jdbcType=VARCHAR}, #{costType, jdbcType=VARCHAR},
+      #{isFinishedProduct, jdbcType=VARCHAR}, #{isMaterial, jdbcType=VARCHAR},
+      #{isSalesUse, jdbcType=VARCHAR}, #{adjustOut, jdbcType=VARCHAR}, #{adjustIn, jdbcType=VARCHAR},
+      #{isVatTarget, jdbcType=VARCHAR}, #{vatProcessType, jdbcType=VARCHAR},
+      #{isAs, jdbcType=VARCHAR}, #{isItemJournal, jdbcType=VARCHAR},
+      #{isByproductIn, jdbcType=VARCHAR}, #{isReturnIn, jdbcType=VARCHAR},
+      #{isMove, jdbcType=VARCHAR}, #{isTransfer, jdbcType=VARCHAR},
+      #{isAsOut, jdbcType=VARCHAR}, #{isAsReturn, jdbcType=VARCHAR},
+      #{isFreeSupply, jdbcType=VARCHAR}, #{isDispatchTarget, jdbcType=VARCHAR},
+      #{description, jdbcType=VARCHAR},
+      SYSDATE
     )
   </insert>
 
 
   <!-- ================== ✏️ 수정 ================== -->
   <!-- ✅ 区分マスタ更新SQL / 구분 마스터 수정 -->
-  <update id="update" parameterType="org.logistics.model.OtherTxnCategory">
+  <!-- 기존 등록된 입출고 구분 정보를 수정 -->
+  <!-- 既存の入出庫区分マスタデータを更新する -->
+  <update id="update" parameterType="org.logistics.domain.OtherTxnCategory">
     UPDATE other_txn_category
-    SET category_name       = #{categoryName},
-        sort_order          = #{sortOrder},
-        use_yn              = #{useYn},
-        account_subject     = #{accountSubject},
-        cost_type           = #{costType},
-        is_finished_product = #{isFinishedProduct},
-        is_material         = #{isMaterial},
-        is_sales_use        = #{isSalesUse},
-        adjust_out          = #{adjustOut},
-        adjust_in           = #{adjustIn},
-        is_vat_target       = #{isVatTarget},
-        vat_process_type    = #{vatProcessType},
-        is_as               = #{isAs},
-        is_item_journal     = #{isItemJournal},
-        is_byproduct_in     = #{isByproductIn},
-        is_return_in        = #{isReturnIn},
-        is_move             = #{isMove},
-        is_transfer         = #{isTransfer},
-        is_as_out           = #{isAsOut},
-        is_as_return        = #{isAsReturn},
-        is_free_supply      = #{isFreeSupply},
-        is_dispatch_target  = #{isDispatchTarget},
-        description         = #{description}
+    SET category_name       = #{categoryName, jdbcType=VARCHAR},   -- 区分名 / 구분명
+        sort_order          = #{sortOrder},                        -- 表示順 / 표시순서
+        use_yn              = #{useYn, jdbcType=VARCHAR},          -- 使用可否 / 사용여부
+        account_subject     = #{accountSubject, jdbcType=VARCHAR}, -- 勘定科目 / 회계과목
+        cost_type           = #{costType, jdbcType=VARCHAR},       -- 費用区分 / 비용구분
+        is_finished_product = #{isFinishedProduct, jdbcType=VARCHAR}, -- 製品区分 / 완제품여부
+        is_material         = #{isMaterial, jdbcType=VARCHAR},     -- 原材料区分 / 원자재여부
+        is_sales_use        = #{isSalesUse, jdbcType=VARCHAR},     -- 販売用途 / 판매용여부
+        adjust_out          = #{adjustOut, jdbcType=VARCHAR},      -- 調整出庫 / 조정출고
+        adjust_in           = #{adjustIn, jdbcType=VARCHAR},       -- 調整入庫 / 조정입고
+        is_vat_target       = #{isVatTarget, jdbcType=VARCHAR},    -- 消費税対象 / 부가세대상
+        vat_process_type    = #{vatProcessType, jdbcType=VARCHAR}, -- 税処理タイプ / 세금처리유형
+        is_as               = #{isAs, jdbcType=VARCHAR},           -- A/S対象 / AS대상여부
+        is_item_journal     = #{isItemJournal, jdbcType=VARCHAR},  -- 品目仕訳 / 품목전표여부
+        is_byproduct_in     = #{isByproductIn, jdbcType=VARCHAR},  -- 副産物入庫 / 부산물입고
+        is_return_in        = #{isReturnIn, jdbcType=VARCHAR},     -- 返品入庫 / 반품입고
+        is_move             = #{isMove, jdbcType=VARCHAR},         -- 移動出庫 / 이동출고
+        is_transfer         = #{isTransfer, jdbcType=VARCHAR},     -- 振替出庫 / 전환출고
+        is_as_out           = #{isAsOut, jdbcType=VARCHAR},        -- A/S出庫 / AS출고
+        is_as_return        = #{isAsReturn, jdbcType=VARCHAR},     -- A/S返品 / AS반품
+        is_free_supply      = #{isFreeSupply, jdbcType=VARCHAR},   -- 無償支給 / 무상지급
+        is_dispatch_target  = #{isDispatchTarget, jdbcType=VARCHAR}, -- 配送対象 / 출하대상
+        description         = #{description, jdbcType=VARCHAR}     -- 備考 / 비고
     WHERE txn_code = #{txnCode}
       AND bu_id    = #{buId}
   </update>
@@ -107,6 +119,8 @@
 
   <!-- ================== 🗑️ 삭제 ================== -->
   <!-- ✅ 区分マスタ削除SQL / 구분 마스터 삭제 -->
+  <!-- 거래코드(txn_code)와 사업부ID(bu_id)를 기준으로 데이터 삭제 -->
+  <!-- トランザクションコードと事業部IDを条件に削除する -->
   <delete id="delete" parameterType="map">
     DELETE FROM other_txn_category
     WHERE txn_code = #{txnCode}
