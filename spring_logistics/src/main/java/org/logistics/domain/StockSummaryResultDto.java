@@ -7,27 +7,27 @@ import lombok.Data;
 @Data
 public class StockSummaryResultDto {
 
-    private Long itemId; // 품번 - item_master item_id로 바꿔야함
-    private String itemAssetClass; // 품목자산분류 - item_master asset_class
-    private String itemBigCategory; // 품목대분류 - item_master big_category
-    private String itemMidCategory; // 품목중분류 - item_master mid_category
-    private String itemName; // 품명 - item_master item_name
-    private BigDecimal inboundQty; // 총입고수량 - inbound_detail qty의 합계
-    private String itemUnit; // 단위 - item_master base_unit
-    private String itemStatus; // 품목상태 - item_master item_status
-    private BigDecimal stockQty; // 재고수량 - stock_transaction 테이블의 stock_type 'INPUT'의 qty 에서 'OUTPUT'을 뺀 값
-    private BigDecimal carriedOverQty; // 이월수량 - 이전 기간에서 이월된 수량입니다. 이는 periodStart 전날의 stock_transaction에서 집계된 값입니다.
-    private BigDecimal outboundQty; // 총출고수량 - out_detail qty의 합계
-    // inbound_master inbound_type 파생
-    private BigDecimal productionInbound; // 입고(생산입고) - 생산을 통해 수령한 수량
-    private BigDecimal outsourcingInbound; // 입고(외주입고) - 아웃소싱을 통해 수령한 수량
-    private BigDecimal purchaseInbound; // 입고(구매입고) - 구매를 통해 수령한 수량
-    private BigDecimal importInbound; // 입고(수입입고) - 수입을 통해 수령한 수량
-    // out_master out_type 파생
-    private BigDecimal deliverySlipOutbound; // 출고(거래명세표) - 배송전표를 통해 배송된 수량
-    private BigDecimal otherOutbound; // 출고(기타출고) - 기타 아웃바운드 유형의 수량
-    private BigDecimal salesConsignmentOutbound; // 출고(판매보관품출고) - 판매위탁수량
-    private BigDecimal workPerformanceOutbound; // 출고(작업실적) - 업무 수행에 대한 양
-    private BigDecimal outsourcingOutbound; // 출고(외주입고) - 아웃소싱 수량
+    private Long itemId; // 品番 - item_master item_id
+    private String itemAssetClass; // 品目資産分類 - item_master asset_class
+    private String itemBigCategory; // 品目大分類 - item_master big_category
+    private String itemMidCategory; // 品目中分類 - item_master mid_category
+    private String itemName; // 品名 - item_master item_name
+    private BigDecimal inboundQty; // 総入庫数量 - inbound_detail qty の合計
+    private String itemUnit; // 単位 - item_master base_unit
+    private String itemStatus; // 品目ステータス - item_master item_status
+    private BigDecimal stockQty; // 在庫数量 - stock_transaction テーブルの stock_type 'INPUT' から 'OUTPUT' を引いた値
+    private BigDecimal carriedOverQty; // 繰越数量 - 前期間から繰り越された数量。periodStart の前日までの stock_transaction から集計されます。
+    private BigDecimal outboundQty; // 総出庫数量 - out_detail qty の合計
+    // inbound_master inbound_type から派生
+    private BigDecimal productionInbound; // 入庫（生産入庫）- 生産によって受領した数量
+    private BigDecimal outsourcingInbound; // 入庫（外注入庫）- アウトソーシングを通じて受領した数量
+    private BigDecimal purchaseInbound; // 入庫（購入入庫）- 購入によって受領した数量
+    private BigDecimal importInbound; // 入庫（輸入入庫）- 輸入によって受領した数量
+    // out_master out_type から派生
+    private BigDecimal deliverySlipOutbound; // 出庫（取引明細書）- 配送伝票を通じて出荷された数量
+    private BigDecimal otherOutbound; // 出庫（その他出庫）- その他アウトバウンドタイプの数量
+    private BigDecimal salesConsignmentOutbound; // 出庫（販売委託品出庫）- 販売委託数量
+    private BigDecimal workPerformanceOutbound; // 出庫（作業実績）- 業務遂行のための数量
+    private BigDecimal outsourcingOutbound; // 出庫（外注出庫）- 外注数量
 	
 }

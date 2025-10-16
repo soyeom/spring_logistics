@@ -10,21 +10,21 @@ import lombok.Data;
 @Data
 public class StockLedgerResultDto {
 	@DateTimeFormat(pattern = "yyyy-MM-dd")
-	private Date transactionDate; // 일자(거래 발생 일자) inbound_master.inbound_date out_master.out_date
-	private String type; // 구분 | 이월재고, 기간계, 출고, 입고
-	private String inOutboundType; // 입출고구분
-	private String inOutboundCategory; // 입출고유형 inbound_master.inbound_type out_master.out_type | 거래명세표, 구매입고, 거래명세표, 구매입고, 거래명세표, 구매입고 등
-	private String unit; // 단위 item_master.base_unit
-	private BigDecimal inboundQty; // 입고수량 inbound_detail.qty
-	private BigDecimal outboundQty; // 출고수량 out_detail.qty
-	private BigDecimal stockQty; // 재고수량 입고와 출고를 쿼리로 만들어서 구함
-	private String managementId;// 관리번호
-	private String buName; // 사업단위 business_unit.bu_name
-	private String inboundWarehouse; // 입고창고 inbound_detail.warehouse_id 를 기준으로 warehouse_detail.warehouse_name 조인
-	private String outboundWarehouse; // 출고창고 inbound_detail.warehouse_id 를 기준으로 warehouse_detail.warehouse_name 조인
-	private String partyName; // 거래처 out_master.party_id 를 기준으로 party.party_name 조인
-	private String department; // 처리부서
-	private String contactName; // 처리자
-	private String transactionType; // 거래 타입 (입고/출고 구분)
-	private Long transactionId; // 고유 ID (관리번호 생성용)
+	private Date transactionDate; // 日付（取引発生日） inbound_master.inbound_date または out_master.out_date
+	private String type; // 区分 | 繰越在庫、期間計、出庫、入庫
+	private String inOutboundType; // 入出庫区分
+	private String inOutboundCategory; // 入出庫タイプ inbound_master.inbound_type または out_master.out_type | 例：取引明細書、購入入庫など
+	private String unit; // 単位 item_master.base_unit
+	private BigDecimal inboundQty; // 入庫数量 inbound_detail.qty
+	private BigDecimal outboundQty; // 出庫数量 out_detail.qty
+	private BigDecimal stockQty; // 在庫数量（入庫と出庫をクエリで計算して求める）
+	private String managementId; // 管理番号
+	private String buName; // 事業単位 business_unit.bu_name
+	private String inboundWarehouse; // 入庫倉庫 inbound_detail.warehouse_id を基に warehouse_detail.warehouse_name と結合
+	private String outboundWarehouse; // 出庫倉庫 outbound_detail.warehouse_id を基に warehouse_detail.warehouse_name と結合
+	private String partyName; // 取引先 out_master.party_id を基に party.party_name と結合
+	private String department; // 処理部署
+	private String contactName; // 処理担当者
+	private String transactionType; // 取引タイプ（入庫/出庫の区分）
+	private Long transactionId; // 固有ID（管理番号生成用）
 }
