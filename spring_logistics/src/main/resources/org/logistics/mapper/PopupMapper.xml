@@ -93,7 +93,7 @@
 				  WHEN consignment_gubun = '20' THEN '위탁' 
 				  WHEN consignment_gubun = '30' THEN '판매후보관' 
 			   END as column14
-			 , out_complete
+			 , out_complete as column16
 			 , created_at
 		FROM out_master a
 		<where>
@@ -202,22 +202,96 @@
 	</select>
 
 	<!-- 🏭 창고 목록 -->
+	<select id="warehousecode_List" resultType="org.logistics.domain.PopupVO">
+		SELECT DISTINCT warehouse_internal_code AS column1
+			 , warehouse_internal_code AS column2
+		FROM warehouse_master
+		<where>
+			<if test="gubun == '10'">
+				warehouse_internal_code LIKE '%' || #{text} || '%'
+			</if>
+		</where>
+	</select>
+
 	<select id="warehouse_List" resultType="org.logistics.domain.PopupVO">
 		SELECT wd.warehouse_name AS column1
-			 , wm.warehouse_master_id AS column2
+			 , TO_CHAR(wm.warehouse_master_id) AS column2
 			 , bu.bu_name AS column3
-			 , wm.warehouse_internal_code AS column4
+			 , TO_CHAR(wm.warehouse_internal_code) AS column4
 		FROM warehouse_detail wd
 		JOIN business_unit bu ON wd.bu_id = bu.bu_id
 		JOIN warehouse_master wm 
 		     ON wd.warehouse_master_id = wm.warehouse_master_id
 		    AND wd.bu_id = wm.bu_id
 		<where>
-			<if test="gubun == 10">
-				wd.warehouse_id LIKE '%' || #{text} || '%'
+			<if test="gubun != null and text != null and text != ''">
+				AND (
+					<if test="gubun == '10' or gubun == '0'">
+						wd.warehouse_name LIKE '%' || #{text} || '%'
+					</if>
+					<if test="gubun == '20' or gubun == '0'">
+						<if test="gubun == '0'">OR</if>
+						<if test="gubun == '20'">
+							wm.warehouse_master_id = #{text}
+						</if>
+						<if test="gubun == '0'">
+							TO_CHAR(wm.warehouse_master_id) LIKE '%' || #{text} || '%'
+						</if>								
+					</if>
+					<if test="gubun == '30' or gubun == '0'">
+						<if test="gubun == '0'">OR</if>
+						bu.bu_name LIKE '%' || #{text} || '%'
+					</if>
+				)
 			</if>
-			<if test="gubun == 20">
-				wd.warehouse_name LIKE '%' || #{text} || '%'
+		</where>
+	</select>
+
+	<!-- 📥 입고 목록 -->
+	<select id="inboundMaster_List" resultType="org.logistics.domain.PopupVO">
+		SELECT ib.inbound_id AS column1,
+			   bu.bu_name AS column2,
+			   TO_CHAR(ib.inbound_date, 'YYYY-MM-DD') AS column3,
+			   ib.local_flag AS column4,
+			   p.party_name AS column5,
+			   c.contact_name AS column6,
+			   ib.inbound_type AS column7,
+			   ib.inbound_complete AS column8,
+			   TO_CHAR(ib.created_at, 'YYYY-MM-DD') AS column9,
+			   p.party_id AS column10,
+			   c.department AS column11,
+			   bu.bu_id AS column12
+		FROM inbound_master ib
+		JOIN business_unit bu ON ib.bu_id = bu.bu_id
+		JOIN party p ON ib.party_id = p.party_id
+		JOIN contact c ON ib.contact_id = c.contact_id
+		<where>
+			<if test="gubun == '10'">
+				ib.inbound_id LIKE '%' || #{text} || '%'
+			</if>
+			<if test="gubun == '20'">
+				bu.bu_name LIKE '%' || #{text} || '%'
+			</if>
+			<if test="gubun == '30'">
+				TO_CHAR(ib.inbound_date, 'YYYY-MM-DD') LIKE '%' || #{text} || '%'
+			</if>
+			<if test="gubun == '40'">
+				ib.local_flag LIKE '%' || #{text} || '%'
+			</if>
+			<if test="gubun == '50'">
+				p.party_name LIKE '%' || #{text} || '%'
+			</if>
+			<if test="gubun == '60'">
+				c.contact_name LIKE '%' || #{text} || '%'
+			</if>
+			<if test="gubun == '70'">
+				ib.inbound_type LIKE '%' || #{text} || '%'
+			</if>
+			<if test="gubun == '80'">
+				ib.inbound_complete LIKE '%' || #{text} || '%'
+			</if>
+			<if test="gubun == '90'">
+				TO_CHAR(ib.created_at, 'YYYY-MM-DD') LIKE '%' || #{text} || '%'
 			</if>
 		</where>
 	</select>

@@ -19,9 +19,12 @@ public class StockAnalysisServiceImpl implements StockAnalysisService {
         this.stockAnalysisMapper = stockAnalysisMapper;
     }
 
-    // 在庫分析データを取得するメインメソッド
-    // @param requestDTO 検索条件
-    // @return 期間別分析値を含む品目別データリスト
+    /**
+     * 在庫分析データを取得するメインメソッド
+     * 期間別の分析値を含む品目別データリストを返します。
+     * @param requestDTO 検索条件
+     * @return 期間別分析値を含む品目別データリスト
+     */
     @Override
     public List<Map<String, Object>> getStockAnalysisData(StockAnalysisRequestDTO requestDTO) {
         List<Map<String, Object>> resultList = new ArrayList<>();
@@ -45,7 +48,7 @@ public class StockAnalysisServiceImpl implements StockAnalysisService {
         List<StockAnalysisResponseDTO> items = stockAnalysisMapper.getBaseItemList(requestDTO);
         if (items == null || items.isEmpty()) return resultList;
 
-        // 2) 分析期間の計算（現在月を基準に、3ヶ月単位で過去4期間を算出）
+        // 2) 分析期間の計算
         List<PeriodRange> periods = calculatePeriods(currentMonth);
 
         // 3) 品目ごとに期間別分析値を計算し、結果を組み立てる
@@ -64,19 +67,21 @@ public class StockAnalysisServiceImpl implements StockAnalysisService {
 
             // 期間別分析値を設定
             for (PeriodRange p : periods) {
-                // 期間別データを取得するためのDTOを準備（品目ID、BU ID、倉庫ID、カテゴリを設定）
+                
+                // 期間別データを取得するためのDTOを準備
                 StockAnalysisRequestDTO periodDTO = new StockAnalysisRequestDTO();
-                periodDTO.setItemId(item.getItemId() == null ? null : item.getItemId().toString());
-                periodDTO.setBuId(requestDTO.getBuId());
+                
+                periodDTO.setBuId(requestDTO.getBuId());      
                 periodDTO.setWarehouseId(requestDTO.getWarehouseId());
                 periodDTO.setItemSmallCategory(requestDTO.getItemSmallCategory());
-
-                // Mapperを呼び出し、期間(p.getStartParam ~ p.getEndParam)の特定の値(analysisItem)を取得
+                periodDTO.setItemId(item.getItemId());
+                
+                // Mapperを呼び出して期間別分析値を取得
                 Double value = stockAnalysisMapper.getPeriodValue(
-                    periodDTO,
-                    p.getStartParam(), // 期間開始日パラメータ (YYYYMM)
-                    p.getEndParam(),   // 期間終了日パラメータ (YYYYMM)
-                    analysisItem       // 分析対象項目 (例: totalIn, totalOutなど)
+                    periodDTO,  
+                    p.getStartParam(),  
+                    p.getEndParam(),    
+                    analysisItem        
                 );
 
                 // 結果マップにキー(YYYY-MM)と値を追加（値がnullの場合は0を設定）
@@ -88,11 +93,13 @@ public class StockAnalysisServiceImpl implements StockAnalysisService {
 
         return resultList;
     }
-
-    // 分析期間を計算する
-    // 基準月(currentMonth)から過去に遡って、3ヶ月単位の期間を4つ生成する
-    // @param currentMonth 基準年月 (YYYY-MM)
-    // @return 期間情報のリスト
+    
+    /**
+     * 分析期間を計算する
+     * 基準月(currentMonth)から過去に遡って、3ヶ月単位の期間を4つ生成します。
+     * @param currentMonth 基準年月 (YYYY-MM)
+     * @return 期間情報のリスト
+     */
     private List<PeriodRange> calculatePeriods(String currentMonth) {
         List<PeriodRange> result = new ArrayList<>();
         String[] ym = currentMonth.split("-");
@@ -120,9 +127,9 @@ public class StockAnalysisServiceImpl implements StockAnalysisService {
             }
 
             // 結果キーとパラメータ文字列を生成
-            String endKey = String.format("%04d-%02d", endYear, endMonth);         // 表示用キー (YYYY-MM)
+            String endKey = String.format("%04d-%02d", endYear, endMonth);      // 表示用キー (YYYY-MM)
             String startParam = String.format("%04d%02d", startYear, startMonth); // DB検索用開始年月 (YYYYMM)
-            String endParam = String.format("%04d%02d", endYear, endMonth);       // DB検索用終了年月 (YYYYMM)
+            String endParam = String.format("%04d%02d", endYear, endMonth);        // DB検索用終了年月 (YYYYMM)
 
             result.add(new PeriodRange(endKey, startParam, endParam));
         }
@@ -130,11 +137,11 @@ public class StockAnalysisServiceImpl implements StockAnalysisService {
         return result;
     }
 
-    // 期間情報を保持する内部クラス
+    /** 期間情報を保持する内部クラス */
     private static class PeriodRange {
         private final String endKey;    // 結果マップのキーとして使用 (YYYY-MM)
         private final String startParam; // 検索パラメータ用 開始年月 (YYYYMM)
-        private final String endParam;   // 検索パラメータ用 終了年月 (YYYYMM)
+        private final String endParam;    // 検索パラメータ用 終了年月 (YYYYMM)
 
         public PeriodRange(String endKey, String startParam, String endParam) {
             this.endKey = endKey;

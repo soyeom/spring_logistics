@@ -15,7 +15,7 @@ public interface StockAnalysisMapper {
      
     List<StockAnalysisResponseDTO> getBaseItemList(@Param("dto") StockAnalysisRequestDTO requestDTO);
 
-     //📌 기간별 값 조회
+     //📌 期間ごとの値照会
     Double getPeriodValue(
         @Param("dto") StockAnalysisRequestDTO requestDTO,
       //下の三つはメソッドパラメーターの値をそのまま伝達

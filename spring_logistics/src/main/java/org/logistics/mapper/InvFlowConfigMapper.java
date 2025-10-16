@@ -33,7 +33,9 @@ public interface InvFlowConfigMapper {
 	public void outBound_Save_Detail(OutBoundMasterVO vo);
 	public String new_Out_Id(String bu_Id);
 	
+	public void outBound_Delete_Master(@Param ("bu_Id") String bu_Id, @Param ("out_Id") String out_Id);
 	public void outBound_Delete_Detail(@Param ("bu_Id") String bu_Id, @Param ("out_Id") String out_Id);
+	public void outBound_Update(@Param ("bu_Id") String bu_Id, @Param ("out_Id") String out_Id);
 	
 	public List<CommonVO> business_UnitList();
 	public List<CommonVO> wareHouse_MasterList();
