@@ -22,7 +22,7 @@
 </head>
 <body>
 	<div class="layout">
-		<%@ include file="/WEB-INF/views/logistics.jsp" %>
+		<%@ include file="/WEB-INF/views/logistics.jsp"%>
 		<!-- ✅ 메인 -->
 		<div class="main">
 			<div class="main-header">
@@ -45,11 +45,11 @@
 				</div>
 				<div class="filters-row">
 					<!-- 事業単位 -->
-						<div class="filters-count">
+					<div class="filters-count">
 						<div class="filters-text">事業単位</div>
 						<div class="filters-value">
 							<select id="buId" name="buId">
-							<option value=""></option>
+								<option value=""></option>
 								<c:forEach items="${buList}" var="bu">
 									<option value="${bu.buId}">${bu.buName}</option>
 								</c:forEach>
@@ -80,7 +80,7 @@
 								alt="search" class="search-icon" onclick="openWarehousePopup()">
 						</div>
 					</div>
-						<!-- 資産区分 -->
+					<!-- 資産区分 -->
 					<div class="filters-count">
 						<div class="filters-text">資産区分</div>
 						<div class="filters-value">
@@ -98,7 +98,7 @@
 							<select id="spec" name="spec">
 								<option value=""></option>
 								<c:forEach items="${specList}" var="spec">
-									<option value="${spec.SPEC}">${spec.SPEC}</option>
+									<option value="${spec.spec}">${spec.spec}</option>
 								</c:forEach>
 							</select>
 						</div>
@@ -169,7 +169,7 @@
 					</div>
 				</div>
 			</div>
-			
+
 			<div class="table-container">
 				<table class="table-single-select">
 					<thead>
@@ -305,11 +305,21 @@
 					targetId = "warehouseName";
 				}
 
-				let textValue = "";
-
 				if (targetId === "itemName") {
-					textValue = data[2];
-				} else if (targetId === "warehouseName") {
+					const itemIdInput = document.getElementById("itemId");
+					const itemNameInput = document.getElementById("itemName");
+
+					if (itemIdInput && itemNameInput) {
+						itemIdInput.value = data[0];
+						itemNameInput.value = data[2]; 
+					}
+
+					doSearch();
+					return;
+				}
+				
+				let textValue = "";
+				if (targetId === "warehouseName") {
 					textValue = data[0]; //
 				} else if (targetId === "smallCategory") {
 					textValue = data[3] || data[0]; // 
@@ -326,6 +336,10 @@
 				
 				doSearch();
 			}
+			
+			document.getElementById("itemId").addEventListener("input", function() {
+			    document.getElementById("itemName").value = "";
+			});
 			</script>
 </body>
 </html>
