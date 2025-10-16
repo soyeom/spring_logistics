@@ -4,29 +4,23 @@
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="org.logistics.mapper.StockAnalysisMapper">
-
-  <!-- ==============================
-    アイテムリスト照会
-  ============================== -->
-  <select id="getBaseItemList"
-          parameterType="org.logistics.domain.StockAnalysisRequestDTO"
-          resultType="org.logistics.domain.StockAnalysisResponseDTO">
+  <select id="getBaseItemList" parameterType="org.logistics.domain.StockAnalysisRequestDTO" resultType="org.logistics.domain.StockAnalysisResponseDTO">
     SELECT DISTINCT
-      im.item_id          AS itemId,
-      im.item_name        AS itemName,
-      im.spec             AS spec,
-      im.asset_class      AS itemAssetClass,
-      im.big_category     AS itemBigCategory,
-      im.mid_category     AS itemMidCategory,
-      im.small_category   AS itemSmallCategory,
-      im.base_unit        AS baseUnit,
+      im.item_id            AS itemId,
+      im.item_name          AS itemName,
+      im.spec               AS spec,
+      im.asset_class        AS itemAssetClass,
+      im.big_category       AS itemBigCategory,
+      im.mid_category       AS itemMidCategory,
+      im.small_category     AS itemSmallCategory,
+      im.base_unit          AS baseUnit,
       im.importance_level AS importanceLevel
     FROM item_master im
     <if test="dto.warehouseId != null">
       INNER JOIN warehouse_item wi
         ON im.item_id = wi.item_id
-       AND im.bu_id = wi.bu_id
-       AND wi.warehouse_id = #{dto.warehouseId}
+        AND im.bu_id = wi.bu_id
+        AND wi.warehouse_id = #{dto.warehouseId}
     </if>
     WHERE 1=1
       <if test="dto.buId != null">
@@ -51,14 +45,9 @@
         AND im.small_category = #{dto.itemSmallCategory}
       </if>
     ORDER BY im.item_name
-  </select>
+</select>
 
-  <!-- ==============================
-       기간별 값 조회
-  ============================== -->
-  <select id="getPeriodValue"
-          parameterType="org.logistics.domain.StockAnalysisRequestDTO"
-          resultType="double">
+  <select id="getPeriodValue" parameterType="org.logistics.domain.StockAnalysisRequestDTO" resultType="double">
     SELECT
       <choose>
         <when test="analysisItem == 'totalIn'">
@@ -83,22 +72,32 @@
     FROM item_master im
     LEFT JOIN inbound_detail ibd
       ON im.item_id = ibd.item_id
-     AND im.bu_id = ibd.bu_id
-     <if test="dto.warehouseId != null">
-       AND ibd.warehouse_id = #{dto.warehouseId}
-     </if>
+      AND im.bu_id = ibd.bu_id
+      <if test="dto.warehouseId != null">
+        AND ibd.warehouse_id = #{dto.warehouseId}
+      </if>
     LEFT JOIN inbound_master ibm
       ON ibd.inbound_id = ibm.inbound_id
-     AND TO_CHAR(ibm.inbound_date, 'YYYYMM') BETWEEN #{startMonth} AND #{endMonth}
+      <if test="dto.startMonth != null and dto.endMonth != null">
+        AND ibm.inbound_date BETWEEN
+          TO_DATE(#{dto.startMonth} || '01', 'YYYYMMDD')  AND
+          LAST_DAY(TO_DATE(#{dto.endMonth} || '01', 'YYYYMMDD')) + 0.99999 </if>
+      
     LEFT JOIN out_detail od
       ON im.item_id = od.item_id
-     AND im.bu_id = od.bu_id
-     <if test="dto.warehouseId != null">
-       AND od.warehouse_id = #{dto.warehouseId}
-     </if>
+      AND im.bu_id = od.bu_id
+      <if test="dto.warehouseId != null">
+        AND od.warehouse_id = #{dto.warehouseId}
+      </if>
     LEFT JOIN out_master om
       ON od.out_id = om.out_id
-     AND TO_CHAR(om.out_date, 'YYYYMM') BETWEEN #{startMonth} AND #{endMonth}
+      <if test="dto.startMonth != null and dto.endMonth != null">
+        AND om.out_date BETWEEN
+          TO_DATE(#{dto.startMonth} || '01', 'YYYYMMDD') 
+        AND
+          LAST_DAY(TO_DATE(#{dto.endMonth} || '01', 'YYYYMMDD')) + 0.99999
+      </if>
+
     WHERE im.item_id = #{dto.itemId}
       <if test="dto.buId != null">
         AND im.bu_id = #{dto.buId}
@@ -106,6 +105,6 @@
       <if test="dto.itemSmallCategory != null and dto.itemSmallCategory != ''">
         AND im.small_category = #{dto.itemSmallCategory}
       </if>
-  </select>
+</select>
 
 </mapper>

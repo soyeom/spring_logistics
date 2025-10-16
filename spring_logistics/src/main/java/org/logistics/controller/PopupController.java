@@ -116,23 +116,6 @@ public class PopupController {
 			@RequestParam(required = false) String text) {
 		return popupService.category_List_Mid(gubun, text);
 	}
-
-	// 品目小分類ポップアップ
-	@GetMapping("/itemSmallcategory_popup")
-	public void itemSmallcategory_Popup(Model model,
-			@RequestParam(required = false) String gubun,
-			@RequestParam(required = false) String text) {
-
-		model.addAttribute("list", popupService.itemSmallcategory_List(gubun, text)); // マスタ照会
-	}
-	
-	@GetMapping("/itemSmallcategory_list")
-	@ResponseBody
-	public List<PopupVO> itemSmallcategory_list(
-			@RequestParam(required = false) String gubun,
-			@RequestParam(required = false) String text) {
-		return popupService.itemSmallcategory_List(gubun, text);
-	}
 	
 	// 品目小分類ポップアップ (category_popup_small)
 	@GetMapping("/category_popup_small")
@@ -187,6 +170,11 @@ public class PopupController {
 	@ResponseBody
 	public List<PopupVO> warehouse_name_list(@RequestParam(required = false) String gubun,
 			@RequestParam(required = false) String text) {
+		
+		/*디버깅용 코드*/
+		log.info("AJAX 검색 요청 - 구분(gubun): " + gubun);
+		log.info("AJAX 검색 요청 - 검색어(text): " + text);
+		
 		return popupService.warehouse_List(gubun, text);
 	}
     

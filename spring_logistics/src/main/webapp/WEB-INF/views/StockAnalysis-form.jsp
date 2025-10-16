@@ -28,7 +28,7 @@
 <script src="https://cdn.datatables.net/colreorder/1.7.0/js/dataTables.colReorder.min.js"></script>
 
 <style>
-/* ポップアップボタンを含む入力グループ */
+/* CSS 스타일링 생략 */
 .input-group {
 	display: flex;
 	align-items: center;
@@ -48,8 +48,6 @@
 	align-items: center;
 	justify-content: center;
 }
-
-/* 期間間隔および比較回数入力グループ */
 .input-with-text {
 	display: flex;
 	align-items: center;
@@ -62,13 +60,25 @@
 .input-with-text span {
 	flex-shrink: 0;
 }
-
-/* DataTables スタイル */
+.layout {
+    display: flex;
+    min-height: 100vh;
+}
+.main {
+    flex-grow: 1;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+}
 .table-container {
     padding: 20px;
     background-color: #fff;
     border: 1px solid #ddd;
     border-radius: 8px;
+    flex-grow: 1; 
+    overflow-y: hidden;
+    min-height: 300px;
     overflow-x: auto;
 }
 #analysisTable {
@@ -89,13 +99,6 @@
     position: sticky;
     top: 0;
 }
-#analysisTable tbody tr:nth-child(even) {
-    background-color: #fafafa;
-}
-#analysisTable tbody tr:hover {
-    background-color: #e6f7ff;
-}
-/* DataTables ヘッダー・ボディ不一致解決 */
 .dataTables_scrollHeadInner {
     width: 100% !important;
 }
@@ -106,7 +109,7 @@
 </head>
 <body>
 	<div class="layout">
-	<%@ include file="/WEB-INF/views/logistics.jsp" %> 
+	<%@ include file="/WEB-INF/views/logistics.jsp" %>
 		<div class="main">
 			<div class="main-header">
 				<div>
@@ -287,13 +290,13 @@
 		</div>
 	</div>
 
-	<script>
+<script>
 var ctx = '${pageContext.request.contextPath}';
 const POPUP_WIDTH = 900, POPUP_HEIGHT = 600;
 
-// 事業部門(BU)リストをロード
+/** 事業部門(BU)データをロードし、セレクトボックスを更新する */
 function loadBusinessUnits() {
-    $.ajax({
+    return $.ajax({
         url: ctx + '/common/bus',
         type: "GET",
         dataType: "json",
@@ -304,10 +307,9 @@ function loadBusinessUnits() {
             $.each(data, function(index, bu) {
                 buSelect.append('<option value="' + bu.id + '">' + bu.name + '</option>');
             });
-            console.log("事業部門データがロードされました:", data);
         },
         error: function(xhr, status, error) {
-            console.error("事業部門のロード中にエラーが発生しました:", error);
+             // エラー発生時、デフォルトオプションを設定 (フォールバック)
             const buSelect = $("#buId");
             if (buSelect.children().length === 0) {
                 buSelect.append('<option value="">全体</option>');
@@ -317,53 +319,34 @@ function loadBusinessUnits() {
     });
 }
 
-// ポップアップを開く (倉庫)
-function open_Warehouse() {
-    var left = (screen.width - POPUP_WIDTH) / 2;
-    var top = (screen.height - POPUP_HEIGHT) / 2;
-    window.open(ctx + '/popup/warehouse_popup', "warehouse_popup",
-        "width=" + POPUP_WIDTH + ",height=" + POPUP_HEIGHT + ",left=" + left + ",top=" + top + ",scrollbars=yes,resizable=yes");
-}
-
-// 品目小分類ポップアップを開く
-function open_Isc() {
-    var left = (screen.width - POPUP_WIDTH) / 2;
-    var top = (screen.height - POPUP_HEIGHT) / 2;
-    window.open(ctx + '/popup/category_popup_small', 
-        "itemSmallcategory_popup", "width=" + POPUP_WIDTH + ",height=" + POPUP_HEIGHT + ",left=" + left + ",top=" + top + ",scrollbars=yes,resizable=yes");
-}
-
-// 🚩 공통 데이터 수신 함수 (기본값: 창고 데이터 처리)
-window.item_RowData = function(data) {
-    // [0]: 倉庫名, [3]: 倉庫ID (Long Type)
-    $("#warehouseName").val(data[0]);
-    $("#warehouseId").val(data[3]);	
-    console.log("기본(창고) 선택:", data);
-};
-
-// ページロード後に実行
 $(document).ready(function() {
-    // 사이드바
+    
+    // サイドバートグル機能
     $('.toggle-sidebar').on('click', function() {
         $('.layout').toggleClass('sidebar-collapsed');
     });
-    
-    loadBusinessUnits();
-    
+
+    // 事業部門ロード後、初期検索を実行
+    loadBusinessUnits().done(function() {
+        $("#btnSearch").trigger("click");
+    });
+
+    // サーバー送信用の分析項目キーを定義
     const analysisMap = {
-        '平均在庫量' : 'averageStock',
-        '在庫回転率(%)' : 'turnoverRatio',
-        '総入庫量' : 'totalInbound',
-        '総出庫量' : 'totalOutbound'
+        '平均在庫量': 'averageStock',
+        '在庫回転率(%)': 'turnoverRate',
+        '総入庫量': 'totalIn',
+        '総出庫量': 'totalOut'
     };
 
-    // 初期化関数
+    /** 検索条件を初期化する関数 */
     window.resetSearch = function() {
-        // DataTablesインスタンスがあれば削除
+        // DataTables が初期化されている場合は破棄
         if ($.fn.DataTable.isDataTable('#analysisTable')) {
             $('#analysisTable').DataTable().destroy();
         }
-        
+
+        // 検索条件を初期値にリセット
         $("#buId").val($("#buId option:first").val());
         $("#stockStandard").val('REAL');
         $("#importanceLevel").val($("#importanceLevel option:first").val());
@@ -371,43 +354,66 @@ $(document).ready(function() {
         $("#analysisItem").val($("#analysisItem option:first").val());
         $("#itemName, #itemId, #spec, #warehouseName, #warehouseId, #itemSmallCategoryName, #itemSmallCategory").val('');
         $("#resultBody").empty();
-        $("#resultHeadRow").find("th.dynamic").remove();
+
+        // テーブルヘッダーを初期状態に戻す
+        let thead = $('#analysisTable').find('thead');
+        thead.empty();
+        thead.append(`
+            <tr id="resultHeadRow">
+                <th>品目資産分類</th><th>品目大分類</th><th>品目小分類</th>
+                <th>品番</th><th>品名</th><th>規格</th><th>品目中分類</th><th>単位</th>
+            </tr>
+        `);
     };
 
     // 検索ボタンクリックイベント
     $("#btnSearch").click(function() {
-        let sel = $("#analysisItem").val();
-        let analysisItem = analysisMap[sel] || sel;
+
+        let buIdValue = $("#buId").val();
+        let warehouseIdValue = $("#warehouseId").val().trim();
+        let itemIdValue = $("#itemId").val();
+
+        // 検索条件の値をパース
+        let parsedBuId = buIdValue ? parseInt(buIdValue) : null;
+        let parsedWarehouseId = (!isNaN(warehouseIdValue) && warehouseIdValue !== "") ? parseInt(warehouseIdValue, 10) : null;
+        let parsedItemId = (!isNaN(itemIdValue) && itemIdValue !== "") ? parseInt(itemIdValue, 10) : null;
+
+        let selectedAnalysisText = $("#analysisItem option:selected").text();
+        let analysisItemServerKey = typeof analysisMap !== 'undefined' ? analysisMap[selectedAnalysisText] : null;
 
         let requestData = {
-            buId : $("#buId").val(),
+            buId : parsedBuId,
+            warehouseId : parsedWarehouseId,
+            itemId : parsedItemId,
             itemName : $("#itemName").val(),
             spec : $("#spec").val(),
             itemAssetClass : $("#itemAssetClass").val(),
             importanceLevel : $("#importanceLevel").val(),
             stockStandard : $("#stockStandard").val(),
-            itemId : $("#itemId").val() ? $("#itemId").val().toString() : null,
             currentMonth : $("#currentMonth").val(),
-            analysisItem : analysisItem,
-            warehouseId : $("#warehouseId").val(),
-            itemSmallCategory : $("#itemSmallCategory").val()
+            itemSmallCategory : $("#itemSmallCategory").val() || null,
+            analysisItem : analysisItemServerKey,
+            periodMonths: parseInt($("#periodMonths").val()),
+            periodCount: parseInt($("#periodCount").val())
         };
 
+        // サーバーに分析データをリクエスト
         $.ajax({
             url : ctx + '/stock-analysis/analysis',
             type : "POST",
             contentType : "application/json",
             data : JSON.stringify(requestData),
             success : function(data) {
-                let tbody = $("#resultBody").empty();
-                let periods = [];
-                
-                // DataTables インスタンスがあればディストロイ
+
+                // 既存の DataTables を破棄
                 if ($.fn.DataTable.isDataTable('#analysisTable')) {
                     $('#analysisTable').DataTable().destroy();
                 }
 
-                // 1. 動的期間キー (YYYY-MM) 抽出
+                let tbody = $("#resultBody").empty();
+                let periods = [];
+                
+                // 動的な期間ヘッダーを抽出（YYYY-MM形式のキーを抽出）
                 if (data.length > 0) {
                     $.each(data[0], function(key) {
                         if (/^\d{4}-\d{2}$/.test(key)) periods.push(key);
@@ -415,95 +421,65 @@ $(document).ready(function() {
                     periods.sort().reverse();
                 }
 
-                // 2. 動的期間ヘッダー再生性
-                let theadRow = $("#resultHeadRow").find("th.dynamic").remove().end();
+                // テーブルヘッダーを動的に再構築
+                let thead = $('#analysisTable').find('thead');
+                thead.empty();
+                let theadRow = $('<tr id="resultHeadRow"></tr>').appendTo(thead);
+                theadRow.append('<th>品目資産分類</th><th>品目大分類</th><th>品目小分類</th><th>品番</th><th>品名</th><th>規格</th><th>品目中分類</th><th>単位</th>');
                 $.each(periods, function(i, p) {
                     theadRow.append("<th class='dynamic'>" + p + "</th>");
                 });
 
-                // 3. データがない場合
-                if (!data || data.length === 0) {
-                    let totalCols = 8 + periods.length;
-                    tbody.append("<tr><td colspan='" + totalCols + "'>検索結果がありません。</td></tr>");
-                    return;
-                }
+                // DataTablesのカラム定義を構築
+                let columnsDef = [
+                    { data: 'itemAssetClass', title: '品目資産分類' },
+                    { data: 'itemBigCategory', title: '品目大分類' },
+                    { data: 'itemSmallCategory', title: '品目小分類' },
+                    { data: 'itemId', title: '品番' },
+                    { data: 'itemName', title: '品名' },
+                    { data: 'spec', title: '規格' },
+                    { data: 'itemMidCategory', title: '品目中分類' },
+                    { data: 'baseUnit', title: '単位' }
+                ];
 
-                // 4. 結果データテーブルに描画	
-                $.each(data, function(idx, item) {
-                    let row = "<tr>"
-                        + "<td>" + (item.itemAssetClass || "") + "</td>"
-                        + "<td>" + (item.itemBigCategory || "") + "</td>"
-                        + "<td>" + (item.itemSmallCategory || "") + "</td>"
-                        + "<td>" + (item.itemId || "") + "</td>"
-                        + "<td>" + (item.itemName || "") + "</td>"
-                        + "<td>" + (item.spec || "") + "</td>"
-                        + "<td>" + (item.itemMidCategory || "") + "</td>"
-                        + "<td>" + (item.baseUnit || "") + "</td>";
-
-                    $.each(periods, function(i, p) {
-                        let value = item[p];
-                        let displayValue = '';
-
-                        if (value != null) {
-                            let numValue = parseFloat(value);
-                            if (!isNaN(numValue)) {
-                                displayValue = numValue.toFixed(2);
-                            } else {
-                                displayValue = value;
-                            }
-                        }
-                        
-                        row += "<td style='text-align: right;'>" + displayValue + "</td>";
+                // 動的な期間カラムを追加
+                $.each(periods, function(i, p) {
+                    columnsDef.push({
+                        data: p,
+                        title: p,
+                        className: 'text-right',
+                        defaultContent: '0.00'
                     });
-
-                    row += "</tr>";
-                    tbody.append(row);
                 });
-                
-                // 5. DataTables 初期化
+
+                // DataTables 初期化
                 let table = $('#analysisTable').DataTable({
+                    data: data,
+                    columns: columnsDef,
+                    scrollX: true,
+                    scrollY: 'calc(100vh - 400px)',
+                    scrollCollapse: true,
+                    autoWidth: false,
                     paging: true,
                     searching: true,
                     ordering: true,
                     info: true,
-                    scrollX: true,	
-                    scrollCollapse: true,
-                    autoWidth: false,
+                    destroy: true,
+                    language: {
+                        emptyTable: "検索結果がありません。",
+                        zeroRecords: "検索結果がありません。"
+                    }
                 });
-                
-                setTimeout(function(){
-                    table.columns.adjust().draw();
-                }, 100);
+
+                table.columns.adjust().draw();
             },
-            error : function() {
-                alert("データ検索中にエラーが発生しました。必須値（事業部門など）を確認してください。");
+            error : function(xhr) {
+                alert("データ取得中にエラーが発生しました。");
             }
         });
     });
 
-    // 🚩 Warehouseボタンイベント: item_RowData를 창고용으로 재정의
-    $("#btnWarehouse").click(function() {
-        window.item_RowData = function(data) {
-            // 창고 팝업 데이터 순서: [0]=이름, [3]=ID
-            $("#warehouseName").val(data[0]);
-            $("#warehouseId").val(data[3]);	
-            console.log("창고 선택:", data);
-        };
-        open_Warehouse();
-    });
-
-    // 🚩 ItemSmallCategoryボタンイベント: item_RowData를 소분류용으로 재정의
-    $("#btnItemSmallCategory").click(function() {
-        window.item_RowData = function(data) {
-            // 소분류 팝업 데이터 순서: [0]=품번(ID), [3]=소분류(Name)
-            $("#itemSmallCategory").val(data[0]); 
-            $("#itemSmallCategoryName").val(data[3]); 
-            console.log("소분류 선택:", data);
-        };
-        open_Isc();
-    });
-
-    // Enter キーで検索
+    // Enterキー押下で検索を実行
     $(document).on("keydown", function(e) {
         if (e.key === "Enter") {
             e.preventDefault();
@@ -512,12 +488,76 @@ $(document).ready(function() {
     });
 });
 
+/** 倉庫検索ポップアップを開く関数 */
+const open_Warehouse = function() {
+    var left = (screen.width - POPUP_WIDTH) / 2;
+    var top = (screen.height - POPUP_HEIGHT) / 2;
+    // 倉庫ポップアップを開く
+    window.open(ctx + '/popup/warehouse_popup', "warehouse_popup",
+        "width=" + POPUP_WIDTH + ",height=" + POPUP_HEIGHT + ",left=" + left + ",top=" + top + ",scrollbars=yes,resizable=yes");
+}
+
+/** 品目小分類検索ポップアップを開く関数 */
+const open_Isc = function() {
+    var left = (screen.width - POPUP_WIDTH) / 2;
+    var top = (screen.height - POPUP_HEIGHT) / 2;
+    // 品目小分類ポップアップを開く
+    window.open(ctx + '/popup/category_popup_small',
+        "width=" + POPUP_WIDTH + ",height=" + POPUP_HEIGHT + ",left=" + left + ",top=" + top + ",scrollbars=yes,resizable=yes");
+}
+
+/**
+ * 統合ポップアップコールバック関数。
+ * 팝업에서 전달된 데이터 배열 (인자 1개)을 처리하며, window.currentPopupType을 사용하여 분기 처리
+ * @param {Array<any>} data - 選択された行のデータ配列
+ */
+window.item_RowData = function(data) {
+    const argsLength = arguments.length;
+    // 전역 변수에서 팝업 타입을 가져오거나 기본값 'warehouse' 사용
+    let callbackType = window.currentPopupType || 'warehouse'; 
+
+    if (argsLength !== 1 || !Array.isArray(data)) {
+        return;
+    }
+    
+    // 팝업 타입별 분기 처리
+    if (callbackType === 'warehouse') {
+        // 倉庫ポップアップの処理: data[0] = 倉庫名, data[1] = 倉庫コード
+        if (data.length >= 2) {
+            $("#warehouseName").val(data[0]); 
+            $("#warehouseId").val(data[1]);
+        }
+    } else if (callbackType === 'category_popup_small') {
+        // 品目小分類ポップアップの処理: data[3] = 小分類
+        if (data.length >= 4) { // 品目 소분류 팝업의 데이터 구조에 따라 data[3]을 사용
+            $("#itemSmallCategory").val(data[3]); 
+            $("#itemSmallCategoryName").val(data[3]);
+        }
+    }
+    
+    // 콜백 처리 후 전역 타입 변수 초기화
+    window.currentPopupType = null;
+};
+
+// 倉庫検索ボタンクリック時、ポップアップタイプを設定
+$("#btnWarehouse").click(function() {
+    window.currentPopupType = 'warehouse';
+    open_Warehouse();
+});
+
+// 品目小分類検索ボタンクリック時、ポップアップタイプを設定
+$("#btnItemSmallCategory").click(function() {
+    window.currentPopupType = 'category_popup_small';
+    open_Isc();
+});
+
+// サイドバーの表示/非表示切り替え
 const toggleButton = document.querySelector('.toggle-sidebar');
 const sidebar = document.querySelector('.sidebar');
-
-toggleButton.addEventListener('click', function(){
+toggleButton.addEventListener('click', function() {
     sidebar.classList.toggle('hidden');
 });
 </script>
+
 </body>
 </html>
