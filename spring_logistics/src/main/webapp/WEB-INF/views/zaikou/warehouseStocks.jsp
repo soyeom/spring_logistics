@@ -98,7 +98,7 @@
 							<select id="spec" name="spec">
 								<option value=""></option>
 								<c:forEach items="${specList}" var="spec">
-									<option value="${spec.SPEC}">${spec.SPEC}</option>
+									<option value="${spec.spec}">${spec.spec}</option>
 								</c:forEach>
 							</select>
 						</div>
