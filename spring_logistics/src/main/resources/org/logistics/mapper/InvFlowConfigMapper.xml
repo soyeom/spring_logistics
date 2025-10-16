@@ -175,7 +175,7 @@
 	</select>
 	
 	<select id="new_Out_Id" resultType="string">
-    	select max(out_id) + 1 as out_id
+    	select nvl(max(out_id) + 1, 1) as out_id
     	from out_master
 		where bu_Id = #{bu_Id}
 	</select>
@@ -198,6 +198,14 @@
 		and out_Id = #{long_Out_Id}
 	</update>
 	
+	<delete id="outBound_Delete_Master">
+        
+        DELETE FROM out_master
+        WHERE bu_id = #{bu_Id}
+        AND out_Id = #{out_Id}
+    
+    </delete>
+	
 	<delete id="outBound_Delete_Detail">
         
         DELETE FROM out_detail
@@ -217,5 +225,12 @@
 		)
 	
 	</insert>
+	
+	<update id = "outBound_Update" parameterType="org.logistics.domain.OutBoundMasterVO">
+		update out_master
+		SET out_complete = CASE WHEN out_complete = 'N' THEN 'Y' ELSE 'N' END
+		where bu_Id = #{bu_Id}
+		and out_Id = #{out_Id}
+	</update>
 	
 </mapper>

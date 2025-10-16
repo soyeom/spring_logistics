@@ -93,7 +93,7 @@
 				  WHEN consignment_gubun = '20' THEN '위탁' 
 				  WHEN consignment_gubun = '30' THEN '판매후보관' 
 			   END as column14
-			 , out_complete
+			 , out_complete as column16
 			 , created_at
 		FROM out_master a
 		<where>
