@@ -449,7 +449,7 @@ function saveAll() {
 	      sortOrder: $(tds[2]).text().trim(),
 	      useYn: $(tds[3]).find("input").prop("checked") ? "Y" : "N",
 	      txnType: type,
-	      buId: 1
+	      buId: 10
 	    };
 
 	    if (type === "OUT") {
