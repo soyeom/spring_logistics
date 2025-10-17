@@ -194,9 +194,9 @@
 	                </tbody>
 				</table>
 				
-				<div id="noDataMessage" class="no-data" style="display: none;">
-	                	データがありません。
-	            </div>
+<!-- 				<div id="noDataMessage" class="no-data" style="display: none;"> -->
+<!-- 	                	データがありません。 -->
+<!-- 	            </div> -->
 			</div>
     	</div>
 	
@@ -343,11 +343,11 @@
                 success: function(response) {
                     console.log('Server response:', response);
                     const $tbody = $('#stockSummaryTableBody');
-                    const $noDataMessage = $('#noDataMessage');
+//                     const $noDataMessage = $('#noDataMessage');
                     $tbody.empty();
 
                     if (response && response.length > 0) {
-                        $noDataMessage.hide();
+//                         $noDataMessage.hide();
                         $.each(response, function(index, item) {
                             if (item) {
                                 const row = `
@@ -378,12 +378,12 @@
                             }
                         });
                     } else {
-                        $noDataMessage.text('データがありません。').show();
+//                         $noDataMessage.text('データがありません。').show();
                     }
                 },
                 error: function(xhr, status, error) {
                     console.error('An error occurred:', status, error);
-                    $('#noDataMessage').text('データの読み込み中にエラーが発生しました。').show();
+//                     $('#noDataMessage').text('データの読み込み中にエラーが発生しました。').show();
                 }
             });
         }
