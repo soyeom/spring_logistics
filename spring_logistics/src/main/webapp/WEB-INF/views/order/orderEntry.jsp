@@ -377,7 +377,7 @@
 										value="${order.krwAmount}" type="number" /></td>
 								<td class="text-center"><fmt:formatNumber
 										value="${order.krwVat}" type="number" /></td>
-								<td><c:out value="${order.partyName}" /></td>
+								<td class="text-center"><c:out value="${order.partyName}" /></td>
 								<td><fmt:formatDate value="${order.inboundDate}"
 										pattern="yyyy-MM-dd" /></td>
 								<td><c:out value="${order.note}" /></td>
@@ -585,7 +585,7 @@ function renderTable(dataList) {
         tr.append("<td class='text-center'>"+(row.vat||0)+"</td>");
         tr.append("<td class='text-center'>"+(row.krwAmount||0)+"</td>");
         tr.append("<td class='text-center'>"+(row.krwVat||0)+"</td>");
-        tr.append("<td>"+(row.partyName||'')+"</td>");
+        tr.append("<td class='text-center'>"+(row.partyName||'')+"</td>");
         tr.append("<td>"+(row.inboundDate||'')+"</td>");
         tr.append("<td>"+(row.note||'')+"</td>");
         tr.append("<td>"+(row.warehouseName || row.warehouseId || '')+"</td>");
