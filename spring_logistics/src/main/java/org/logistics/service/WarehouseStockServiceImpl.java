@@ -19,59 +19,34 @@ public class WarehouseStockServiceImpl implements WarehouseStockService {
 	    return mapper.getWarehouseStocks(params);
 	}
 
-
 	@Override
 	public List<WarehouseStockVO> search(Map<String, Object> params) {
 		return mapper.search(params);
 	}
 
 	@Override
-	public List<Map<String, String>> getBusinessUnits() {
+	public List<WarehouseStockVO> getBusinessUnits() {
 		return mapper.getBusinessUnits();
 	}
 
 	@Override
-	public List<Map<String, String>> getStockBases() {
+	public List<WarehouseStockVO> getStockBases() {
 		return mapper.getStockBases();
 	}
 
 	@Override
-	public List<Map<String, Object>> getWarehouseNames() {
-		return mapper.getWarehouseNames();
-	}
-
-	@Override
-	public List<Map<String, Object>> getAssetClasses() {
+	public List<WarehouseStockVO> getAssetClasses() {
 		return mapper.getAssetClasses();
 	}
 	
 	@Override
-	public List<Map<String, Object>> getImportanceLevels() {
+	public List<WarehouseStockVO> getImportanceLevels() {
 		return mapper.getImportanceLevels();
 	}
 
-	@Override
-	public List<Map<String, Object>> getBigCategorys() {
-		return mapper.getBigCategorys();
-	}
 
 	@Override
-	public List<Map<String, Object>> getMidCategorys() {
-		return mapper.getMidCategorys();
-	}
-
-	@Override
-	public List<Map<String, Object>> getSmallCategorys() {
-		return mapper.getSmallCategorys();
-	}
-
-	@Override
-	public List<Map<String, Object>> getItemNames() {
-		return mapper.getItemNames();
-	}
-
-	@Override
-	public List<Map<String, Object>> getSpecs() {
+	public List<WarehouseStockVO> getSpecs() {
 		return mapper.getSpecs();
 	}
 }

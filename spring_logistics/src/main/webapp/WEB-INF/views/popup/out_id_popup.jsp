@@ -9,66 +9,66 @@
 <html>
 <head>
 	<meta charset="UTF-8">
-    <title>거래명세서</title>
+    <title>取引明細書</title>
     <link rel="stylesheet" type="text/css" href="/resources/css/popup.css">
     <link rel="stylesheet" href="/resources/css/logistics.css" type="text/css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css" />
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
 </head>
-<body style = "background-color: #fff;">
+<body style="background-color: #fff;">
 	<div class="popup-wrapper">
-		<!-- 헤더 -->
-		<div class = "popup-header">거래명세서</div>	  
-	     <!-- 검색바 -->
-	     <div class = "popup-search-bar">
-	     	<div style = "flex: 2;">
-     			<select id = "gubun">
-	            	<option value = "0">전체</option>
-	            	<option value = "10">사업단위</option>
-	            	<option value = "20">거래명세서번호</option>
+		<!-- ヘッダー -->
+		<div class="popup-header">取引明細書</div>	  
+	     <!-- 検索バー -->
+	     <div class="popup-search-bar">
+	     	<div style="flex: 2;">
+     			<select id="gubun">
+	            	<option value="0">全て</option>
+	            	<option value="10">事業単位</option>
+	            	<option value="20">取引明細書番号</option>
 	        	</select>
 	     	</div>
-	     	<div style = "flex: 7;">
-	     		<input type="text" id = "text" placeholder="검색어를 입력하세요" autocomplete="off">
+	     	<div style="flex: 7;">
+	     		<input type="text" id="text" placeholder="検索語を入力してください" autocomplete="off">
 	     	</div>
-	     	<div style = "flex: 1;">
-	     		<button class="btn-primary" onclick = "search()">검색</button>
+	     	<div style="flex: 1;">
+	     		<button class="btn-primary" onclick="search()">検索</button>
 	     	</div>
 	     </div>
-	    <!-- 나머지 컨텐츠 -->
+	    <!-- コンテンツ本体 -->
 	    <div class="popup-body">
-       		<div class = "table-container" style = "height: 400px;">
-				<table class="table-single-select" style = "width: 100%">
-					<thead>					 		<!-- 화면에 보여야 하는 테이블 헤더 수정 -->
+       		<div class="table-container" style="height: 400px;">
+				<table class="table-single-select" style="width: 100%">
+					<thead>
 						<tr>
-					    	<th>사업단위</th>
-					        <th>거래명세서번호</th>
-					        <th>거래명세서일</th>
-					        <th>Local구분</th>
-					        <th>거래처</th>
-					        <th>담당자</th>
-					        <th>출고구분</th>
-					        <th>위탁구분</th>
+					    	<th>事業単位</th>
+					        <th>取引明細書番号</th>
+					        <th>取引明細書日付</th>
+					        <th>Local区分</th>
+					        <th>取引先</th>
+					        <th>担当者</th>
+					        <th>出庫区分</th>
+					        <th>委託区分</th>
 				        </tr>
 				    </thead>
-				    <tbody id = "result-tbody">		<!-- 화면에 보여야 하는 테이블 바디 수정 -->
-			    		<c:forEach items = "${list}" var = "board">
+				    <tbody id="result-tbody">
+			    		<c:forEach items="${list}" var="board">
 					    	<tr>
-								<td class = "text-center"><input type = "hidden" value = "${board.column2}"><c:out value = "${board.column15}"/></td>
-								<td class = "text-center"><c:out value = "${board.column1}"/></td>
-								<td class = "text-center"><c:out value = "${board.column3}"/></td>
-								<td class = "text-center"><input type = "hidden" value = "${board.column4}"><c:out value = "${board.column5}"/></td>
-								<td class = "text-center"><input type = "hidden" value = "${board.column6}"><c:out value = "${board.column7}"/></td>
-								<td class = "text-center"><input type = "hidden" value = "${board.column8}"><input type = "hidden" value = "${board.column10}"><c:out value = "${board.column9}"/></td>
-								<td class = "text-center"><input type = "hidden" value = "${board.column11}"><c:out value = "${board.column12}"/></td>
-								<td class = "text-center"><input type = "hidden" value = "${board.column13}"><c:out value = "${board.column14}"/></td>
+								<td class="text-center"><input type="hidden" value="${board.column2}"><c:out value="${board.column15}"/></td>
+								<td class="text-center"><c:out value="${board.column1}"/></td>
+								<td class="text-center"><c:out value="${board.column3}"/></td>
+								<td class="text-center"><input type="hidden" value="${board.column4}"><c:out value="${board.column5}"/></td>
+								<td class="text-center"><input type="hidden" value="${board.column6}"><c:out value="${board.column7}"/></td>
+								<td class="text-center"><input type="hidden" value="${board.column8}"><input type="hidden" value="${board.column10}"><c:out value="${board.column9}"/></td>
+								<td class="text-center"><input type="hidden" value="${board.column11}"><c:out value="${board.column12}"/></td>
+								<td class="text-center"><input type="hidden" value="${board.column13}"><input type="hidden" value="${board.column16}"><c:out value="${board.column14}"/></td>
 							</tr>
 				    	</c:forEach>
 				    </tbody>
 				</table>
 		    </div>
 	    </div>
-	    <div class = "btn-primary" style = "width: 100px; text-align: center; padding: 0.5rem 1.2rem; font-size: 18px; margin: auto; margin-top: 10px;" onclick = "button_Click()">적용</div>
+	    <div class="btn-primary" style="width: 100px; text-align: center; padding: 0.5rem 1.2rem; font-size: 18px; margin: auto; margin-top: 10px;" onclick="button_Click()">適用</div>
 	</div>
 </body>
 </html>
@@ -108,24 +108,20 @@
 		}
 		
 		$.ajax({
-			url: '/popup/out_id_list',			// '/popup/Controller에 불러올 getMapping 주소 입력'
+			url: '/popup/out_id_list',
 			data: formData,
 			type: 'GET',
 			dataType: 'json',
 			success: function(result) {
 				
-				// 기존 내용 초기화
+				// 既存内容初期化
 				const tbody = document.getElementById("result-tbody");
 	            tbody.innerHTML = ""; 
 	            
-	         	// result 배열 반복
+	         	// 結果配列を繰り返し
 	            result.forEach(function(board) {
 	            	const tr = document.createElement("tr");
-	
-	            	// tbody 생성한 만큼 입력
-	                tr.innerHTML = 
-	                	'<td class="text-center">' + (board.column2 || '') + '</td>';
-	                    
+	            	tr.innerHTML = '<td class="text-center">' + (board.column2 || '') + '</td>';
 	                tbody.appendChild(tr);
 	            });
 			}			
@@ -135,18 +131,18 @@
 	function button_Click() {
 		
 	    if (!selectedRow) {
-	        alert("선택된 행이 없습니다!");
+	        alert("選択された行がありません！");
 	        return;
 	    }
 
 	    const data = [];
 
 	    selectedRow.querySelectorAll("td").forEach(function(td) {
-	        // td 텍스트 (없으면 "")
+	        // tdテキスト (無ければ "")
 	        const text = td.textContent.trim() || "";
 	        data.push(text);
 
-	        // td 안의 hidden input 값들 (없으면 "")
+	        // td内のhidden input値 (無ければ "")
 	        const hiddenInputs = td.querySelectorAll('input[type="hidden"]');
 	        if (hiddenInputs.length > 0) {
 	            hiddenInputs.forEach(function(input) {
@@ -155,9 +151,9 @@
 	        }
 	    });
 
-	    // 부모창 함수 호출 + 데이터 전달
+	    // 親ウィンドウ関数呼び出し + データ送信
 	    window.opener.out_Id_RowData(data);
-	    // 팝업 닫기
+	    // ポップアップ閉じる
 	    window.close();
 	}
 	

@@ -25,7 +25,7 @@
                 <span class="card__number">1</span>
                 <h2 class="card__title">재고부족시 출하 통제</h2>
             </article>
-            <article class="card card--blue" tabindex="0" role="button" aria-label="재고 관리">
+            <article class="card card--blue" tabindex="0" role="button" aria-label="재고 관리" onclick="location.href='/warehouse/setting'">
                 <span class="card__number">2</span>
                 <h2 class="card__title">실재고/자산재고 관리</h2>
             </article>
@@ -33,11 +33,11 @@
                 <span class="card__number">3</span>
                 <h2 class="card__title">기타입출고 구분 설정</h2>
             </article>
-            <article class="card card--green" tabindex="0" role="button" aria-label="사업단위별 수불집계">
+            <article class="card card--green" tabindex="0" role="button" aria-label="사업단위별 수불집계" onclick="location.href='/stock/summary'">
                 <span class="card__number">4</span>
                 <h2 class="card__title">사업단위별 수불 집계 조회</h2>
             </article>
-            <article class="card card--olive" tabindex="0" role="button" aria-label="재고 변동 추이 분석">
+            <article class="card card--olive" tabindex="0" role="button" aria-label="재고 변동 추이 분석"onclick="window.location.href='/stock-analysis/form'">
                 <span class="card__number">5</span>
                 <h2 class="card__title">재고 변동 추이 분석</h2>
             </article>

@@ -66,7 +66,7 @@
 </style>
 <head>
 	<meta charset="UTF-8">
-    <title>회원가입 - 팜스프링 ERP</title>
+    <title>新規登録 - ファムスプリング</title>
     <link rel="stylesheet" href="/resources/css/logistics.css" type="text/css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css" />
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
@@ -81,9 +81,9 @@
 	            <div></div>
 	        </div>
 	        <div class="login-box">
-			    <h2>회원가입</h2>
+			    <h2>新規登録</h2>
 		    	<div class = "form-group">
-		    		<div class = "label">사업단위</div>
+		    		<div class = "label">事業単位</div>
 			    	<div>
 				    	<select id = "bu_Id" name = "bu_Id">
 							<option value = ""></option>
@@ -94,35 +94,35 @@
 					</div>
 				</div>
 			    <div class="form-group">
-			    	<div class = "label">아이디</div>
+			    	<div class = "label">ID</div>
 			        <input type="text" id="username" name="username">
 			    </div>
 				<div class="form-group">
-					<div class = "label">패스워드</div>
+					<div class = "label">パスワード</div>
 			        <input type="password" id="password" name="password">
 			    </div>
 			    <div class="form-group">
-			    	<div class = "label">이름</div>
+			    	<div class = "label">氏名</div>
 			        <input type="text" id="name" name="name">
 			    </div>
 			    <div class="form-group">
-			    	<div class = "label">부서</div>
+			    	<div class = "label">部署</div>
 			        <input type="text" id="department" name="department">
 			    </div>
 			    <div class="form-group">
-			    	<div class = "label">연락처</div>
+			    	<div class = "label">連絡先</div>
 			        <input type="text" id="phone" name="phone">
 			    </div>
 			    <div class="form-group">
-			    	<div class = "label">핸드폰</div>
+			    	<div class = "label">携帯電話</div>
 			        <input type="text" id="mobile" name="mobile">
 			    </div>
 			    <div class="form-group">
-			    	<div class = "label">이메일</div>
+			    	<div class = "label">メール</div>
 			        <input type="text" id="email" name="email">
 			    </div>
 		        <div class="buttons">
-		            <button type="button" class="btn btn-secondary" onclick="signin()">회원가입</button>
+		            <button type="button" class="btn btn-secondary" onclick="signin()">登録</button>
 		        </div>
 			</div>
 		</div>
@@ -142,22 +142,22 @@
 	    
 		// ✅ 필수값 검증
 	    if (!bu_Id) {
-	        alert("사업단위를 입력해주세요.");
+	        alert("事業単位を入力してください。");
 	        document.getElementById("bu_Id").focus();
 	        return;
 	    }
 	    if (!contact_Id) {
-	        alert("아이디를 입력해주세요.");
+	        alert("IDを入力してください。");
 	        document.getElementById("username").focus();
 	        return;
 	    }
 	    if (!password) {
-	        alert("비밀번호를 입력해주세요.");
+	        alert("パスワードを入力してください。");
 	        document.getElementById("password").focus();
 	        return;
 	    }
 	    if (!contact_Name) {
-	        alert("이름 입력해주세요.");
+	        alert("氏名を入力してください。");
 	        document.getElementById("name").focus();
 	        return;
 	    }
@@ -179,10 +179,10 @@
 	        data: formData,
 	        success: function(result) {
 	        	if (result == "success") {
-	        		alert("회원가입이 완료되었습니다.");
+	        		alert("新規登録が完了しました。");
 	        		location.href = "/Contact/login";
 	        	} else {
-	        		alert("이미 등록된 아이디 입니다.");
+	        		alert("既に登録されているユーザーIDです。");
 	        	}
 	        },
 	        error: function(xhr, status, error) {

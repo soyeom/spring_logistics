@@ -19,8 +19,6 @@ import lombok.extern.log4j.Log4j;
 @Log4j
 public class InvFlowConfigServiceImpl implements InvFlowConfigService {
 
-	
-
 	@Setter(onMethod_= @Autowired)
 	private InvFlowConfigMapper invFlowConfigMapper;
 	
@@ -133,5 +131,15 @@ public class InvFlowConfigServiceImpl implements InvFlowConfigService {
 	@Override
 	public void outBound_Save_Detail(OutBoundMasterVO vo) {
 		invFlowConfigMapper.outBound_Save_Detail(vo);
+	}
+	
+	@Override
+	public void outBound_Delete_Master(String bu_Id, String out_Id) {
+		invFlowConfigMapper.outBound_Delete_Master(bu_Id, out_Id);	
+	}
+
+	@Override
+	public void outBound_Update(String bu_Id, String out_Id) {
+		invFlowConfigMapper.outBound_Update(bu_Id, out_Id);
 	}
 }

@@ -20,7 +20,7 @@
       NVL(wd_in.warehouse_name, wd_out.warehouse_name) AS warehouseName,
 
       <choose>
-        <!-- 가용재고 -->
+        <!-- 利用可能在庫 -->
         <when test="criteria == 'available'">
           (
             (SUM(CASE WHEN im.inbound_complete = 'Y' THEN id.qty ELSE 0 END)
@@ -30,13 +30,13 @@
           ) AS stockQty
         </when>
 
-        <!-- 자산재고 -->
+        <!-- 資産在庫 -->
         <when test="criteria == 'asset'">
           (SUM(CASE WHEN im.inbound_complete = 'Y' THEN id.qty ELSE 0 END)
          - SUM(CASE WHEN om.out_complete    = 'Y' THEN od.qty ELSE 0 END)) AS stockQty
         </when>
 
-        <!-- 실재고 (기본값) -->
+        <!-- 実在庫 (デフォルト) -->
         <otherwise>
           (SUM(CASE WHEN im.inbound_complete = 'Y' THEN id.qty ELSE 0 END)
          - SUM(CASE WHEN om.out_complete    = 'Y' THEN od.qty ELSE 0 END)) AS stockQty
@@ -92,7 +92,6 @@
       NVL(wd_in.warehouse_name, wd_out.warehouse_name) AS warehouseName,
 
       <choose>
-        <!-- 가용재고 -->
         <when test="criteria == 'available'">
           (
             (SUM(CASE WHEN im.inbound_complete = 'Y' THEN id.qty ELSE 0 END)
@@ -102,7 +101,6 @@
           ) AS stockQty
         </when>
 
-        <!-- 실재고 / 자산재고 -->
         <otherwise>
           (SUM(CASE WHEN im.inbound_complete = 'Y' THEN id.qty ELSE 0 END)
          - SUM(CASE WHEN om.out_complete    = 'Y' THEN od.qty ELSE 0 END)) AS stockQty
@@ -174,69 +172,29 @@
 </select>
 
 
-
-	<select id="getBusinessUnits" resultType="map">
-		SELECT bu_id AS BU_ID,
-		bu_name AS BU_NAME
+	<select id="getBusinessUnits" resultType="org.logistics.domain.WarehouseStockVO">
+		SELECT bu_id AS buId,
+		bu_name AS buName
 		FROM business_unit
 		ORDER BY bu_id
 	</select>
 
-	<select id="getWarehouseNames" resultType="map">
+	<select id="getAssetClasses" resultType="org.logistics.domain.WarehouseStockVO">
 		SELECT DISTINCT
-		w.warehouse_name AS WAREHOUSE_NAME,
-		w.warehouse_id AS WAREHOUSE_ID
-		FROM
-		warehouse_detail w
-		ORDER BY w.warehouse_name
-	</select>
-
-	<select id="getAssetClasses" resultType="map">
-		SELECT DISTINCT
-		asset_class AS ASSET_CLASS
+		asset_class AS assetClass
 		FROM item_master
 		ORDER BY asset_class
 	</select>
 
-	<select id="getImportanceLevels" resultType="map">
+	<select id="getImportanceLevels" resultType="org.logistics.domain.WarehouseStockVO">
 		SELECT DISTINCT
-		importance_level AS IMPORTANCE_LEVEL
+		importance_level AS importanceLevel
 		FROM item_master
-		ORDER BY
-		importance_level
+		ORDER BY importance_level
 	</select>
 
-	<select id="getBigCategorys" resultType="map">
-		SELECT DISTINCT
-		big_category AS BIG_CATEGORY
-		FROM item_master
-		ORDER BY big_category
-	</select>
-
-	<select id="getMidCategorys" resultType="map">
-		SELECT DISTINCT
-		mid_category AS MID_CATEGORY
-		FROM item_master
-		ORDER BY mid_category
-	</select>
-
-	<select id="getSmallCategorys" resultType="map">
-		SELECT DISTINCT
-		small_category AS SMALL_CATEGORY
-		FROM item_master
-		ORDER BY
-		small_category
-	</select>
-
-	<select id="getItemNames" resultType="map">
-		SELECT item_id AS ITEM_ID,
-		item_name AS ITEM_NAME
-		FROM item_master
-		ORDER BY item_id
-	</select>
-
-	<select id="getSpecs" resultType="map">
-		SELECT spec AS SPEC
+	<select id="getSpecs" resultType="org.logistics.domain.WarehouseStockVO">
+		SELECT spec AS spec
 		FROM
 		item_master
 		ORDER BY spec

@@ -12,4 +12,5 @@ public class OutboundVO {
 	private Date outboundDate;
 	private String note;
 	private int itemId;
+	private String outboundComplete;
 }
