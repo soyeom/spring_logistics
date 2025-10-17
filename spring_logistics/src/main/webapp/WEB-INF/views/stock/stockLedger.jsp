@@ -93,7 +93,7 @@
 				</div>
 			</form>
 			
-			<div class="table-container" style="height: 300px;">
+			<div class="table-container">
 				<table class="table-single-select">
 					<thead>
 						<tr>
@@ -298,7 +298,7 @@
                     },
                     error: function(xhr, status, error) {
                         console.error('An error occurred:', status, error);
-                        $noDataMessage.text('データを読み込む中にエラーが発生しました。').show();
+//                         $noDataMessage.text('データを読み込む中にエラーが発生しました。').show();
                     }
                 });
             });

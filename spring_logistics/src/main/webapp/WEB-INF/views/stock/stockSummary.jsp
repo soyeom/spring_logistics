@@ -156,7 +156,7 @@
 				</div>
 			</form>
 		
-			<div class="table-container" style="height: 300px;">
+			<div class="table-container">
 				<table class="table-single-select">
 					<thead>
 						<tr>
