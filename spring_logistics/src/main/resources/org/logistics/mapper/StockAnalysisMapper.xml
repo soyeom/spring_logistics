@@ -4,16 +4,20 @@
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="org.logistics.mapper.StockAnalysisMapper">
-  <select id="getBaseItemList" parameterType="org.logistics.domain.StockAnalysisRequestDTO" resultType="org.logistics.domain.StockAnalysisResponseDTO">
+
+  <!-- 기준 품목 리스트 -->
+  <select id="getBaseItemList"
+          parameterType="org.logistics.domain.StockAnalysisRequestDTO"
+          resultType="org.logistics.domain.StockAnalysisResponseDTO">
     SELECT DISTINCT
-      im.item_id            AS itemId,
-      im.item_name          AS itemName,
-      im.spec               AS spec,
-      im.asset_class        AS itemAssetClass,
-      im.big_category       AS itemBigCategory,
-      im.mid_category       AS itemMidCategory,
-      im.small_category     AS itemSmallCategory,
-      im.base_unit          AS baseUnit,
+      im.item_id AS itemId,
+      im.item_name AS itemName,
+      im.spec AS spec,
+      im.asset_class AS itemAssetClass,
+      im.big_category AS itemBigCategory,
+      im.mid_category AS itemMidCategory,
+      im.small_category AS itemSmallCategory,
+      im.base_unit AS baseUnit,
       im.importance_level AS importanceLevel
     FROM item_master im
     <if test="dto.warehouseId != null">
@@ -32,8 +36,8 @@
       <if test="dto.importanceLevel != null and dto.importanceLevel != ''">
         AND im.importance_level = #{dto.importanceLevel}
       </if>
-      <if test="dto.itemId != null and dto.itemId != ''">
-        AND im.item_id LIKE '%' || #{dto.itemId} || '%'
+      <if test="dto.itemId != null">
+        AND im.item_id = #{dto.itemId}
       </if>
       <if test="dto.itemName != null and dto.itemName != ''">
         AND im.item_name LIKE '%' || #{dto.itemName} || '%'
@@ -45,66 +49,65 @@
         AND im.small_category = #{dto.itemSmallCategory}
       </if>
     ORDER BY im.item_name
-</select>
+  </select>
 
-  <select id="getPeriodValue" parameterType="org.logistics.domain.StockAnalysisRequestDTO" resultType="double">
+  <!-- 기간별 분석값 -->
+  <select id="getPeriodValue"
+          parameterType="map"
+          resultType="double">
     SELECT
       <choose>
-        <when test="analysisItem == 'totalIn'">
+        <when test="analysisItem != null and analysisItem.equals('totalIn')">
           NVL(SUM(ibd.qty), 0)
         </when>
-        <when test="analysisItem == 'totalOut'">
+        <when test="analysisItem != null and analysisItem.equals('totalOut')">
           NVL(SUM(od.qty), 0)
         </when>
-        <when test="analysisItem == 'averageStock'">
+        <when test="analysisItem != null and analysisItem.equals('averageStock')">
           (NVL(SUM(ibd.qty),0) - NVL(SUM(od.qty),0)) / 2
         </when>
-        <when test="analysisItem == 'turnoverRate'">
+        <when test="analysisItem != null and analysisItem.equals('turnoverRate')">
           CASE
             WHEN ((NVL(SUM(ibd.qty),0) - NVL(SUM(od.qty),0)) / 2) = 0 THEN 0
             ELSE (NVL(SUM(od.qty),0) / ((NVL(SUM(ibd.qty),0) - NVL(SUM(od.qty),0)) / 2)) * 100
           END
         </when>
-        <otherwise>
-          0
-        </otherwise>
+        <otherwise>0</otherwise>
       </choose>
     FROM item_master im
     LEFT JOIN inbound_detail ibd
       ON im.item_id = ibd.item_id
       AND im.bu_id = ibd.bu_id
-      <if test="dto.warehouseId != null">
-        AND ibd.warehouse_id = #{dto.warehouseId}
-      </if>
+    <if test="dto.warehouseId != null">
+      AND ibd.warehouse_id = #{dto.warehouseId}
+    </if>
     LEFT JOIN inbound_master ibm
       ON ibd.inbound_id = ibm.inbound_id
-      <if test="dto.startMonth != null and dto.endMonth != null">
-        AND ibm.inbound_date BETWEEN
-          TO_DATE(#{dto.startMonth} || '01', 'YYYYMMDD')  AND
-          LAST_DAY(TO_DATE(#{dto.endMonth} || '01', 'YYYYMMDD')) + 0.99999 </if>
-      
+    <if test="startMonth != null and endMonth != null">
+      AND ibm.inbound_date BETWEEN
+      TO_DATE(#{startMonth} || '01','YYYYMMDD')
+      AND LAST_DAY(TO_DATE(#{endMonth} || '01','YYYYMMDD')) + 0.99999
+    </if>
     LEFT JOIN out_detail od
       ON im.item_id = od.item_id
       AND im.bu_id = od.bu_id
-      <if test="dto.warehouseId != null">
-        AND od.warehouse_id = #{dto.warehouseId}
-      </if>
+    <if test="dto.warehouseId != null">
+      AND od.warehouse_id = #{dto.warehouseId}
+    </if>
     LEFT JOIN out_master om
       ON od.out_id = om.out_id
-      <if test="dto.startMonth != null and dto.endMonth != null">
-        AND om.out_date BETWEEN
-          TO_DATE(#{dto.startMonth} || '01', 'YYYYMMDD') 
-        AND
-          LAST_DAY(TO_DATE(#{dto.endMonth} || '01', 'YYYYMMDD')) + 0.99999
-      </if>
-
+    <if test="startMonth != null and endMonth != null">
+      AND om.out_date BETWEEN
+      TO_DATE(#{startMonth} || '01','YYYYMMDD')
+      AND LAST_DAY(TO_DATE(#{endMonth} || '01','YYYYMMDD')) + 0.99999
+    </if>
     WHERE im.item_id = #{dto.itemId}
-      <if test="dto.buId != null">
-        AND im.bu_id = #{dto.buId}
-      </if>
-      <if test="dto.itemSmallCategory != null and dto.itemSmallCategory != ''">
-        AND im.small_category = #{dto.itemSmallCategory}
-      </if>
-</select>
+    <if test="dto.buId != null">
+      AND im.bu_id = #{dto.buId}
+    </if>
+    <if test="dto.itemSmallCategory != null and dto.itemSmallCategory != ''">
+      AND im.small_category = #{dto.itemSmallCategory}
+    </if>
+  </select>
 
 </mapper>

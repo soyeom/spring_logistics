@@ -297,8 +297,8 @@ input:focus, select:focus {
     font-size: 0.9rem;
     color: #2d3f6b;
     gap: 0.5rem;
-    min-width: 100px;
-    max-width: 100px;
+    min-width: 110px;
+    max-width: 110px;
 }
 
 .filters-value {
