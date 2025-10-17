@@ -145,7 +145,7 @@
 		     , case when surtax_yn = 'N' then a.qty * a.unit_price else round(a.qty * a.unit_price * 100 / 110, 0) end as sales_price
 		     , case when surtax_yn = 'N' then a.qty * a.unit_price / 10 else round(a.qty * a.unit_price * 10 / 110, 0) end as surtax_Price
 		     , case when surtax_yn = 'N' then (a.qty * a.unit_price) + (a.qty * a.unit_price / 10) else round(a.qty * a.unit_price * 100 / 110, 0) + round(a.qty * a.unit_price * 10 / 110, 0) end as sales_Price_Sum
-		     , b.base_unit, b.storage_location, (select warehouse_name from warehouse_detail where bu_Id = b.bu_Id and warehouse_id = b.storage_location) as warehouse_Name
+		     , b.base_unit, b.storage_location, (select warehouse_name from warehouse_detail where bu_Id = b.bu_Id AND TO_CHAR(warehouse_id) = b.storage_location) as warehouse_Name
 		     , a.special_note, a.lot_no, a.other_out_code
 		     , a.is_charge_supply, b.asset_class, a.asset_proc_type
 		     , '0' as current_Qty 

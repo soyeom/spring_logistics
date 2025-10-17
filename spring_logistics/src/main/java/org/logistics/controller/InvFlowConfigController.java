@@ -138,7 +138,7 @@ public class InvFlowConfigController {
 		String out_Id = obm.getOut_Id();
 		String new_Out_Id = "";
 		
-		if ("자동생성".equals(out_Id)) {
+		if ("自動生成".equals(out_Id)) {
 			
 			new_Out_Id = invFlowConfigService.new_Out_Id(obm.getBu_Id());
 			

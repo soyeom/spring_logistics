@@ -18,7 +18,7 @@
 			 , (SELECT warehouse_name 
 				  FROM warehouse_detail 
 				 WHERE bu_id = a.bu_id 
-				   AND warehouse_id = a.storage_location) as column10
+				   AND TO_CHAR(warehouse_id) = a.storage_location) as column10
 			 , storage_location as column11
 		FROM item_master a
 		<where>
