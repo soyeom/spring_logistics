@@ -69,7 +69,7 @@
 
   <!-- 📦 出庫タブ / 출고 탭 -->
   <div id="outTab" class="tab-content active">
-    <div class="table-container" style="height: 400px;">
+    <div class="table-container" style="height: 700px;">
       <table class="table-single-select">
         <thead>
           <tr>
@@ -98,7 +98,7 @@
 
   <!-- 📦 入庫タブ / 입고 탭 -->
   <div id="inTab" class="tab-content" style="display:none;">
-    <div class="table-container" style="height: 400px;">
+    <div class="table-container" style="height: 700px;">
       <table class="table-single-select">
         <thead>
           <tr>
@@ -122,7 +122,7 @@
 
   <!-- 📦 移動タブ / 이동 탭 -->
   <div id="moveTab" class="tab-content" style="display:none;">
-    <div class="table-container" style="height: 400px;">
+    <div class="table-container" style="height: 700px;">
       <table class="table-single-select">
         <thead>
           <tr>
