@@ -67,7 +67,7 @@
 </style>
 <head>
 	<meta charset="UTF-8">
-    <title>로그인 - 팜스프링 ERP</title>
+    <title>ログイン - ファムスプリング</title>
     <link rel="stylesheet" href="/resources/css/logistics.css" type="text/css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css" />
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
@@ -82,9 +82,9 @@
 	            <div></div>
 	        </div>
 	        <div class="login-box">
-			    <h2>로그인</h2>
+			    <h2>ログイン</h2>
 		    	<div class = "form-group">
-		    		<div class = "label">사업단위</div>
+		    		<div class = "label">事業単位</div>
 			    	<div>
 				    	<select id = "bu_Id" name = "bu_Id">
 							<option value = ""></option>
@@ -95,16 +95,16 @@
 					</div>
 				</div>
 			    <div class="form-group">
-			    	<div class = "label">아이디</div>
+			    	<div class = "label">ID</div>
 			        <input type="text" id="username" name="username">
 			    </div>
 				<div class="form-group">
-					<div class = "label">패스워드</div>
+					<div class = "label">パスワード</div>
 			        <input type="password" id="password" name="password">
 			    </div>
 		        <div class="buttons">
-		            <button type="submit" class="btn btn-secondary" onclick = "login_check()">로그인</button>
-		            <button type="button" class="btn btn-secondary" onclick="location.href='/Contact/signup'">회원가입</button>
+		            <button type="submit" class="btn btn-secondary" onclick = "login_check()">ログイン</button>
+		            <button type="button" class="btn btn-secondary" onclick="location.href='/Contact/signin'">新規登録</button>
 		        </div>
 			</div>
 		</div>
@@ -132,7 +132,7 @@
 				if (result.result == "success") {
 	        		location.href = "/InvFlowConfig/invflowconfig";
 	        	} else {
-	        		alert("아이디 또는 비밀번호가 틀렸습니다.");
+	        		alert("IDまたはパスワードが間違っています。");
 	        	}
 			},
 	        error: function(xhr, status, error) {
