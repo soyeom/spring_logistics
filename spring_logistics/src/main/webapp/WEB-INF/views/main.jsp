@@ -2,14 +2,14 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ja">
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta charset="utf-8" />
-    <title>팜스프링물류관리시스템 - 물류관리 ERP</title>
+    <title>ファームスプリング物流管理システム - 物流管理ERP</title>
     <meta
             name="description"
-            content="팜스프링물류관리시스템 - 입고 및 출고, 재고 출하통제, 재고 관리, 사업단위별 수불집계, 재고 변동 추이 분석을 제공하는 물류관리 ERP 시스템"
+            content="ファームスプリング物流管理システム - 入庫・出庫、在庫出荷統制、在庫管理、事業単位別収支集計、在庫変動推移分析を提供する物流管理ERPシステム"
     />
     <link rel="stylesheet" type="text/css" href="/resources/css/main.css" />
 </head>
@@ -17,29 +17,29 @@
 <main>
     <section class="section">
         <header>
-            <h1>팜스프링물류관리시스템</h1>
-            <p>물류관리 ERP</p>
+            <h1>ファームスプリング物流管理システム</h1>
+            <p>物流管理ERP</p>
         </header>
-        <section class="features-grid" aria-label="시스템 주요 기능">
-            <article class="card" tabindex="0" role="button" aria-label="입고 및 출고" onclick="location.href='/InvFlowConfig/invflowconfig'">
+        <section class="features-grid" aria-label="システム主要機能">
+            <article class="card" tabindex="0" role="button" aria-label="在庫出荷統制" onclick="location.href='/InvFlowConfig/invflowconfig'"> 
                 <span class="card__number">1</span>
-                <h2 class="card__title">재고부족시 출하 통제</h2>
+                <h2 class="card__title">在庫出荷統制</h2> 
             </article>
-            <article class="card card--blue" tabindex="0" role="button" aria-label="재고 관리" onclick="location.href='/warehouse/setting'">
+            <article class="card card--blue" tabindex="0" role="button" aria-label="在庫管理" onclick="location.href='/warehouse/setting'">
                 <span class="card__number">2</span>
-                <h2 class="card__title">실재고/자산재고 관리</h2>
+                <h2 class="card__title">在庫管理</h2>
             </article>
-            <article class="card card--teal" tabindex="0" role="button" aria-label="재고 출하통제" onclick="location.href='/txnCategory/list'">
+            <article class="card card--teal" tabindex="0" role="button" aria-label="入庫および出庫" onclick="location.href='/txnCategory/list'"> 
                 <span class="card__number">3</span>
-                <h2 class="card__title">기타입출고 구분 설정</h2>
+                <h2 class="card__title">入庫および出庫</h2> 
             </article>
-            <article class="card card--green" tabindex="0" role="button" aria-label="사업단위별 수불집계" onclick="location.href='/stock/summary'">
+            <article class="card card--green" tabindex="0" role="button" aria-label="事業単位別収支集計照会" onclick="location.href='/stock/summary'"> 
                 <span class="card__number">4</span>
-                <h2 class="card__title">사업단위별 수불 집계 조회</h2>
+                <h2 class="card__title">事業単位別収支集計照会</h2>
             </article>
-            <article class="card card--olive" tabindex="0" role="button" aria-label="재고 변동 추이 분석"onclick="window.location.href='/stock-analysis/form'">
+            <article class="card card--olive" tabindex="0" role="button" aria-label="在庫変動推移分析" onclick="window.location.href='/stock-analysis/form'">
                 <span class="card__number">5</span>
-                <h2 class="card__title">재고 변동 추이 분석</h2>
+                <h2 class="card__title">在庫変動推移分析</h2>
             </article>
         </section>
     </section>
