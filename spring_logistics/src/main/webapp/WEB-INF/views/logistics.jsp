@@ -36,7 +36,6 @@
             <div class="title">재고부족시 출하 통제</div>
             <div class="submenu">
                 <div><a href="/InvFlowConfig/invflowconfig">창고별 재고 부족 허용여부 설정하기</a></div>
-                <div><a href="/InvFlowConfig/outbound">출고 처리하기</a></div>
             </div>
         </div>
         <div class="menu-item">
@@ -52,6 +51,7 @@
             <div class="submenu">
                 <div><a href="/txnCategory/list">기타입출고 항목과 계정과목 설정하기</a></div>
                 <div><a href="/order/entry">수주(주문) 입력하기</a></div>
+                <div><a href="/InvFlowConfig/outbound">출고 처리하기</a></div>
             </div>
         </div>
         <div class="menu-item">

@@ -118,7 +118,7 @@
 						</div>
 						<div class="filters-value">
 							<input type="text" id="orderId" name="orderId"
-								placeholder="受注番号を選択">
+								>
 							<!-- 수주번호 선택 -->
 							<img
 								src="https://cdn-icons-png.flaticon.com/512/16799/16799970.png"
@@ -182,7 +182,7 @@
 							<!-- 담당자 -->
 						</div>
 						<div class="filters-value">
-							<input type="text" name="contactName" placeholder="担当者を選択">
+							<input type="text" name="contactName">
 							<!-- 담당자 선택 -->
 							<img
 								src="https://cdn-icons-png.flaticon.com/512/16799/16799970.png"
@@ -197,7 +197,7 @@
 							<!-- 부서 -->
 						</div>
 						<div class="filters-value">
-							<input type="text" name="department" placeholder="部署を選択">
+							<input type="text" name="department">
 							<!-- 부서 선택 -->
 <!-- 							<img -->
 <!-- 								src="https://cdn-icons-png.flaticon.com/512/16799/16799970.png" -->
@@ -212,7 +212,7 @@
 							<!-- 거래처 -->
 						</div>
 						<div class="filters-value">
-							<input type="text" name="partyName" placeholder="取引先を選択">
+							<input type="text" name="partyName">
 							<!-- 거래처 선택 -->
 							<img
 								src="https://cdn-icons-png.flaticon.com/512/16799/16799970.png"
@@ -227,7 +227,7 @@
 							<!-- 거래처번호 -->
 						</div>
 						<div class="filters-value">
-							<input type="text" name="partyId" placeholder="取引先番号">
+							<input type="text" name="partyId">
 							<!-- 거래처 번호 -->
 <!-- 							<img -->
 <!-- 								src="https://cdn-icons-png.flaticon.com/512/16799/16799970.png" -->
@@ -329,7 +329,7 @@
 			<!-- 📋 テーブル領域 / 테이블 영역 -->
 			<!-- =============================================================== -->
 
-			<div class="table-container" style="height: 300px;">
+			<div class="table-container">
 				<table class="table-single-select">
 					<thead>
 						<tr>

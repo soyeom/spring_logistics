@@ -68,8 +68,8 @@
   </div>
 
   <!-- 📦 出庫タブ / 출고 탭 -->
-  <div id="outTab" class="tab-content active">
-    <div class="table-container" style="height: 400px;">
+  <div id="outTab" class="tab-content active" style="height:100%">
+    <div class="table-container" >
       <table class="table-single-select">
         <thead>
           <tr>
@@ -97,8 +97,8 @@
   </div>
 
   <!-- 📦 入庫タブ / 입고 탭 -->
-  <div id="inTab" class="tab-content" style="display:none;">
-    <div class="table-container" style="height: 400px;">
+  <div id="inTab" class="tab-content" style="display:none; height:100%">
+    <div class="table-container" >
       <table class="table-single-select">
         <thead>
           <tr>
@@ -121,8 +121,8 @@
   </div>
 
   <!-- 📦 移動タブ / 이동 탭 -->
-  <div id="moveTab" class="tab-content" style="display:none;">
-    <div class="table-container" style="height: 400px;">
+  <div id="moveTab" class="tab-content" style="display:none; height:100%">
+    <div class="table-container">
       <table class="table-single-select">
         <thead>
           <tr>
@@ -449,7 +449,7 @@ function saveAll() {
 	      sortOrder: $(tds[2]).text().trim(),
 	      useYn: $(tds[3]).find("input").prop("checked") ? "Y" : "N",
 	      txnType: type,
-	      buId: 1
+	      buId: 10
 	    };
 
 	    if (type === "OUT") {
