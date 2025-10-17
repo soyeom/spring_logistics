@@ -18,7 +18,7 @@
 <body style = "background-color: #fff;">
 	<div class="popup-wrapper">
 		<!-- 헤더 -->
-		<div class = "popup-header">品名 照会</div>	  
+		<div class = "popup-header">品名照会</div>	  
 	     <!-- 검색바 -->
 	     <div class = "popup-search-bar">
 	     	<div style = "flex: 2;">
@@ -34,7 +34,7 @@
 	     		<input type="text" id = "text" placeholder="検索語を入力してください" autocomplete="off">
 	     	</div>
 	     	<div style = "flex: 1;">
-	     		<button class="btn-primary" onclick = "search()">검색</button>
+	     		<button class="btn-primary" onclick = "search()">照会</button>
 	     	</div>
 	     </div>
 	    <!-- 나머지 컨텐츠 -->

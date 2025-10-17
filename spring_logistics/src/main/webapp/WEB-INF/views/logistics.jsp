@@ -42,9 +42,9 @@
         <div class="menu-item">
             <div class="title">실재고/자산재고 관리</div>
             <div class="submenu">
-                <div><a href="#">창고별 재고 조회 기준 설정하기</a></div>
-                <div><a href="#">창고별 재고 조회하기</a></div>
-                <div><a href="#">가용재고 조회하기</a></div>
+                <div><a href="/warehouse/setting">창고별 재고 조회 기준 설정하기</a></div>
+                <div><a href="/warehouse/stock">창고별 재고 조회하기</a></div>
+                <div><a href="/warehouse/availableItems">가용재고 조회하기</a></div>
             </div>
         </div>
         <div class="menu-item">
@@ -63,7 +63,7 @@
         <div class="menu-item">
             <div class="title">재고 변동 추이 분석</div>
             <div class="submenu">
-            	<div><a href="#">재고 변동 추이 분석하기</a></div>
+            	<div><a href="/stock-analysis/form">재고 변동 추이 분석하기</a></div>
         	</div>
     	</div>
 	</nav>

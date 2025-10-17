@@ -22,13 +22,14 @@ public class PopupController {
 
 	private PopupService popupService;
 
-	// 품번
+	// 品目ポップアップ (品目コード)
 	@GetMapping("/item_popup")
 	public void item_Popup(Model model, @RequestParam(required = false) String gubun,
 			@RequestParam(required = false) String text) {
-		model.addAttribute("list", popupService.item_List(gubun, text)); // 마스터 조회
+		model.addAttribute("list", popupService.item_List(gubun, text)); // マスタ照会
 	}
 
+	// 品目リスト照会 (AJAX)
 	@GetMapping("/item_list")
 	@ResponseBody
 	public List<PopupVO> item_list(@RequestParam(required = false) String gubun,
@@ -36,11 +37,11 @@ public class PopupController {
 		return popupService.item_List(gubun, text);
 	}
 
-	// 담당자
+	// 担当者ポップアップ
 	@GetMapping("/contact_popup")
 	public void contact_Popup(Model model, @RequestParam(required = false) String gubun,
 			@RequestParam(required = false) String text) {
-		model.addAttribute("list", popupService.contact_List(gubun, text)); // 마스터 조회
+		model.addAttribute("list", popupService.contact_List(gubun, text)); // マスタ照会
 	}
 
 	@GetMapping("/contact_list")
@@ -50,24 +51,24 @@ public class PopupController {
 		return popupService.contact_List(gubun, text);
 	}
 
-	// 거래처
+	// 取引先ポップアップ
 	@GetMapping("/party_popup")
 	public void party_Popup(Model model, @RequestParam(required = false) String gubun, @RequestParam(required = false) String text) {
-		model.addAttribute("list", popupService.party_List(gubun, text));	// 마스터 조회
+		model.addAttribute("list", popupService.party_List(gubun, text));	// マスタ照会
 	}
-	
+
 	@GetMapping("/party_list")
 	@ResponseBody
 	public List<PopupVO> party_list(@RequestParam(required = false) String gubun, @RequestParam(required = false) String text) {
 		return popupService.party_List(gubun, text);
 	}
-	
-	// 출고 마스터 팝업
+
+	// 出庫マスタポップアップ
 	@GetMapping("/out_id_popup")
 	public void out_Id_Popup(Model model, @RequestParam(required = false) String gubun, @RequestParam(required = false) String text) {
-		model.addAttribute("list", popupService.out_Id_List(gubun, text));	// 마스터 조회
+		model.addAttribute("list", popupService.out_Id_List(gubun, text));	// マスタ照会
 	}
-	
+
 	@GetMapping("/out_id_list")
 	@ResponseBody
 	public List<PopupVO> out_Id_list(@RequestParam(required = false) String gubun, @RequestParam(required = false) String text) {
@@ -88,11 +89,11 @@ public class PopupController {
 		return popupService.currency_List(gubun, text);
 	}
 
-	// 품목 대
+	// 品目大分類ポップアップ
 	@GetMapping("/category_popup_big")
 	public void category_Popup_Big(Model model, @RequestParam(required = false) String gubun,
 			@RequestParam(required = false) String text) {
-		model.addAttribute("list", popupService.category_List_Big(gubun, text)); // 마스터 조회
+		model.addAttribute("list", popupService.category_List_Big(gubun, text)); // マスタ照会
 	}
 
 	@GetMapping("/category_list_big")
@@ -102,11 +103,11 @@ public class PopupController {
 		return popupService.category_List_Big(gubun, text);
 	}
 
-	// 품목 중
+	// 品目中分類ポップアップ
 	@GetMapping("/category_popup_mid")
 	public void category_Popup_Mid(Model model, @RequestParam(required = false) String gubun,
 			@RequestParam(required = false) String text) {
-		model.addAttribute("list", popupService.category_List_Mid(gubun, text)); // 마스터 조회
+		model.addAttribute("list", popupService.category_List_Mid(gubun, text)); // マスタ照会
 	}
 
 	@GetMapping("/category_list_mid")
@@ -115,12 +116,12 @@ public class PopupController {
 			@RequestParam(required = false) String text) {
 		return popupService.category_List_Mid(gubun, text);
 	}
-
-	// 품목 대
+	
+	// 品目小分類ポップアップ (category_popup_small)
 	@GetMapping("/category_popup_small")
 	public void category_Popup_small(Model model, @RequestParam(required = false) String gubun,
 			@RequestParam(required = false) String text) {
-		model.addAttribute("list", popupService.category_List_Small(gubun, text)); // 마스터 조회
+		model.addAttribute("list", popupService.category_List_Small(gubun, text)); // マスタ照会
 	}
 
 	@GetMapping("/category_list_small")
@@ -130,11 +131,11 @@ public class PopupController {
 		return popupService.category_List_Small(gubun, text);
 	}
 
-	// 품명
+	// 品名ポップアップ
 	@GetMapping("/item_name_popup")
 	public void item_name_Popup(Model model, @RequestParam(required = false) String gubun,
 			@RequestParam(required = false) String text) {
-		model.addAttribute("list", popupService.itemname_List(gubun, text)); // 마스터 조회
+		model.addAttribute("list", popupService.itemname_List(gubun, text)); // マスタ照会
 	}
 
 	@GetMapping("/item_name_list")
@@ -145,7 +146,7 @@ public class PopupController {
 	}
 
 
-
+	// 倉庫コードポップアップ
 	@GetMapping("/warehouse_code_popup")
 	public void warehouse_code_Popup(Model model, @RequestParam(required = false) String gubun,
 			@RequestParam(required = false) String text) {
@@ -158,21 +159,26 @@ public class PopupController {
 			@RequestParam(required = false) String text) {
 		return popupService.warehousecode_List(gubun, text);
 	}
-
-	@GetMapping("/warehousePopup")
+    
+	@GetMapping("/warehouse_popup")
 	public void warehousePopup(Model model, @RequestParam(required = false) String gubun,
 			@RequestParam(required = false) String text) {
-		model.addAttribute("warehouseNamelist", popupService.warehousename_List(gubun, text));
+		model.addAttribute("list", popupService.warehouse_List(gubun, text));
 	}
 
-	@GetMapping("/warehousePopup/list")
+	@GetMapping("/warehouse_popup/list")
 	@ResponseBody
 	public List<PopupVO> warehouse_name_list(@RequestParam(required = false) String gubun,
 			@RequestParam(required = false) String text) {
-		return popupService.warehousename_List(gubun, text);
+		
+		/*디버깅용 코드*/
+		log.info("AJAX 검색 요청 - 구분(gubun): " + gubun);
+		log.info("AJAX 검색 요청 - 검색어(text): " + text);
+		
+		return popupService.warehouse_List(gubun, text);
 	}
-	
-	// 수주 진형
+    
+	// 受注マスタポップアップ
 	@GetMapping("/inbound_popup")
 	public void inbound_Popup(Model model, @RequestParam(required = false) String gubun,
 			@RequestParam(required = false) String text) {

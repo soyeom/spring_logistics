@@ -139,6 +139,7 @@ public class InvFlowConfigController {
 		String new_Out_Id = "";
 		
 		if ("자동생성".equals(out_Id)) {
+			
 			new_Out_Id = invFlowConfigService.new_Out_Id(obm.getBu_Id());
 			
 			Long newOutId = Long.valueOf(new_Out_Id); 
@@ -152,7 +153,7 @@ public class InvFlowConfigController {
 			
 			Long newContactId = Long.valueOf(obm.getContact_Id());
 			obm.setLong_Contact_Id(newContactId);
-			
+
 			invFlowConfigService.newOutBoundMasterSave(obm);
 		} else {
 			new_Out_Id = obm.getOut_Id();
@@ -203,6 +204,24 @@ public class InvFlowConfigController {
 			
 			invFlowConfigService.outBound_Save_Detail(vo);
 		}
+		
+		return "success";
+	}
+	
+	@GetMapping("outBound_delete")
+	@ResponseBody
+	public String out_Delete(@RequestParam("bu_Id") String bu_Id, @RequestParam("out_Id") String out_Id) {
+		invFlowConfigService.outBound_Delete_Detail(bu_Id, out_Id);
+		
+		invFlowConfigService.outBound_Delete_Master(bu_Id, out_Id);
+		
+		return "success";
+	}
+	
+	@PostMapping("outBound_update")
+	@ResponseBody
+	public String outBound_Update(@RequestParam("bu_Id") String bu_Id, @RequestParam("out_Id") String out_Id) {
+		invFlowConfigService.outBound_Update(bu_Id, out_Id);
 		
 		return "success";
 	}

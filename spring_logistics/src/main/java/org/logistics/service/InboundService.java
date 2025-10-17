@@ -5,5 +5,5 @@ import java.util.Map;
 import org.logistics.domain.InboundVO;
 
 public interface InboundService {
-    List<InboundVO> getByItemId(Map<String, Object> params);
+    List<InboundVO> selectByItemId(Map<String, Object> params);
 }

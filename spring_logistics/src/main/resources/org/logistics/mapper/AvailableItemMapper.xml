@@ -7,148 +7,158 @@
 
 	<select id="getAvailableItems"
 		resultType="org.logistics.domain.AvailableItemVO">
-		SELECT w.warehouse_name AS warehouseName
-		, w.warehouse_id AS
-		warehouseId
-		, i.asset_class AS assetClass
-		, i.item_name AS itemName
-		,
-		i.spec AS spec
-		, i.item_id AS itemId
-		, i.base_unit AS baseUnit
-		,
-		i.safety_stock_qty AS safetyQty
-		, SUM(CASE WHEN im.inbound_complete =
-		'N' AND im.inbound_type = '생산의뢰'
-		THEN id.qty END) AS requestQty <!-- 입고 미완료(N) 
-			+ '생산의뢰' 유형 -->
-		, SUM(CASE WHEN im.inbound_complete = 'N' AND im.inbound_type = '구매발주'
-		THEN id.qty END) AS orderQty <!-- 입고 미완료(N) + '구매발주' 유형 -->
-		, SUM(CASE WHEN im.inbound_complete = 'N' AND im.inbound_type = '적송요청'
-		THEN id.qty END) AS transferQty <!-- 입고 미완료(N) + '적송요청' 유형 -->
-		, SUM(CASE WHEN im.inbound_complete = 'N' AND im.inbound_type =
-		'기타입고요청' THEN id.qty END) AS inboundQty <!-- 입고 미완료(N) + '기타입고요청' 유형 -->
-		, SUM(CASE WHEN im.inbound_complete = 'N' THEN id.qty END) AS
-		expectedQty <!-- 미완료 전체 합계 -->
-		, SUM(CASE WHEN om.out_complete = 'N' AND om.out_type = '수주' THEN
-		od.qty END) AS receivedQty
-		, SUM(CASE WHEN om.out_complete = 'N' AND
-		om.out_type = '적송요청' THEN
-		od.qty END) AS deliveryQty
-		, SUM(CASE WHEN
-		om.out_complete = 'N' AND om.out_type = '위탁출고요청' THEN
-		od.qty END) AS
-		shipmentQty
-		, SUM(CASE WHEN om.out_complete = 'N' AND om.out_type =
-		'기타출고요청' THEN
-		od.qty END) AS otherQty
-		, SUM(CASE WHEN om.out_complete =
-		'N' THEN od.qty END) AS
-		expectedOutQty
-		FROM warehouse_detail w
-		JOIN
-		item_master i
+		SELECT
+		w.warehouse_name AS warehouseName,
+		w.warehouse_id AS warehouseId,
+		i.bu_id AS buId,
+		i.asset_class AS assetClass,
+		i.item_name AS itemName,
+		i.spec AS spec,
+		i.item_id AS itemId,
+		i.base_unit AS baseUnit,
+		i.safety_stock_qty AS safetyQty,
+
+		<!-- 가용재고 (입고완료 + 입고예정 - 출고예정)-->
+		<!-- 利用可能在庫 （入庫完了＋入庫予定−出庫予定）-->
+		(
+		NVL(SUM(CASE WHEN im.inbound_complete = 'Y' THEN id.qty ELSE 0 END), 0)
+		+ NVL(SUM(CASE WHEN im.inbound_complete = 'N' THEN id.qty ELSE 0 END),
+		0)
+		- NVL(SUM(CASE WHEN om.out_complete = 'N' THEN od.qty ELSE 0 END), 0)
+		) AS availableQty,
+
+		<!-- 입고 예정 세부 (미완료 N)-->
+		<!-- 入庫予定詳細 -->
+		SUM(CASE WHEN im.inbound_complete = 'N' AND im.inbound_type = '生産依頼' THEN
+		id.qty ELSE 0 END) AS requestQty,
+		SUM(CASE WHEN im.inbound_complete = 'N' AND im.inbound_type = '購買発注' THEN
+		id.qty ELSE 0 END) AS orderQty,
+		SUM(CASE WHEN im.inbound_complete = 'N' AND im.inbound_type = '積送依頼' THEN
+		id.qty ELSE 0 END) AS transferQty,
+		SUM(CASE WHEN im.inbound_complete = 'N' AND im.inbound_type = 'その他入庫依頼' THEN
+		id.qty ELSE 0 END) AS inboundQty,
+		SUM(CASE WHEN im.inbound_complete = 'N' THEN id.qty ELSE 0 END) AS
+		expectedQty,
+
+		<!-- 출고 예정 세부 (미완료 N)-->
+		<!-- 出庫予定詳細 -->
+		SUM(CASE WHEN om.out_complete = 'N' AND om.out_type = '受注' THEN od.qty ELSE 0
+		END) AS receivedQty,
+		SUM(CASE WHEN om.out_complete = 'N' AND om.out_type = '積送依頼' THEN od.qty ELSE
+		0 END) AS deliveryQty,
+		SUM(CASE WHEN om.out_complete = 'N' AND om.out_type = '委託出庫依頼' THEN od.qty
+		ELSE 0 END) AS shipmentQty,
+		SUM(CASE WHEN om.out_complete = 'N' AND om.out_type = 'その他出庫依頼' THEN od.qty
+		ELSE 0 END) AS otherQty,
+		SUM(CASE WHEN om.out_complete = 'N' THEN od.qty ELSE 0 END) AS expectedOutQty
+
+		FROM item_master i
+		LEFT JOIN warehouse_detail w
 		ON w.bu_id = i.bu_id
 		LEFT JOIN inbound_detail id
-		ON i.bu_id
-		= id.bu_id
-		AND i.item_id = id.item_id
-		AND w.warehouse_id =
-		id.warehouse_id
+		ON i.item_id = id.item_id
+		AND w.warehouse_id = id.warehouse_id
 		LEFT JOIN inbound_master im
-		ON id.bu_id = im.bu_id
-		AND
-		id.inbound_id = im.inbound_id
+		ON id.inbound_id = im.inbound_id
 		LEFT JOIN out_detail od
-		ON i.bu_id =
-		od.bu_id
-		AND i.item_id = od.item_id
+		ON i.item_id = od.item_id
 		AND w.warehouse_id = od.warehouse_id
 		LEFT JOIN out_master om
-		ON od.bu_id = om.bu_id
-		AND od.out_id = om.out_id
-		GROUP BY w.warehouse_name, w.warehouse_id, <!-- 결과 묶기 -->
-		i.asset_class, i.item_name, i.spec, i.item_id, i.base_unit,
-		i.safety_stock_qty
-		HAVING NVL(SUM(id.qty),0) > 0
-		OR NVL(SUM(od.qty),0) >
-		0
-		ORDER BY w.warehouse_id, i.item_id <!-- 품번 순서대로 정렬 -->
+		ON od.out_id = om.out_id
+
+		GROUP BY
+		w.warehouse_name, w.warehouse_id,
+		i.bu_id, i.asset_class, i.item_name, i.spec,
+		i.item_id, i.base_unit, i.safety_stock_qty
+
+		HAVING
+		(
+		NVL(SUM(CASE WHEN im.inbound_complete = 'Y' THEN id.qty ELSE 0 END), 0)
+		+ NVL(SUM(CASE WHEN im.inbound_complete = 'N' THEN id.qty ELSE 0 END),
+		0)
+		+ NVL(SUM(CASE WHEN om.out_complete = 'N' THEN od.qty ELSE 0 END), 0)
+		) > 0
+
+		ORDER BY w.warehouse_id, i.item_id
 	</select>
+
+
 
 	<select id="searchAvailableItems" parameterType="map"
 		resultType="org.logistics.domain.AvailableItemVO">
-		SELECT w.bu_id AS buId
-		, w.warehouse_name AS warehouseName
-		,
-		w.warehouse_id AS warehouseId
-		, i.asset_class AS assetClass
-		,
-		i.item_name AS itemName
-		, i.spec AS spec
-		, i.item_id AS itemId
-		,
-		i.base_unit AS baseUnit
-		, i.safety_stock_qty AS safetyQty
-		, SUM(CASE
-		WHEN im.inbound_complete = 'N' AND im.inbound_type = '생산의뢰'
-		THEN id.qty
-		END) AS requestQty
-		, SUM(CASE WHEN im.inbound_complete = 'N' AND
-		im.inbound_type = '구매발주'
-		THEN id.qty END) AS orderQty
-		, SUM(CASE WHEN
-		im.inbound_complete = 'N' AND im.inbound_type = '적송요청'
-		THEN id.qty END)
-		AS transferQty
-		, SUM(CASE WHEN im.inbound_complete = 'N' AND
-		im.inbound_type =
-		'기타입고요청' THEN id.qty END) AS inboundQty
-		, SUM(CASE
-		WHEN im.inbound_complete = 'N' THEN id.qty END) AS
-		expectedQty
-		,
-		SUM(CASE WHEN om.out_complete = 'N' AND om.out_type = '수주' THEN
-		od.qty
-		END) AS receivedQty
-		, SUM(CASE WHEN om.out_complete = 'N' AND
-		om.out_type = '적송요청' THEN
-		od.qty END) AS deliveryQty
-		, SUM(CASE WHEN
-		om.out_complete = 'N' AND om.out_type = '위탁출고요청' THEN
-		od.qty END) AS
-		shipmentQty
-		, SUM(CASE WHEN om.out_complete = 'N' AND om.out_type =
-		'기타출고요청' THEN
-		od.qty END) AS otherQty
-		, SUM(CASE WHEN om.out_complete =
-		'N' THEN od.qty END) AS
-		expectedOutQty
 
-		FROM warehouse_detail w
-		JOIN
-		warehouse_master wm
-		ON w.warehouse_master_id = wm.warehouse_master_id
-		JOIN item_master i
+		SELECT
+		w.warehouse_name AS warehouseName,
+		w.warehouse_id AS warehouseId,
+		i.asset_class AS assetClass,
+		i.item_name
+		AS itemName,
+		i.spec AS spec,
+		i.item_id AS itemId,
+		i.base_unit AS
+		baseUnit,
+		i.safety_stock_qty AS safetyQty,
+
+		SUM(CASE WHEN
+		im.inbound_complete = 'N' AND im.inbound_type = '生産依頼' THEN
+		id.qty ELSE
+		0 END) AS requestQty,
+		SUM(CASE WHEN im.inbound_complete = 'N' AND
+		im.inbound_type = '購買発注' THEN
+		id.qty ELSE 0 END) AS orderQty,
+		SUM(CASE
+		WHEN im.inbound_complete = 'N' AND im.inbound_type = '積送依頼' THEN
+		id.qty ELSE 0 END) AS transferQty,
+		SUM(CASE WHEN im.inbound_complete =
+		'N' AND im.inbound_type = 'その他入庫依頼' THEN
+		id.qty ELSE 0 END) AS
+		inboundQty,
+		SUM(CASE WHEN im.inbound_complete = 'N' THEN id.qty ELSE 0
+		END) AS
+		expectedQty,
+
+		(
+		NVL(SUM(CASE WHEN im.inbound_complete = 'Y' THEN id.qty ELSE 0 END), 0)
+		+ NVL(SUM(CASE WHEN im.inbound_complete = 'N' THEN id.qty ELSE 0 END),
+		0)
+		- NVL(SUM(CASE WHEN om.out_complete = 'N' THEN od.qty ELSE 0 END), 0)
+		) AS availableQty,
+
+		SUM(CASE WHEN im.inbound_complete = 'N' AND im.inbound_type = '生産依頼' THEN
+		id.qty ELSE 0 END) AS requestQty,
+		SUM(CASE WHEN im.inbound_complete = 'N' AND im.inbound_type = '購買発注' THEN
+		id.qty ELSE 0 END) AS orderQty,
+		SUM(CASE WHEN im.inbound_complete = 'N' AND im.inbound_type = '積送依頼' THEN
+		id.qty ELSE 0 END) AS transferQty,
+		SUM(CASE WHEN im.inbound_complete = 'N' AND im.inbound_type = 'その他入庫依頼' THEN
+		id.qty ELSE 0 END) AS inboundQty,
+		SUM(CASE WHEN im.inbound_complete = 'N' THEN id.qty ELSE 0 END) AS
+		expectedQty,
+
+		SUM(CASE WHEN om.out_complete = 'N' AND om.out_type = '受注' THEN od.qty ELSE 0
+		END) AS receivedQty,
+		SUM(CASE WHEN om.out_complete = 'N' AND om.out_type = '積送依頼' THEN od.qty ELSE
+		0 END) AS deliveryQty,
+		SUM(CASE WHEN om.out_complete = 'N' AND om.out_type = '委託出庫依頼' THEN od.qty
+		ELSE 0 END) AS shipmentQty,
+		SUM(CASE WHEN om.out_complete = 'N' AND om.out_type = 'その他出庫依頼' THEN od.qty
+		ELSE 0 END) AS otherQty,
+		SUM(CASE WHEN om.out_complete = 'N' THEN od.qty ELSE 0 END) AS expectedOutQty
+
+		FROM item_master i
+		LEFT JOIN warehouse_detail w
 		ON w.bu_id = i.bu_id
 		LEFT JOIN inbound_detail id
-		ON
-		i.bu_id = id.bu_id
-		AND i.item_id = id.item_id
-		AND w.warehouse_id =
-		id.warehouse_id
+		ON i.item_id = id.item_id
+		AND w.warehouse_id = id.warehouse_id
 		LEFT JOIN inbound_master im
-		ON id.bu_id = im.bu_id
-		AND
-		id.inbound_id = im.inbound_id
+		ON id.inbound_id = im.inbound_id
 		LEFT JOIN out_detail od
-		ON i.bu_id =
-		od.bu_id
-		AND i.item_id = od.item_id
+		ON i.item_id = od.item_id
 		AND w.warehouse_id = od.warehouse_id
 		LEFT JOIN out_master om
-		ON od.bu_id = om.bu_id
-		AND od.out_id = om.out_id
+		ON od.out_id = om.out_id
+
 		<where>
 			<if test="buId != null and buId != ''">
 				AND w.bu_id = #{buId}
@@ -175,24 +185,35 @@
 				AND i.item_id LIKE '%' || #{itemId} || '%'
 			</if>
 		</where>
-		GROUP BY w.bu_id, w.warehouse_name, w.warehouse_id,
+
+		GROUP BY
+		w.bu_id, w.warehouse_name, w.warehouse_id,
 		i.asset_class,
-		i.item_name, i.spec, i.item_id, i.base_unit, i.safety_stock_qty
+		i.item_name, i.spec,
+		i.item_id, i.base_unit, i.safety_stock_qty
+
 		HAVING
-		SUM(id.qty) > 0 OR SUM(od.qty) > 0
+		NVL(SUM(CASE WHEN im.inbound_complete = 'Y' THEN id.qty END), 0) > 0
+		OR NVL(SUM(CASE WHEN im.inbound_complete = 'N' THEN id.qty END), 0) >
+		0
+		OR NVL(SUM(CASE WHEN om.out_complete = 'N' THEN od.qty END), 0) > 0
+
 		ORDER BY w.warehouse_id, i.item_id
 	</select>
 
-    <select id="getBusinessUnits" resultType="org.logistics.domain.AvailableItemVO">
-        SELECT bu_id   AS buId
-             , bu_name AS buName
-        FROM business_unit
-    </select>
+	<select id="getBusinessUnits"
+		resultType="org.logistics.domain.AvailableItemVO">
+		SELECT bu_id AS buId
+		, bu_name AS buName
+		FROM business_unit
+		ORDER BY bu_id
+	</select>
 
-    <!-- 자산분류 목록 -->
-    <select id="getAssetClasses" resultType="org.logistics.domain.AvailableItemVO">
-        SELECT DISTINCT asset_class AS assetClass
-        FROM item_master
-    </select>
-    
+	<select id="getAssetClasses"
+		resultType="org.logistics.domain.AvailableItemVO">
+		SELECT DISTINCT asset_class AS assetClass
+		FROM item_master
+		ORDER BY asset_class
+	</select>
+
 </mapper>

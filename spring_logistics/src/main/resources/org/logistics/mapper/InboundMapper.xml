@@ -10,6 +10,7 @@
 		resultType="org.logistics.domain.InboundVO">
 		SELECT d.inbound_detail_id AS inboundDetailId,
 		d.item_id AS itemId,
+		m.inbound_complete AS inboundComplete,
 		m.inbound_type AS inboundType,
 		m.inbound_date AS inboundDate,
 		d.qty AS inboundQty,
