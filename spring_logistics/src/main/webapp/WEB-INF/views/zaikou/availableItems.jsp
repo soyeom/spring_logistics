@@ -22,7 +22,7 @@
 </head>
 <body>
 	<div class="layout">
-		<%@ include file="/WEB-INF/views/logistics.jsp" %>
+		<%@ include file="/WEB-INF/views/logistics.jsp"%>
 		<div class="main">
 			<div class="main-header">
 				<div>
@@ -489,18 +489,27 @@
 			} else if (data.length === 3) {
 				targetId = "midCategory";
 			} else if (data.length === 4) {
-				// ✅ 창고 데이터는 무조건 창고명 입력란에
 				targetId = "warehouseName";
 			} else if (data.length === 5) {
 				targetId = "warehouseName";
 			}
 
-			let textValue = "";
-
 			if (targetId === "itemName") {
-				textValue = data[2];
-			} else if (targetId === "warehouseName") {
-				textValue = data[0]; // 창고명
+				const itemIdInput = document.getElementById("itemId");
+				const itemNameInput = document.getElementById("itemName");
+
+				if (itemIdInput && itemNameInput) {
+					itemIdInput.value = data[0];
+					itemNameInput.value = data[2]; 
+				}
+
+				searchAvailable();
+				return;
+			}
+
+			let textValue = "";
+			if (targetId === "warehouseName") {
+				textValue = data[0]; 
 			} else if (targetId === "smallCategory") {
 				textValue = data[3] || data[0];
 			} else if (targetId === "midCategory") {
@@ -516,6 +525,11 @@
 
 			searchAvailable();
 		}
+		
+		document.getElementById("itemId").addEventListener("input", function() {
+		    document.getElementById("itemName").value = "";
+		});
+		
 	</script>
 </body>
 </html>
