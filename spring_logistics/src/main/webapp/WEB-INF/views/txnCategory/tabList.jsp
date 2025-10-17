@@ -73,22 +73,22 @@
       <table class="table-single-select">
         <thead>
           <tr>
-            <th style="width:50px;">番号</th> <!-- 번호 -->
-            <th style="width:140px;">出庫区分</th> <!-- 출고 구분 -->
-            <th style="width:80px;">並び順</th> <!-- 정렬 순서 -->
-            <th style="width:80px;">使用可否</th> <!-- 사용 여부 -->
-            <th style="width:120px;">勘定科目</th> <!-- 회계 과목 -->
-            <th style="width:100px;">費用区分</th> <!-- 비용 구분 -->
-            <th style="width:90px;">製品</th> <!-- 제품 -->
-            <th style="width:90px;">材料</th> <!-- 자재 -->
-            <th style="width:90px;">営業使用</th> <!-- 영업 사용 -->
-            <th style="width:110px;">在庫実調整(出庫)</th> <!-- 재고 실조정(출고) -->
-            <th style="width:110px;">在庫実調整(入庫)</th> <!-- 재고 실조정(입고) -->
-            <th style="width:100px;">付加税対象</th> <!-- 부가세 대상 -->
-            <th style="width:110px;">付加税処理区分</th> <!-- 부가세 처리 구분 -->
-            <th style="width:80px;">AS</th>
-            <th style="width:130px;">品目別伝票処理可否</th> <!-- 품목별 전표 처리 여부 -->
-            <th style="width:90px;">項目選択</th> <!-- 항목 선택 -->
+            <th style="width:75px;">番号</th> <!-- 번호 -->
+            <th style="width:165px;">出庫区分</th> <!-- 출고 구분 -->
+            <th style="width:105px;">並び順</th> <!-- 정렬 순서 -->
+            <th style="width:105px;">使用可否</th> <!-- 사용 여부 -->
+            <th style="width:145px;">勘定科目</th> <!-- 회계 과목 -->
+            <th style="width:125px;">費用区分</th> <!-- 비용 구분 -->
+            <th style="width:115px;">製品</th> <!-- 제품 -->
+            <th style="width:115px;">材料</th> <!-- 자재 -->
+            <th style="width:115px;">営業使用</th> <!-- 영업 사용 -->
+            <th style="width:135px;">在庫実調整(出庫)</th> <!-- 재고 실조정(출고) -->
+            <th style="width:135px;">在庫実調整(入庫)</th> <!-- 재고 실조정(입고) -->
+            <th style="width:125px;">付加税対象</th> <!-- 부가세 대상 -->
+            <th style="width:135px;">付加税処理区分</th> <!-- 부가세 처리 구분 -->
+            <th style="width:105px;">AS</th>
+            <th style="width:155px;">品目別伝票処理可否</th> <!-- 품목별 전표 처리 여부 -->
+            <th style="width:115px;">項目選択</th> <!-- 항목 선택 -->
           </tr>
         </thead>
         <tbody id="tbody-out"></tbody>
@@ -102,17 +102,17 @@
       <table class="table-single-select">
         <thead>
           <tr>
-            <th style="width:50px;">番号</th> <!-- 번호 -->
-            <th style="width:140px;">入庫区分</th> <!-- 입고 구분 -->
-            <th style="width:80px;">並び順</th> <!-- 정렬 순서 -->
-            <th style="width:80px;">使用可否</th> <!-- 사용 여부 -->
-            <th style="width:120px;">勘定科目</th> <!-- 회계 과목 -->
-            <th style="width:100px;">費用区分</th> <!-- 비용 구분 -->
-            <th style="width:90px;">製品</th> <!-- 제품 -->
-            <th style="width:90px;">材料</th> <!-- 자재 -->
-            <th style="width:110px;">副産物入庫</th> <!-- 부산물 입고 -->
-            <th style="width:150px;">品目別反入処理可否</th> <!-- 품목별 반입 처리 여부 -->
-            <th style="width:90px;">項目選択</th> <!-- 항목 선택 -->
+            <th style="width:75px;">番号</th> <!-- 번호 -->
+            <th style="width:165px;">入庫区分</th> <!-- 입고 구분 -->
+            <th style="width:105px;">並び順</th> <!-- 정렬 순서 -->
+            <th style="width:105px;">使用可否</th> <!-- 사용 여부 -->
+            <th style="width:145px;">勘定科目</th> <!-- 회계 과목 -->
+            <th style="width:125px;">費用区分</th> <!-- 비용 구분 -->
+            <th style="width:115px;">製品</th> <!-- 제품 -->
+            <th style="width:115px;">材料</th> <!-- 자재 -->
+            <th style="width:135px;">副産物入庫</th> <!-- 부산물 입고 -->
+            <th style="width:175px;">品目別反入処理可否</th> <!-- 품목별 반입 처리 여부 -->
+            <th style="width:115px;">項目選択</th> <!-- 항목 선택 -->
           </tr>
         </thead>
         <tbody id="tbody-in"></tbody>
@@ -126,17 +126,17 @@
       <table class="table-single-select">
         <thead>
           <tr>
-            <th style="width:50px;">番号</th> <!-- 번호 -->
-            <th style="width:140px;">移動区分</th> <!-- 이동 구분 -->
-            <th style="width:80px;">並び順</th> <!-- 정렬 순서 -->
-            <th style="width:80px;">使用可否</th> <!-- 사용 여부 -->
-            <th style="width:90px;">移動</th> <!-- 이동 -->
-            <th style="width:90px;">積送</th> <!-- 적송 -->
-            <th style="width:90px;">AS出庫</th> <!-- AS 출고 -->
-            <th style="width:90px;">AS返納</th> <!-- AS 반납 -->
-            <th style="width:100px;">無償支給</th> <!-- 무상 지급 -->
-            <th style="width:100px;">配車対象</th> <!-- 배차 대상 -->
-            <th style="width:90px;">項目選択</th> <!-- 항목 선택 -->
+            <th style="width:75px;">番号</th> <!-- 번호 -->
+            <th style="width:165px;">移動区分</th> <!-- 이동 구분 -->
+            <th style="width:105px;">並び順</th> <!-- 정렬 순서 -->
+            <th style="width:105px;">使用可否</th> <!-- 사용 여부 -->
+            <th style="width:115px;">移動</th> <!-- 이동 -->
+            <th style="width:115px;">積送</th> <!-- 적송 -->
+            <th style="width:115px;">AS出庫</th> <!-- AS 출고 -->
+            <th style="width:115px;">AS返納</th> <!-- AS 반납 -->
+            <th style="width:125px;">無償支給</th> <!-- 무상 지급 -->
+            <th style="width:125px;">配車対象</th> <!-- 배차 대상 -->
+            <th style="width:115px;">項目選択</th> <!-- 항목 선택 -->
           </tr>
         </thead>
         <tbody id="tbody-move"></tbody>
@@ -193,7 +193,7 @@ function loadTabData(type, tbodySelector) {
               </select>
             </td>
 
-            <td contenteditable="true">\${r.sortOrder || ''}</td>
+            <td class="text-center" contenteditable="true">\${r.sortOrder || ''}</td>
             <td class="text-center"><input type="checkbox" \${r.useYn?.toUpperCase() === 'Y' ? "checked" : ""}></td>
 
             <!-- ✅ 勘定科目 -->
@@ -250,7 +250,7 @@ function loadTabData(type, tbodySelector) {
               </select>
             </td>
 
-            <td contenteditable="true">\${r.sortOrder || ''}</td>
+            <td class="text-center" contenteditable="true">\${r.sortOrder || ''}</td>
             <td class="text-center"><input type="checkbox" \${r.useYn?.toUpperCase() === 'Y' ? "checked" : ""}></td>
 
             <!-- ✅ 勘定科目 -->
@@ -295,7 +295,7 @@ function loadTabData(type, tbodySelector) {
                 <option value="양품처리" \${r.categoryName === "양품처리" ? "selected" : ""}>良品処理</option>
               </select>
             </td>
-            <td contenteditable="true">\${r.sortOrder || ''}</td>
+            <td class="text-center" contenteditable="true">\${r.sortOrder || ''}</td>
             <td class="text-center"><input type="checkbox" \${r.useYn?.toUpperCase() === 'Y' ? "checked" : ""}></td>
             <td class="text-center"><input type="checkbox" \${r.isMove?.toUpperCase() === 'Y' ? "checked" : ""}></td>
             <td class="text-center"><input type="checkbox" \${r.isTransfer?.toUpperCase() === 'Y' ? "checked" : ""}></td>
