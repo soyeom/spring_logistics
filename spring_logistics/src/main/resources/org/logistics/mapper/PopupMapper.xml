@@ -141,7 +141,8 @@
 
 	<!-- 📂 카테고리 대분류 -->
 	<select id="category_List_Big" resultType="org.logistics.domain.PopupVO">
-		SELECT DISTINCT big_category as column2
+		SELECT item_Id as column1,
+			 big_category as column2
 		FROM item_master
 		<where>
 			<if test="gubun == 10 or gubun == '10'">
@@ -152,7 +153,8 @@
 
 	<!-- 📂 카테고리 중분류 -->
 	<select id="category_List_Mid" resultType="org.logistics.domain.PopupVO">
-		SELECT DISTINCT big_category as column2
+		SELECT item_Id as column1 
+			 , big_category as column2
 			 , mid_category as column3
 		FROM item_master
 		<where>
@@ -164,7 +166,8 @@
 
 	<!-- 📂 카테고리 소분류 -->
 	<select id="category_List_Small" resultType="org.logistics.domain.PopupVO">
-		SELECT DISTINCT big_category as column2
+		SELECT item_id as column1 
+			 , big_category as column2
 			 , mid_category as column3
 			 , small_category as column4
 		FROM item_master
