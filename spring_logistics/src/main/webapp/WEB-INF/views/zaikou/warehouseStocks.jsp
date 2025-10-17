@@ -171,7 +171,7 @@
 			</div>
 
 			<div class="table-container">
-				<table class="table-single-select">
+				<table class="table-single-select" style = "width: 100%;">
 					<thead>
 						<tr>
 							<th style="width: 120px;">品目資産分類</th>

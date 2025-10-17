@@ -37,7 +37,7 @@
 				</div>
 			</div>
 			
-			<div class="table-container" style="width : 55%;">
+			<div class="table-container" style="width : 47%;">
 			<form id="warehouseForm">
 				<table class="table-single-select">
 					<thead>
