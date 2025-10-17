@@ -28,6 +28,7 @@
 	min-width: 100%; /* 최소한 컨테이너 폭은 유지 / コンテナ幅を最低限維持 */
 	table-layout: auto; /* 자동 폭 계산 / 自動レイアウト */
 }
+
 </style>
 
 </head>
@@ -363,20 +364,20 @@
 
 
 								<!-- 💰 単価・数量などの数値列 / 단가, 수량 등 숫자 컬럼 -->
-								<td class="text-right"><fmt:formatNumber
+								<td class="text-center"><fmt:formatNumber
 										value="${order.unitPrice}" type="number" /></td>
-								<td class="text-right"><fmt:formatNumber
+								<td class="text-center"><fmt:formatNumber
 										value="${order.qty}" type="number" /></td>
 								<td><c:out value="${order.baseUnit}" /></td>
-								<td class="text-right"><fmt:formatNumber
+								<td class="text-center"><fmt:formatNumber
 										value="${order.amount}" type="number" /></td>
-								<td class="text-right"><fmt:formatNumber
+								<td class="text-center"><fmt:formatNumber
 										value="${order.vat}" type="number" /></td>
-								<td class="text-right"><fmt:formatNumber
+								<td class="text-center"><fmt:formatNumber
 										value="${order.krwAmount}" type="number" /></td>
-								<td class="text-right"><fmt:formatNumber
+								<td class="text-center"><fmt:formatNumber
 										value="${order.krwVat}" type="number" /></td>
-								<td><c:out value="${order.partyName}" /></td>
+								<td class="text-center"><c:out value="${order.partyName}" /></td>
 								<td><fmt:formatDate value="${order.inboundDate}"
 										pattern="yyyy-MM-dd" /></td>
 								<td><c:out value="${order.note}" /></td>
@@ -480,7 +481,7 @@
 
 			if (!dataList || dataList.length === 0) {
 				tbody
-						.append("<tr><td colspan='16' class='text-center'>데이터가 없습니다.</td></tr>");
+						.append("<tr><td colspan='16' class='text-center'></td></tr>");
 				return;
 			}
 
@@ -503,13 +504,25 @@
 <script>
 //✅ ポップアップを開く / 팝업 열기
 function openInboundPopup() {
+    var width = 900;    // 팝업 가로 크기
+    var height = 600;   // 팝업 세로 크기
 
-	window.open(
+    // 현재 브라우저 창 기준 중앙 좌표 계산
+    var left = (window.innerWidth - width) / 2 + window.screenX;
+    var top = (window.innerHeight - height) / 2 + window.screenY;
+
+    // 팝업 열기
+    window.open(
         "/popup/inbound_popup",
         "inboundPopup",
-        "width=900,height=600,scrollbars=yes,resizable=yes"
+        "width=" + width +
+        ",height=" + height +
+        ",left=" + left +
+        ",top=" + top +
+        ",scrollbars=yes,resizable=yes"
     );
 }
+
 
 //✅ ポップアップから親画面に値を渡す / 팝업에서 부모창으로 값 전달
 function inbound_RowData(data) {
@@ -555,7 +568,7 @@ function renderTable(dataList) {
     tbody.empty();
 
     if (!dataList || dataList.length === 0) {
-        tbody.append("<tr><td colspan='16' class='text-center'>데이터가 없습니다.</td></tr>");
+        tbody.append("<tr><td colspan='16' class='text-center'></td></tr>");
         return;
     }
 
@@ -565,14 +578,14 @@ function renderTable(dataList) {
         tr.append("<td>"+(row.itemId||'')+"</td>");
         tr.append("<td>"+(row.spec||'')+"</td>");
         tr.append('<td class="text-center"><input type="checkbox" '+(row.surtaxYn==="Y"?"checked":"")+' onchange="calcVat(this)"></td>');
-        tr.append("<td class='text-right'>"+(row.unitPrice||0)+"</td>");
-        tr.append("<td class='text-right'>"+(row.qty||0)+"</td>");
+        tr.append("<td class='text-center'>"+(row.unitPrice||0)+"</td>");
+        tr.append("<td class='text-center'>"+(row.qty||0)+"</td>");
         tr.append("<td>"+(row.baseUnit||'')+"</td>");
-        tr.append("<td class='text-right'>"+(row.amount||0)+"</td>");
-        tr.append("<td class='text-right'>"+(row.vat||0)+"</td>");
-        tr.append("<td class='text-right'>"+(row.krwAmount||0)+"</td>");
-        tr.append("<td class='text-right'>"+(row.krwVat||0)+"</td>");
-        tr.append("<td>"+(row.partyName||'')+"</td>");
+        tr.append("<td class='text-center'>"+(row.amount||0)+"</td>");
+        tr.append("<td class='text-center'>"+(row.vat||0)+"</td>");
+        tr.append("<td class='text-center'>"+(row.krwAmount||0)+"</td>");
+        tr.append("<td class='text-center'>"+(row.krwVat||0)+"</td>");
+        tr.append("<td class='text-center'>"+(row.partyName||'')+"</td>");
         tr.append("<td>"+(row.inboundDate||'')+"</td>");
         tr.append("<td>"+(row.note||'')+"</td>");
         tr.append("<td>"+(row.warehouseName || row.warehouseId || '')+"</td>");
@@ -737,10 +750,23 @@ function applyUnitPrice() {
 }
 //✅ 取引先ポップアップを開く / 거래처 팝업 열기
 function openPartyPopup() {
+    // 팝업 크기 설정
+    var width = 900;
+    var height = 600;
+
+    // 화면 가운데 위치 계산
+    var left = (window.innerWidth - width) / 2 + window.screenX;
+    var top = (window.innerHeight - height) / 2 + window.screenY;
+
+    // 팝업 열기
     window.open(
-        "/popup/party_popup",       
-        "partyPopup",              
-        "width=1000,height=600,scrollbars=yes,resizable=yes"
+        "/popup/party_popup",
+        "partyPopup",
+        "width=" + width +
+        ",height=" + height +
+        ",left=" + left +
+        ",top=" + top +
+        ",scrollbars=yes,resizable=yes"
     );
 }
 
@@ -753,12 +779,25 @@ function party_RowData(data) {
 }
 //✅ 担当者ポップアップを開く / 담당자 팝업 열기
 function openContactPopup() {
+    var width = 900;   // 팝업 가로 크기
+    var height = 600;   // 팝업 세로 크기
+
+    // 현재 브라우저 창 기준으로 중앙 좌표 계산
+    var left = (window.innerWidth - width) / 2 + window.screenX;
+    var top = (window.innerHeight - height) / 2 + window.screenY;
+
+    // 팝업 열기
     window.open(
         "/popup/contact_popup",    
         "contactPopup",            
-        "width=1000,height=600,scrollbars=yes,resizable=yes"
+        "width=" + width +
+        ",height=" + height +
+        ",left=" + left +
+        ",top=" + top +
+        ",scrollbars=yes,resizable=yes"
     );
 }
+
 
 //✅ 担当者データを受け取る / 담당자 팝업에서 데이터 전달받기
 function contact_RowData(data) {
