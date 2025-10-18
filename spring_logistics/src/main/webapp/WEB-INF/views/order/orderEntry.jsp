@@ -43,7 +43,7 @@
 				</div>
 				<div>
 					<h1>
-						受注入力
+						入庫登録
 						<!-- 수주입력 -->
 					</h1>
 				</div>
@@ -320,7 +320,7 @@
 						</div>
 						<div class="filters-value">
 							<input type="number" step="0.1" name="discountRate" value="0">
-							<span>%</span>
+							<span style = "margin: auto; margin-left: -20px;">%</span>
 						</div>
 					</div>
 				</div>

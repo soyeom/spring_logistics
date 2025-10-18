@@ -35,7 +35,7 @@ public class StockAnalysisController {
   
     @GetMapping("/form")
     public String viewFormPage() {
-        return "StockAnalysis-form"; // StockAnalysis-form.jspに遷移
+        return "Analysis/StockAnalysis-form"; // StockAnalysis-form.jspに遷移
     }
 
     

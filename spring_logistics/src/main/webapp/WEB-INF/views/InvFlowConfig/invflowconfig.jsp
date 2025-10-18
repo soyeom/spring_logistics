@@ -150,7 +150,7 @@
 					    </table>
 		    		</div>
 	    		</div>
-	    		<div style = "display: grid; gap: 10px; width: 550px;">
+	    		<div style = "display: grid; gap: 5px; width: 550px;">
 			    	<div class="filters">
 			    		<div class = "filters-main">
 		        			<div class = "title">担当者情報</div>

@@ -21,7 +21,7 @@
     	<div class = "main">
     		<div class = "main-header">
     			<div><span class="btn btn-secondary btn-icon toggle-sidebar">≡</span></div>
-	            <div><h1>取引明細書入力</h1></div>
+	            <div><h1>出庫処理</h1></div>
 	            <div>
 	            	<button class="btn btn-secondary search-btn" id = "save" onclick = "new_out()">新規</button>
 					<button class="btn btn-secondary search-btn" id = "save" onclick = "save()">保存</button>
