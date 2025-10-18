@@ -14,43 +14,7 @@
 	rel="stylesheet">
 <link rel="stylesheet" href="/resources/css/logistics.css">
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<style>
-.result-body {
-	height: 50vh;
-	overflow-y: auto;
-	padding: 0;
-}
 
-.filters-row .input-with-text {
-	display: flex;
-	align-items: center;
-	width: 100%;
-	gap: 5px;
-}
-
-.filters-row .input-with-text input {
-	width: 80px;
-	min-width: 0;
-}
-
-.filters-row .input-with-text span {
-	white-space: nowrap;
-	font-size: 0.9rem;
-	color: #2d3f6b;
-}
-
-/* 動的に追加されたセルに対するテキストの整列 */
-.text-right {
-    text-align: right;
-}
-.text-center {
-    text-align: center;
-}
-.selected-row {
-    background-color: #e0f7fa !important; /* 選択された行の背景色 */
-}
-
-</style>
 </head>
 <body>
 	<div class="layout">
@@ -542,5 +506,7 @@ $("#btnItemSmallCategory").click(function() {
     open_Isc();
 });
 </script>
+</div>
+</div>
 </body>
 </html>
