@@ -49,8 +49,8 @@
 					<div class="filters-count">
 						<div class="filters-text">倉庫</div>
 						<div class="filters-value">
-							<input type="text" id="warehouseName">
-							<input type="hidden" id="warehouseId"> <img
+							<input type="text" id="warehouseName"> <input
+								type="hidden" id="warehouseId"> <img
 								src="https://cdn-icons-png.flaticon.com/512/16799/16799970.png"
 								alt="search" class="search-icon" id="btnWarehouse"
 								onclick="open_Warehouse()">
@@ -99,8 +99,8 @@
 						<div class="filters-text">品目小分類</div>
 
 						<div class="filters-value">
-							<input type="text" id="itemSmallCategoryName"> 
-							<input type="hidden" id="itemSmallCategory"> <img
+							<input type="text" id="itemSmallCategoryName">  <input
+								type="hidden" id="itemSmallCategory"> <img
 								src="https://cdn-icons-png.flaticon.com/512/16799/16799970.png"
 								alt="search" class="search-icon" id="btnItemSmallCategory"
 								onclick="open_Isc()">
@@ -178,8 +178,8 @@
 			</div>
 
 			<div class="table-container">
-				<!-- テーブルIDをanalysisTableとして追加し、JSから正しく参照できるように修正 -->
-				<table class="table-single-select" id="analysisTable" style="width: 100%">
+				<table class="table-single-select" id="analysisTable"
+					style="width: 100%">
 					<thead>
 						<tr id="resultHeadRow">
 							<th>品目資産分類</th>
@@ -197,17 +197,18 @@
 							<c:when test="${not empty analysisData}">
 								<c:forEach var="item" items="${analysisData}" varStatus="status">
 									<tr onclick="row_Click(this)">
-										<td class="text-center">
-											<input type="hidden" value="<c:out value='${item.buId}'/>" />
-											<c:out value="${item.itemAssetClass}"/>
-										</td>
-										<td class="text-center"><c:out value="${item.itemBigCategory}"/></td>
-										<td class="text-center"><c:out value="${item.itemSmallCategory}"/></td>
-										<td class="text-center"><c:out value="${item.itemId}"/></td>
-										<td><c:out value="${item.itemName}"/></td>
-										<td><c:out value="${item.spec}"/></td>
-										<td><c:out value="${item.itemMidCategory}"/></td>
-										<td><c:out value="${item.baseUnit}"/></td>
+										<td class="text-center"><input type="hidden"
+											value="<c:out value='${item.buId}'/>" /> <c:out
+												value="${item.itemAssetClass}" /></td>
+										<td class="text-center"><c:out
+												value="${item.itemBigCategory}" /></td>
+										<td class="text-center"><c:out
+												value="${item.itemSmallCategory}" /></td>
+										<td class="text-center"><c:out value="${item.itemId}" /></td>
+										<td><c:out value="${item.itemName}" /></td>
+										<td><c:out value="${item.spec}" /></td>
+										<td><c:out value="${item.itemMidCategory}" /></td>
+										<td><c:out value="${item.baseUnit}" /></td>
 									</tr>
 								</c:forEach>
 							</c:when>
@@ -215,8 +216,8 @@
 					</tbody>
 				</table>
 			</div>
-
-			<script>
+		</div>
+		<script>
 var ctx = '${pageContext.request.contextPath}';
 const POPUP_WIDTH = 900, POPUP_HEIGHT = 600;
 
@@ -399,7 +400,7 @@ $(document).ready(function() {
                 // 動的期間カラムの追加
                 $.each(periods, function(i, p) {
                     // pは'YYYY-MM'形式です。
-                    theadRow.append("<th class='dynamic'>" + p + "</th>");
+                    theadRow.append("<th class='text-right dynamic'>" + p + "</th>");
                 });
                 
                 // **テーブルボディの動的生成**
@@ -506,7 +507,5 @@ $("#btnItemSmallCategory").click(function() {
     open_Isc();
 });
 </script>
-</div>
-</div>
 </body>
 </html>
