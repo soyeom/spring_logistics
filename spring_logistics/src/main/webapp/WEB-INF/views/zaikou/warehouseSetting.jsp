@@ -77,7 +77,8 @@
 				</table>
 			</form>
 			</div>
-			
+
+			<script type="text/javascript" src="../resources/js/logistics.js"></script>
 			<script>
 			$(document).ready(function(){
 				$('#saveBtn').on('click', function(e){
