@@ -258,42 +258,6 @@ function loadBusinessUnits() {
     });
 }
 
-/** テーブル行クリック時のデータ抽出とロギング */
-window.row_Click = function(row) {
-    // #analysisTable IDを使用して選択された行のクラスを削除
-    $("#analysisTable tbody tr").removeClass('selected-row');
-    $(row).addClass('selected-row');
-
-    const cells = row.cells;
-    const rowData = {};
-    // #analysisTable IDを使用してヘッダー行を正確に探す
-    const headerRow = $('#analysisTable').find('#resultHeadRow th');
-    const fixedColumnsCount = 8;
-
-    // 固定された8つのカラムデータを抽出
-    rowData['buId'] = $(cells[0]).find('input[type="hidden"]').val(); 
-    rowData[headerRow.eq(0).text().trim()] = $(cells[0]).text().trim();
-    rowData[headerRow.eq(1).text().trim()] = $(cells[1]).text().trim();
-    rowData[headerRow.eq(2).text().trim()] = $(cells[2]).text().trim();
-    rowData[headerRow.eq(3).text().trim()] = $(cells[3]).text().trim();
-    rowData[headerRow.eq(4).text().trim()] = $(cells[4]).text().trim();
-    rowData[headerRow.eq(5).text().trim()] = $(cells[5]).text().trim();
-    rowData[headerRow.eq(6).text().trim()] = $(cells[6]).text().trim();
-    rowData[headerRow.eq(7).text().trim()] = $(cells[7]).text().trim();
-
-    // 動的に追加された期間カラムデータを抽出
-    for (let i = fixedColumnsCount; i < cells.length; i++) {
-        const headerText = headerRow.eq(i).text().trim();
-        // 数値フォーマットを削除
-        const cellValue = $(cells[i]).text().trim().replace(/,/g, ''); 
-        rowData[headerText] = cellValue;
-    }
-
-    console.log("--- クリックされた在庫変動データ ---");
-    console.log(rowData);
-    console.log("-----------------------------------");
-};
-
 $(document).ready(function() {
     
     $('.toggle-sidebar').on('click', function() {
