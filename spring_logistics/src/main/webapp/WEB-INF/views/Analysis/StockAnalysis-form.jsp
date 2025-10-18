@@ -14,8 +14,8 @@
 	rel="stylesheet">
 <link rel="stylesheet" href="/resources/css/logistics.css">
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
 </head>
+
 <body>
 	<div class="layout">
 		<%@ include file="/WEB-INF/views/logistics.jsp"%>
@@ -28,14 +28,14 @@
 					<h1>在庫変動推移分析</h1>
 				</div>
 				<div>
-					<button id="btnSearch" class="btn btn-secondary">検索</button>
+					<button id="btnSearch" class="btn btn-secondary">照会</button>
 					<button onclick="resetSearch()" class="btn btn-secondary">初期化</button>
 				</div>
 			</div>
 
 			<div class="filters search-filters">
 				<div class="filters-main">
-					<div class="title">検索条件</div>
+					<div class="title">照会条件</div>
 					<div class="line"></div>
 				</div>
 
@@ -130,7 +130,7 @@
 				</div>
 			</div>
 
-			<div class="filters compare-filters">
+			<div class="filters">
 				<div class="filters-main">
 					<div class="title">比較設定</div>
 					<div class="line"></div>
@@ -176,10 +176,9 @@
 					</div>
 				</div>
 			</div>
-
-			<div class="table-container">
-				<table class="table-single-select" id="analysisTable"
-					style="width: 100%">
+            
+            <div class="table-container" style="height: 300px;">
+				<table class="table-single-select" id="analysisTable" style="width: 100%">
 					<thead>
 						<tr id="resultHeadRow">
 							<th>品目資産分類</th>
@@ -260,11 +259,6 @@ function loadBusinessUnits() {
 
 $(document).ready(function() {
     
-    $('.toggle-sidebar').on('click', function() {
-           $('.sidebar').toggleClass('hidden');
-    		$('.layout').toggleClass('sidebar-collapsed');
-    });
-
     loadBusinessUnits();
 
     const analysisMap = {
@@ -337,7 +331,7 @@ $(document).ready(function() {
             data : JSON.stringify(requestData),
             beforeSend: function() {
                 // tbodyのcolspanを十分に大きく設定し、ローディングメッセージがよく見えるようにする
-                $("#result-tbody").html('<tr><td colspan="100%" style="text-align:center;">データを検索中です...</td></tr>');
+                $("#result-tbody").html('<tr><td colspan="100%" style="text-align:center;">データを照会中です...</td></tr>');
             },
             success : function(data) {
 
@@ -394,7 +388,7 @@ $(document).ready(function() {
                     // データがない場合のcolspan計算
                     let colspanCount = 8 + periods.length;
                     if (colspanCount < 8) colspanCount = 8; // 最小8つの固定カラム
-                    tbody.append('<tr><td colspan="' + colspanCount + '" class="text-center">検索結果がありません。</td></tr>');
+                    tbody.append('<tr><td colspan="' + colspanCount + '" class="text-center">照会結果がありません。</td></tr>');
                 }
             },
             error : function(xhr) {
@@ -471,5 +465,6 @@ $("#btnItemSmallCategory").click(function() {
     open_Isc();
 });
 </script>
+<script type="text/javascript" src="../resources/js/logistics.js"></script>
 </body>
 </html>
