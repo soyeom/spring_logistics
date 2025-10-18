@@ -199,6 +199,11 @@ a:hover {
 .submenu div.active::before { 
 	background-color: #3966d9;
 	opacity: 1; 
+	color: #3966d9;
+}
+
+.submenu div.active a {
+  color: #3966d9;
 }
 
 /* --------------------------------------

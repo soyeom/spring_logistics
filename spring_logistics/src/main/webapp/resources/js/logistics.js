@@ -57,3 +57,31 @@ document.querySelectorAll(".submenu div").forEach(item => {
         item.classList.add("active");
     });
 });
+
+document.addEventListener("DOMContentLoaded", () => {
+
+    const submenuItems = document.querySelectorAll(".submenu div");
+
+    // 1. 페이지 로딩 시 active 메뉴 적용
+    const activeHref = localStorage.getItem("activeSubmenu");
+    if (activeHref) {
+        submenuItems.forEach(item => {
+            const a = item.querySelector("a");
+            if (a && a.getAttribute("href") === activeHref) {
+                item.classList.add("active");
+            }
+        });
+    }
+
+    // 2. 클릭 시 active 저장 후 페이지 이동
+    submenuItems.forEach(item => {
+        const a = item.querySelector("a");
+        if (!a) return;
+
+        a.addEventListener("click", () => {
+            localStorage.setItem("activeSubmenu", a.getAttribute("href"));
+            // 이동은 그대로 발생
+        });
+    });
+
+});
