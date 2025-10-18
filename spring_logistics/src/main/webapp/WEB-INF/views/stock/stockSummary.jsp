@@ -199,6 +199,7 @@
 <!-- 	            </div> -->
 			</div>
     	</div>
+    	<script type="text/javascript" src="../resources/js/logistics.js"></script>
 	
 <script>
 
