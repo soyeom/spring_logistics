@@ -36,7 +36,7 @@ public class OtherTxnCategoryServiceImpl implements OtherTxnCategoryService {
             // 🔹 一意なコード生成(UUID) / 고유 코드 생성(UUID 기반)
             String newCode = UUID.randomUUID().toString().substring(0, 6).toUpperCase();
             category.setTxnCode(category.getTxnType() + newCode);
-            category.setBuId(1);          // 事業部ID固定(仮設定) / 사업부 ID 임시 설정
+            // category.setBuId(10);          // 事業部ID固定(仮設定) / 사업부 ID 임시 설정
             category.setUseYn("Y");       // 使用可フラグ / 사용여부 기본 Y
             mapper.insert(category);
         } else {

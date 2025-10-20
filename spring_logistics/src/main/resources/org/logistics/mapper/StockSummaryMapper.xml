@@ -213,7 +213,7 @@
 	            T1.item_id,
 	            T1.warehouse_id AS inbound_warehouse_id, -- 入庫倉庫
 	            NULL AS outbound_warehouse_id, -- 出庫倉庫
-	            T2.partner_id AS customer_party_id,
+	            T2.party_Id AS customer_party_id,
 	            T2.contact_id AS processor_contact_id
 	        FROM inbound_detail T1
 	        JOIN inbound_master T2 ON T1.inbound_id = T2.inbound_id
