@@ -73,6 +73,8 @@
 								</select>
 							</div>
 						</div>
+						<div class = "filters-count">
+						</div>
 						<div class="filters-count">
 							<div class="filters-text">品名</div>
 							<div class="filters-value">
@@ -107,23 +109,23 @@
 			</form>
 
 			<div class="table-container">
-				<table class="table-single-select">
+				<table class="table-single-select" style = "width: 100%">
 					<thead>
 						<tr>
-							<th style="width: 90">日付</th>
+							<th>日付</th>
 							<th style="width: 90">区分</th>
 							<th style="width: 90">入出庫区分</th>
 							<th style="width: 90">単位</th>
 							<th style="width: 90">入庫数量</th>
 							<th style="width: 90">出庫数量</th>
 							<th style="width: 90">在庫数量</th>
-							<th style="width: 90">管理番号</th>
-							<th style="width: 90">事業部門</th>
+							<th>管理番号</th>
+							<th>事業部門</th>
 							<th style="width: 90">入庫倉庫</th>
 							<th style="width: 90">出庫倉庫</th>
-							<th style="width: 90">取引先</th>
-							<th style="width: 90">処理部署</th>
-							<th style="width: 90">処理者</th>
+							<th>取引先</th>
+							<th>処理部署</th>
+							<th>処理者</th>
 						</tr>
 					</thead>
 
@@ -281,27 +283,27 @@
 
                         if (data && data.length > 0) {
                             data.forEach(function(item) {
+                            	
                                 // transactionDateをJavaScriptで変換
                                 const transactionDate = item.transactionDate ? new Date(item.transactionDate) : null;
                                 const formattedDate = transactionDate ? transactionDate.toISOString().split('T')[0] : '';
                                 
                                 const row = `
                                     <tr>
-                                        <td>\${formattedDate}</td>
-                                        <td>\${item.type || ''}</td>
-                                        <td>\${item.inOutboundType || ''}</td>
-                                        <td>\${item.inOutboundCategory || ''}</td>
-                                        <td>\${item.unit || ''}</td>
-                                        <td>\${item.inboundQty !== null ? item.inboundQty : ''}</td>
-                                        <td>\${item.outboundQty !== null ? item.outboundQty : ''}</td>
-                                        <td>\${item.stockQty !== null ? item.stockQty : ''}</td>
-                                        <td>\${item.managementId || ''}</td>
-                                        <td>\${item.buName || ''}</td>
-                                        <td>\${item.inboundWarehouse || ''}</td>
-                                        <td>\${item.outboundWarehouse || ''}</td>
-                                        <td>\${item.customer || ''}</td>
-                                        <td>\${item.processingDepartment || ''}</td>
-                                        <td>\${item.processor || ''}</td>
+                                        <td class = "text-center">\${formattedDate}</td>
+                                        <td class = "text-center">\${item.type || ''}</td>
+                                        <td class = "text-center">\${item.inOutboundType || ''}</td>
+                                        <td class = "text-center">\${item.unit || ''}</td>
+                                        <td class = "text-right">\${item.inboundQty !== null ? item.inboundQty : ''}</td>
+                                        <td class = "text-right">\${item.outboundQty !== null ? item.outboundQty : ''}</td>
+                                        <td class = "text-right">\${item.stockQty !== null ? item.stockQty : ''}</td>
+                                        <td class = "text-center">\${item.managementId || ''}</td>
+                                        <td class = "text-center">\${item.buName || ''}</td>
+                                        <td class = "text-center">\${item.inboundWarehouse || ''}</td>
+                                        <td class = "text-center">\${item.outboundWarehouse || ''}</td>
+                                        <td class = "text-center">\${item.partyName || ''}</td>
+                                        <td class = "text-center">\${item.department || ''}</td>
+                                        <td class = "text-center">\${item.contactName || ''}</td>
                                     </tr>
                                 `;
                                 $resultTableBody.append(row);
@@ -321,5 +323,6 @@
             $searchForm.submit();
         });
     </script>
+    </div>
 </body>
 </html>
